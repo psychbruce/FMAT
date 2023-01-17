@@ -1,0 +1,16 @@
+data-raw
+research
+^.*\.pdf$
+^.*\.docx$
+^.Rhistory$
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.travis\.yml$
+^LICENSE$
+^cran-comments\.md$
+^CRAN-RELEASE$
+^CRAN-SUBMISSION$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$
