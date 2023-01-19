@@ -20,7 +20,6 @@ LazyDataCompression: xz
 URL: https://psychbruce.github.io/FMAT/
 BugReports: https://github.com/psychbruce/FMAT/issues
 Depends: R (>= 4.0.0)
-Imports: dplyr, stringr, data.table, cli, text, reticulate,
-         PsychWordVec
-Suggests: bruceR
-RoxygenNote: 7.2.2
+Imports: bruceR, PsychWordVec, data.table, stringr, forcats, purrr, cli,
+         text, reticulate
+RoxygenNote: 7.2.3
