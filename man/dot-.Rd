@@ -4,8 +4,18 @@
 \alias{.}
 \title{A wrapper of \code{list()}.}
 \usage{
-.()
+.(...)
+}
+\arguments{
+\item{...}{Objects (possibly named) passed to \code{\link{list}}.}
+}
+\value{
+A list.
 }
 \description{
-A wrapper of \code{list()}.
+A simple version of the \code{\link{list}} function.
+}
+\examples{
+.(Male=s("man, he, his"), Female=s("woman, she, her"))
+
 }

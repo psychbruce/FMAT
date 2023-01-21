@@ -48,28 +48,30 @@ FMAT_query("[MASK] is a nurse.", MASK = .(Male="He", Female="She"))
 FMAT_query(
   c("[MASK] is {TARGET}.", "[MASK] works as {TARGET}."),
   MASK = .(Male="He", Female="She"),
-  TARGET = .(Occupation=cc("a doctor, a nurse, an artist"))
+  TARGET = .(Occupation=s("a doctor, a nurse, an artist"))
 )
 
 FMAT_query(
   "The [MASK] {ATTRIB}.",
-  MASK = .(Male=cc("man, boy"), Female=cc("woman, girl")),
-  ATTRIB = .(Masc=cc("is masculine, has a masculine personality"),
-             Femi=cc("is feminine, has a feminine personality"))
+  MASK = .(Male=s("man, boy"), Female=s("woman, girl")),
+  ATTRIB = .(Masc=s("is masculine, has a masculine personality"),
+             Femi=s("is feminine, has a feminine personality"))
 )
 
 FMAT_query(
   "The {TARGET} has a [MASK] association with {ATTRIB}.",
   MASK = .(H="high", L="low"),
-  TARGET = .(Flower=cc("rose, iris, lily"),
-             Insect=cc("ant, cockroach, spider")),
-  ATTRIB = .(Pos=cc("health, happiness, love, peace"),
-             Neg=cc("death, sickness, hatred, disaster"))
+  TARGET = .(Flower=s("rose, iris, lily"),
+             Insect=s("ant, cockroach, spider")),
+  ATTRIB = .(Pos=s("health, happiness, love, peace"),
+             Neg=s("death, sickness, hatred, disaster"))
 )
 
 }
 \seealso{
 \code{\link{FMAT}}
+
+\code{\link{FMAT_load}}
 
 \code{\link{FMAT_query_bind}}
 

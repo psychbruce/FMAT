@@ -1,7 +1,7 @@
 Package: FMAT
 Title: The Fill-Mask Association Test
-Version: 0.0.1
-Date: 2023-01-17
+Version: 0.0.2
+Date: 2023-01-21
 Authors@R:
     c(person(given = "Han-Wu-Shuang",
              family = "Bao",
@@ -15,11 +15,10 @@ Description:
     (e.g., BERT) to measure conceptual associations.
 License: GPL-3
 Encoding: UTF-8
-LazyData: true
-LazyDataCompression: xz
 URL: https://psychbruce.github.io/FMAT/
 BugReports: https://github.com/psychbruce/FMAT/issues
 Depends: R (>= 4.0.0)
-Imports: bruceR, PsychWordVec, data.table, stringr, forcats, purrr, cli,
-         text, reticulate
+Imports: reticulate, text, data.table, stringr, forcats,
+         glue, cli, purrr, plyr, parallel
+Suggests: bruceR, PsychWordVec
 RoxygenNote: 7.2.3

@@ -5,16 +5,27 @@
 \title{The Fill-Mask Association Test (\code{FMAT_query()} & \code{FMAT_run()}).}
 \usage{
 FMAT(
-  model = "bert-base-uncased",
+  models = "bert-base-uncased",
   query = "[MASK] is {TARGET}.",
   MASK = .(),
   TARGET = .(),
   ATTRIB = .(),
   unmask.id = 1,
-  parallel = FALSE
+  progress = c("text", "time", "none"),
+  parallel = FALSE,
+  ncores = min(length(models), parallel::detectCores())
 )
 }
 \arguments{
+\item{models}{Language model(s):
+\itemize{
+  \item{Model names (usually the BERT-based models) at
+        \href{https://huggingface.co/models}{HuggingFace}.}
+  \item{A list of fill-mask pipelines loaded by \code{\link{FMAT_load}}.
+        You should \strong{rerun} \code{\link{FMAT_load}}
+        if you \strong{restart} the R session.}
+}}
+
 \item{query}{Query text (should be a character string/vector
 with at least one \code{[MASK]} token).
 Multiple queries would share the same
@@ -37,26 +48,43 @@ replaced by the words/phrases.}
 \item{unmask.id}{If there are multiple \code{[MASK]} in \code{query},
 this argument will be used to determine which one is to be unmasked.
 Defaults to the 1st \code{[MASK]}.}
+
+\item{progress}{Show a progress bar:
+\code{"text"} (default), \code{"time"}, \code{"none"}.}
+
+\item{parallel}{Parallel processing. Defaults to \code{FALSE}.
+If \code{TRUE}, then \code{models} must be model names
+rather than from \code{\link{FMAT_load}}.
+
+Note that for a small \code{data},
+parallel processing would instead be slower
+because it takes time to create a parallel cluster.}
+
+\item{ncores}{Number of CPU cores to be used in parallel processing.
+Defaults to the minimum of the number of models and your CPU cores.}
 }
 \description{
 The Fill-Mask Association Test (\code{FMAT_query()} & \code{FMAT_run()}).
 }
 \examples{
-models = c("bert-base-uncased",
-           "bert-base-cased")
+# Running the example requires models downloaded
+\donttest{
+models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
 
-FMAT(
+data = FMAT(
   models,
   "The {TARGET} has a [MASK] association with {ATTRIB}.",
   MASK = .(H="high", L="low"),
-  TARGET = .(Flower=cc("rose, iris, lily"),
-             Insect=cc("ant, cockroach, spider")),
-  ATTRIB = .(Pos=cc("health, happiness, love, peace"),
-             Neg=cc("death, sickness, hatred, disaster"))
+  TARGET = .(Flower=s("rose, iris, lily"),
+             Insect=s("ant, cockroach, spider")),
+  ATTRIB = .(Pos=s("health, happiness, love, peace"),
+             Neg=s("death, sickness, hatred, disaster"))
 )
-
+}
 }
 \seealso{
+\code{\link{FMAT_load}}
+
 \code{\link{FMAT_query}}
 
 \code{\link{FMAT_query_bind}}

@@ -4,7 +4,6 @@
 #' @import stringr
 #' @import data.table
 #' @importFrom forcats as_factor
-#' @importFrom bruceR cc Glue Print dtime
 .onAttach = function(libname, pkgname) {
   inst.ver = as.character(utils::packageVersion("FMAT"))
   pkgs = c("data.table", "stringr")
@@ -15,11 +14,11 @@
   })
   if(all(loaded)) {
     cli::cli_h1("FMAT (v{inst.ver})")
-    cat("\n")
+    cn()
     cli::cli_alert_success("
     Packages also loaded: {.pkg data.table, stringr}
     ")
-    cat("\n")
+    cn()
   }
 }
 
@@ -27,29 +26,66 @@
 #### Basic ####
 
 
+cn = function() cat("\n")
+
 #' A wrapper of \code{list()}.
+#'
+#' A simple version of the \code{\link{list}} function.
+#'
+#' @param ... Objects (possibly named) passed to \code{\link{list}}.
+#'
+#' @return A list.
+#'
+#' @examples
+#' .(Male=s("man, he, his"), Female=s("woman, she, her"))
+#'
 #' @export
-. = list
+. = function(...) list(...)
 
-#' @importFrom bruceR cc
+#' Split a string (with separators) into a character vector.
+#'
+#' @param x Character string.
+#' Separators can be: \code{,} \code{;} \code{|} \code{\\n} \code{\\t}.
+#'
+#' @return Character vector.
+#'
+#' @examples
+#' s("a, b, c, d, e")
+#'
 #' @export
-bruceR::cc
+s = function(x) {
+  as.character(str_split(str_trim(x), "\\s*[,;\\|\\n\\t]\\s*", simplify=TRUE))
+}
 
-#' @importFrom PsychWordVec text_init
-#' @export
-PsychWordVec::text_init
+text_init = function() {
+  suppressMessages({
+    suppressWarnings({
+      text::textrpp_install(prompt=FALSE)
+    })
+  })
+  cn()
+  cli::cli_alert_success("{.pkg Installed Python modules in conda environment.}")
 
-#' @importFrom PsychWordVec text_model_download
-#' @export
-PsychWordVec::text_model_download
+  error = TRUE
+  try({
+    suppressMessages({
+      suppressWarnings({
+        text::textrpp_initialize(save_profile=TRUE, prompt=FALSE)
+      })
+    })
+    error = FALSE
+  }, silent=TRUE)
+  if(error)
+    stop("No valid Python or conda environment.
 
-#' @importFrom PsychWordVec text_model_remove
-#' @export
-PsychWordVec::text_model_remove
-
-#' @importFrom PsychWordVec text_unmask
-#' @export
-PsychWordVec::text_unmask
+       You may need to specify the version of Python:
+         RStudio -> Tools -> Global/Project Options
+         -> Python -> Select -> Conda Environments
+         -> Choose \".../textrpp_condaenv/python.exe\"",
+       call.=FALSE)
+  cn()
+  cli::cli_alert_success("{.pkg Initialized the Python modules.}")
+}
 
 text_initialized = function() {
   error = TRUE
@@ -57,17 +93,99 @@ text_initialized = function() {
     text::textModels()
     error = FALSE
   }, silent=TRUE)
-  if(error) PsychWordVec::text_init()
+  if(error) text_init()
+}
+
+model_download = function(model=NULL) {
+  text_initialized()
+  if(!is.null(model)) {
+    for(m in model) {
+      cli::cli_h1("Downloading model \"{m}\"")
+      transformers = reticulate::import("transformers")
+      cli::cli_text("Downloading configuration...")
+      config = transformers$AutoConfig$from_pretrained(m)
+      cli::cli_text("Downloading tokenizer...")
+      tokenizer = transformers$AutoTokenizer$from_pretrained(m)
+      cli::cli_text("Downloading model...")
+      model = transformers$AutoModel$from_pretrained(m)
+      cli::cli_alert_success("Successfully downloaded model \"{m}\"")
+      gc()
+    }
+  }
+  cli::cli_h2("Currently downloaded language models:")
+  models = text::textModels()
+  models[[1]] = sort(models[[1]])
+  models[[2]] = sort(models[[2]])
+  cli::cli_li(paste0("\"", models$Downloaded_models, "\""))
+  cn()
+  invisible(models)
+}
+
+dtime = function(t0) {
+  diff = as.numeric(difftime(Sys.time(), t0, units="secs"))
+  if(diff < 1) {
+    paste0(round(diff * 1000), "ms")
+  } else if(diff < 60) {
+    paste0(round(diff, 1), "s")
+  } else {
+    mins = floor(diff / 60)
+    secs = round(diff - mins * 60, 1)
+    paste0(mins, "m ", secs, "s")
+  }
 }
 
 
 #### FMAT ####
 
 
+#' Initialize running environment and (down)load language models.
+#'
+#' @param models Language model names (usually the BERT-based models)
+#' at \href{https://huggingface.co/models}{HuggingFace}.
+#'
+#' @return
+#' A named list of fill-mask pipelines obtained from the models.
+#'
+#' @seealso
+#' \code{\link{FMAT}}
+#'
+#' \code{\link{FMAT_query}}
+#'
+#' \code{\link{FMAT_query_bind}}
+#'
+#' \code{\link{FMAT_run}}
+#'
+#' @examples
+#' \donttest{models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))}
+#'
+#' @export
+FMAT_load = function(models) {
+  cli::cli_text("Initializing environment...")
+  text_initialized()
+  old.models = text::textModels()$Downloaded_models
+  new.models = setdiff(models, old.models)
+  if(length(new.models) > 0) model_download(new.models)
+
+  cli::cli_text("Loading models...")
+  transformers = reticulate::import("transformers")
+  fms = lapply(models, function(model) {
+    t0 = Sys.time()
+    reticulate::py_capture_output({
+      fill_mask = transformers$pipeline("fill-mask", model=model)
+    })
+    cli::cli_alert_success("{model} ({dtime(t0)})")
+    return(list(model.name=model, fill.mask=fill_mask))
+  })
+  names(fms) = models
+  class(fms) = "fill.mask"
+  return(fms)
+}
+
+
 # query = "[MASK] is ABC."
-# expand_pair(query, .(High=cc("high, strong"), Low=cc("low, weak")))
+# expand_pair(query, .(High=s("high, strong"), Low=s("low, weak")))
 # expand_pair(query, .(H="high", M="medium", L="low"))
-# X = .(Flower=cc("rose, iris, lily"), Pos=cc("health, happiness, love, peace"))
+# X = .(Flower=s("rose, iris, lily"), Pos=s("health, happiness, love, peace"))
 # expand_full(query, X)
 
 expand_pair = function(query, X, var="MASK") {
@@ -149,6 +267,8 @@ append_X = function(dq, X, var="TARGET") {
 #' @seealso
 #' \code{\link{FMAT}}
 #'
+#' \code{\link{FMAT_load}}
+#'
 #' \code{\link{FMAT_query_bind}}
 #'
 #' \code{\link{FMAT_run}}
@@ -159,23 +279,23 @@ append_X = function(dq, X, var="TARGET") {
 #' FMAT_query(
 #'   c("[MASK] is {TARGET}.", "[MASK] works as {TARGET}."),
 #'   MASK = .(Male="He", Female="She"),
-#'   TARGET = .(Occupation=cc("a doctor, a nurse, an artist"))
+#'   TARGET = .(Occupation=s("a doctor, a nurse, an artist"))
 #' )
 #'
 #' FMAT_query(
 #'   "The [MASK] {ATTRIB}.",
-#'   MASK = .(Male=cc("man, boy"), Female=cc("woman, girl")),
-#'   ATTRIB = .(Masc=cc("is masculine, has a masculine personality"),
-#'              Femi=cc("is feminine, has a feminine personality"))
+#'   MASK = .(Male=s("man, boy"), Female=s("woman, girl")),
+#'   ATTRIB = .(Masc=s("is masculine, has a masculine personality"),
+#'              Femi=s("is feminine, has a feminine personality"))
 #' )
 #'
 #' FMAT_query(
 #'   "The {TARGET} has a [MASK] association with {ATTRIB}.",
 #'   MASK = .(H="high", L="low"),
-#'   TARGET = .(Flower=cc("rose, iris, lily"),
-#'              Insect=cc("ant, cockroach, spider")),
-#'   ATTRIB = .(Pos=cc("health, happiness, love, peace"),
-#'              Neg=cc("death, sickness, hatred, disaster"))
+#'   TARGET = .(Flower=s("rose, iris, lily"),
+#'              Insect=s("ant, cockroach, spider")),
+#'   ATTRIB = .(Pos=s("health, happiness, love, peace"),
+#'              Neg=s("death, sickness, hatred, disaster"))
 #' )
 #'
 #' @export
@@ -203,7 +323,8 @@ FMAT_query = function(
                   ATTRIB, "ATTRIB")
   } else if(length(TARGET)>0 & length(ATTRIB)>0) {
     # Both TARGET and ATTRIB
-    dq = map_query(query, function(q, target, attrib) {
+    dm = map_query(query, expand_pair, MASK)
+    dx = map_query(query, function(q, target, attrib) {
       rbind(
         expand_full(q, c(target[1], attrib[1])),
         expand_full(q, c(target[1], attrib[2])),
@@ -211,6 +332,7 @@ FMAT_query = function(
         expand_full(q, c(target[2], attrib[2]))
       )
     }, TARGET, ATTRIB)
+    dq = plyr::adply(dx, 1, function(x) cbind(dm, x))
   }
   if(any(str_count(query, "\\[MASK\\]") > 1))
     dq$unmask.id = as.integer(unmask.id)
@@ -220,7 +342,7 @@ FMAT_query = function(
 }
 
 
-#' Combind multiple query data.tables and renumber query ids.
+#' Combine multiple query data.tables and renumber query ids.
 #'
 #' @param ... Query data.tables returned from \code{\link{FMAT_query}}.
 #'
@@ -229,6 +351,8 @@ FMAT_query = function(
 #'
 #' @seealso
 #' \code{\link{FMAT}}
+#'
+#' \code{\link{FMAT_load}}
 #'
 #' \code{\link{FMAT_query}}
 #'
@@ -239,12 +363,12 @@ FMAT_query = function(
 #'   FMAT_query(
 #'     "[MASK] is {TARGET}.",
 #'     MASK = .(Male="He", Female="She"),
-#'     TARGET = .(Occupation=cc("a doctor, a nurse, an artist"))
+#'     TARGET = .(Occupation=s("a doctor, a nurse, an artist"))
 #'   ),
 #'   FMAT_query(
 #'     "[MASK] occupation is {TARGET}.",
 #'     MASK = .(Male="His", Female="Her"),
-#'     TARGET = .(Occupation=cc("doctor, nurse, artist"))
+#'     TARGET = .(Occupation=s("doctor, nurse, artist"))
 #'   )
 #' )
 #'
@@ -257,13 +381,148 @@ FMAT_query_bind = function(...) {
 }
 
 
-#' Run the FMAT on multiple models.
+# Using plyr!
+# library(plyr)
+# library(doParallel)
+#
+# minmax = function(d) data.frame(min=min(d$yield), max=max(d$yield))
+#
+# adply(npk, 1, minmax, .progress="time")
+#
+# cl = makeCluster(detectCores())
+# registerDoParallel(cl)
+# suppressWarnings(adply(npk, 1, minmax, .parallel=TRUE))
+# stopCluster(cl)
+
+
+#' Run the fill-mask pipeline on multiple models.
+#'
+#' @param models Language model(s):
+#' \itemize{
+#'   \item{Model names (usually the BERT-based models) at
+#'         \href{https://huggingface.co/models}{HuggingFace}.}
+#'   \item{A list of fill-mask pipelines loaded by \code{\link{FMAT_load}}.
+#'         You should \strong{rerun} \code{\link{FMAT_load}}
+#'         if you \strong{restart} the R session.}
+#' }
+#' @param data A data.table returned from
+#' \code{\link{FMAT_query}} or \code{\link{FMAT_query_bind}}.
+#' @param progress Show a progress bar:
+#' \code{"text"} (default), \code{"time"}, \code{"none"}.
+#' @param parallel Parallel processing. Defaults to \code{FALSE}.
+#' If \code{TRUE}, then \code{models} must be model names
+#' rather than from \code{\link{FMAT_load}}.
+#'
+#' Note that for a small \code{data},
+#' parallel processing would instead be slower
+#' because it takes time to create a parallel cluster.
+#' @param ncores Number of CPU cores to be used in parallel processing.
+#' Defaults to the minimum of the number of models and your CPU cores.
+#'
+#' @seealso
+#' \code{\link{FMAT}}
+#'
+#' \code{\link{FMAT_load}}
+#'
+#' \code{\link{FMAT_query}}
+#'
+#' \code{\link{FMAT_query_bind}}
+#'
+#' @examples
+#' # Running the example requires models downloaded
+#' \donttest{
+#' models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
+#'
+#' dq = FMAT_query(
+#'   c("[MASK] is {TARGET}.", "[MASK] works as {TARGET}."),
+#'   MASK = .(Male="He", Female="She"),
+#'   TARGET = .(Occupation=s("a doctor, a nurse, an artist"))
+#' )
+#'
+#' data = FMAT_run(models, dq)
+#' }
 #' @export
-FMAT_run = function(model, data.query, parallel = FALSE) {
-  res = lapply(model, function(model.i) {
-    Print(model.i)
-  })
-  return(res)
+FMAT_run = function(
+    models,
+    data,
+    progress = c("text", "time", "none"),
+    parallel = FALSE,
+    ncores = min(length(models), parallel::detectCores())
+) {
+  t0 = Sys.time()
+  progress = match.arg(progress)
+
+  text_initialized()
+  cli::cli_alert_success("Environment initialized ({dtime(t0)})")
+
+  onerun = function(model, data=data) {
+    if(is.character(model)) {
+      t1 = Sys.time()
+      transformers = reticulate::import("transformers")
+      reticulate::py_capture_output({
+        fill_mask = transformers$pipeline("fill-mask", model=model)
+      })
+      cli::cli_h1("{model} (model loaded: {dtime(t1)})")
+    }
+    if(is.list(model)) {
+      fill_mask = model$fill.mask
+      model = model$model.name
+      cli::cli_h1("{model}")
+    }
+
+    uncased = str_detect(model, "uncased|albert")
+    prefix = str_detect(model, "xlm-roberta|albert")
+
+    unmask = function(d) {
+      if("TARGET" %in% names(d))
+        TARGET = as.character(d$T_word)
+      if("ATTRIB" %in% names(d))
+        ATTRIB = as.character(d$A_word)
+      uid = if("unmask.id" %in% names(d)) d$unmask.id else 1
+      query = glue::glue(as.character(d$query))
+      mask = as.character(d$M_word)
+      if(uncased) mask = tolower(mask)
+      if(prefix) mask = paste0("\u2581", mask)
+      oov = reticulate::py_capture_output({
+        res = fill_mask(query, targets=mask, top_k=1L)[[uid]]
+      })
+      return(data.table(
+        output = res$sequence,
+        token = ifelse(
+          oov=="",
+          res$token_str,
+          paste(res$token_str, "(out-of-vocabulary)")),
+        prop = res$score
+      ))
+    }
+
+    t2 = Sys.time()
+    suppressWarnings({
+      data = plyr::adply(
+        data, 1, unmask,
+        .progress = if(parallel) "none" else progress
+      )
+    })
+    cat(paste0("  (", dtime(t2), ")\n"))
+
+    return(cbind(data.table(model=as.factor(model)), data))
+  }
+
+  cli::cli_alert_info(" Task: {length(models)} models * {nrow(data)} queries")
+
+  if(parallel) {
+    cl = parallel::makeCluster(ncores)
+    models = names(models)
+    data = rbindlist(parallel::parLapply(cl, models, onerun, data=data))
+    parallel::stopCluster(cl)
+  } else {
+    data = rbindlist(lapply(models, onerun, data=data))
+    cn()
+  }
+
+  cli::cli_alert_success("Task completed (total time cost = {dtime(t0)})")
+
+  return(data)
 }
 
 
@@ -273,6 +532,8 @@ FMAT_run = function(model, data.query, parallel = FALSE) {
 #' @inheritParams FMAT_run
 #'
 #' @seealso
+#' \code{\link{FMAT_load}}
+#'
 #' \code{\link{FMAT_query}}
 #'
 #' \code{\link{FMAT_query_bind}}
@@ -280,34 +541,37 @@ FMAT_run = function(model, data.query, parallel = FALSE) {
 #' \code{\link{FMAT_run}}
 #'
 #' @examples
-#' models = c("bert-base-uncased",
-#'            "bert-base-cased")
+#' # Running the example requires models downloaded
+#' \donttest{
+#' models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
 #'
-#' FMAT(
+#' data = FMAT(
 #'   models,
 #'   "The {TARGET} has a [MASK] association with {ATTRIB}.",
 #'   MASK = .(H="high", L="low"),
-#'   TARGET = .(Flower=cc("rose, iris, lily"),
-#'              Insect=cc("ant, cockroach, spider")),
-#'   ATTRIB = .(Pos=cc("health, happiness, love, peace"),
-#'              Neg=cc("death, sickness, hatred, disaster"))
+#'   TARGET = .(Flower=s("rose, iris, lily"),
+#'              Insect=s("ant, cockroach, spider")),
+#'   ATTRIB = .(Pos=s("health, happiness, love, peace"),
+#'              Neg=s("death, sickness, hatred, disaster"))
 #' )
-#'
+#' }
 #' @export
 FMAT = function(
-    model = "bert-base-uncased",
+    models = "bert-base-uncased",
     query = "[MASK] is {TARGET}.",
     MASK = .(),
     TARGET = .(),
     ATTRIB = .(),
     unmask.id = 1,
-    parallel = FALSE
+    progress = c("text", "time", "none"),
+    parallel = FALSE,
+    ncores = min(length(models), parallel::detectCores())
 ) {
   # Many Queries
-  dq = FMAT_query(query, MASK, TARGET, ATTRIB)
+  dq = FMAT_query(query, MASK, TARGET, ATTRIB, unmask.id)
 
   # Many Models
-  data = FMAT_run(model, dq, parallel)
+  data = FMAT_run(models, dq, progress, parallel, ncores)
 
   return(data)
 }

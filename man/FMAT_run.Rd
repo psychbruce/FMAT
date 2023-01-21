@@ -2,10 +2,66 @@
 % Please edit documentation in R/FMAT.R
 \name{FMAT_run}
 \alias{FMAT_run}
-\title{Run the FMAT on multiple models.}
+\title{Run the fill-mask pipeline on multiple models.}
 \usage{
-FMAT_run(model, data.query, parallel = FALSE)
+FMAT_run(
+  models,
+  data,
+  progress = c("text", "time", "none"),
+  parallel = FALSE,
+  ncores = min(length(models), parallel::detectCores())
+)
+}
+\arguments{
+\item{models}{Language model(s):
+\itemize{
+  \item{Model names (usually the BERT-based models) at
+        \href{https://huggingface.co/models}{HuggingFace}.}
+  \item{A list of fill-mask pipelines loaded by \code{\link{FMAT_load}}.
+        You should \strong{rerun} \code{\link{FMAT_load}}
+        if you \strong{restart} the R session.}
+}}
+
+\item{data}{A data.table returned from
+\code{\link{FMAT_query}} or \code{\link{FMAT_query_bind}}.}
+
+\item{progress}{Show a progress bar:
+\code{"text"} (default), \code{"time"}, \code{"none"}.}
+
+\item{parallel}{Parallel processing. Defaults to \code{FALSE}.
+If \code{TRUE}, then \code{models} must be model names
+rather than from \code{\link{FMAT_load}}.
+
+Note that for a small \code{data},
+parallel processing would instead be slower
+because it takes time to create a parallel cluster.}
+
+\item{ncores}{Number of CPU cores to be used in parallel processing.
+Defaults to the minimum of the number of models and your CPU cores.}
 }
 \description{
-Run the FMAT on multiple models.
+Run the fill-mask pipeline on multiple models.
+}
+\examples{
+# Running the example requires models downloaded
+\donttest{
+models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
+
+dq = FMAT_query(
+  c("[MASK] is {TARGET}.", "[MASK] works as {TARGET}."),
+  MASK = .(Male="He", Female="She"),
+  TARGET = .(Occupation=s("a doctor, a nurse, an artist"))
+)
+
+data = FMAT_run(models, dq)
+}
+}
+\seealso{
+\code{\link{FMAT}}
+
+\code{\link{FMAT_load}}
+
+\code{\link{FMAT_query}}
+
+\code{\link{FMAT_query_bind}}
 }

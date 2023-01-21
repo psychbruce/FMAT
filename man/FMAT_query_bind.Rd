@@ -2,7 +2,7 @@
 % Please edit documentation in R/FMAT.R
 \name{FMAT_query_bind}
 \alias{FMAT_query_bind}
-\title{Combind multiple query data.tables and renumber query ids.}
+\title{Combine multiple query data.tables and renumber query ids.}
 \usage{
 FMAT_query_bind(...)
 }
@@ -13,25 +13,27 @@ FMAT_query_bind(...)
 A data.table of queries and variables.
 }
 \description{
-Combind multiple query data.tables and renumber query ids.
+Combine multiple query data.tables and renumber query ids.
 }
 \examples{
 FMAT_query_bind(
   FMAT_query(
     "[MASK] is {TARGET}.",
     MASK = .(Male="He", Female="She"),
-    TARGET = .(Occupation=cc("a doctor, a nurse, an artist"))
+    TARGET = .(Occupation=s("a doctor, a nurse, an artist"))
   ),
   FMAT_query(
     "[MASK] occupation is {TARGET}.",
     MASK = .(Male="His", Female="Her"),
-    TARGET = .(Occupation=cc("doctor, nurse, artist"))
+    TARGET = .(Occupation=s("doctor, nurse, artist"))
   )
 )
 
 }
 \seealso{
 \code{\link{FMAT}}
+
+\code{\link{FMAT_load}}
 
 \code{\link{FMAT_query}}
 
