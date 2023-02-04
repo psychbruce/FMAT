@@ -7,8 +7,10 @@
 FMAT_load(models)
 }
 \arguments{
-\item{models}{Language model names (usually the BERT-based models)
-at \href{https://huggingface.co/models}{HuggingFace}.}
+\item{models}{Language model names (usually the BERT-based models) at
+\href{
+https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers
+}{HuggingFace}.}
 }
 \value{
 A named list of fill-mask pipelines obtained from the models.
@@ -21,8 +23,6 @@ Initialize running environment and (down)load language models.
 
 }
 \seealso{
-\code{\link{FMAT}}
-
 \code{\link{FMAT_query}}
 
 \code{\link{FMAT_query_bind}}

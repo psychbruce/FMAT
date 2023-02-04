@@ -2,7 +2,7 @@
 % Please edit documentation in R/FMAT.R
 \name{FMAT_run}
 \alias{FMAT_run}
-\title{Run the fill-mask pipeline on multiple models.}
+\title{Run the mask filling pipeline on multiple models.}
 \usage{
 FMAT_run(
   models,
@@ -16,13 +16,15 @@ FMAT_run(
 \item{models}{Language model(s):
 \itemize{
   \item{Model names (usually the BERT-based models) at
-        \href{https://huggingface.co/models}{HuggingFace}.}
-  \item{A list of fill-mask pipelines loaded by \code{\link{FMAT_load}}.
-        You should \strong{rerun} \code{\link{FMAT_load}}
-        if you \strong{restart} the R session.}
+   \href{
+   https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers
+   }{HuggingFace}.}
+  \item{A list of mask filling pipelines loaded by \code{\link{FMAT_load}}.
+   You should \strong{rerun} \code{\link{FMAT_load}}
+   if you \strong{restart} the R session.}
 }}
 
-\item{data}{A data.table returned from
+\item{data}{A data.table returned by
 \code{\link{FMAT_query}} or \code{\link{FMAT_query_bind}}.}
 
 \item{progress}{Show a progress bar:
@@ -39,8 +41,25 @@ because it takes time to create a parallel cluster.}
 \item{ncores}{Number of CPU cores to be used in parallel processing.
 Defaults to the minimum of the number of models and your CPU cores.}
 }
+\value{
+A data.table (of new class \code{fmat}) appending \code{data}
+with these new variables:
+\itemize{
+  \item{\code{model}: model name}
+  \item{\code{output}: complete sentence output with unmasked token}
+  \item{\code{token}: actual token to be filled in the blank mask
+  (a note "out-of-vocabulary" will be added
+  if the original word is not found in the model vocabulary)}
+  \item{\code{prop}: (raw) conditional probability of the unmasked token
+  given the context, estimated by the corresponding language model
+
+  NOT SUGGESTED to directly interpret the raw probabilities
+  because the contrast between a pair of probabilities is more meaningful.
+  See \code{\link{summary.fmat}} for detail.)}
+}
+}
 \description{
-Run the fill-mask pipeline on multiple models.
+Run the mask filling pipeline on multiple models.
 }
 \examples{
 # Running the example requires models downloaded
@@ -52,13 +71,23 @@ dq = FMAT_query(
   MASK = .(Male="He", Female="She"),
   TARGET = .(Occupation=s("a doctor, a nurse, an artist"))
 )
+data1 = FMAT_run(models, dq)
+summary(data1)
 
-data = FMAT_run(models, dq)
+data2 = FMAT_run(
+  models,
+  FMAT_query(
+    "The {TARGET} has a [MASK] association with {ATTRIB}.",
+    MASK = .(H="high", L="low"),
+    TARGET = .(Flower=s("rose, iris, lily"),
+               Insect=s("ant, cockroach, spider")),
+    ATTRIB = .(Pos=s("health, happiness, love, peace"),
+               Neg=s("death, sickness, hatred, disaster"))
+  ))
+summary(data2)
 }
 }
 \seealso{
-\code{\link{FMAT}}
-
 \code{\link{FMAT_load}}
 
 \code{\link{FMAT_query}}

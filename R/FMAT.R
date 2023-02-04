@@ -140,15 +140,15 @@ dtime = function(t0) {
 
 #' Initialize running environment and (down)load language models.
 #'
-#' @param models Language model names (usually the BERT-based models)
-#' at \href{https://huggingface.co/models}{HuggingFace}.
+#' @param models Language model names (usually the BERT-based models) at
+#' \href{
+#' https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers
+#' }{HuggingFace}.
 #'
 #' @return
 #' A named list of fill-mask pipelines obtained from the models.
 #'
 #' @seealso
-#' \code{\link{FMAT}}
-#'
 #' \code{\link{FMAT_query}}
 #'
 #' \code{\link{FMAT_query_bind}}
@@ -239,7 +239,7 @@ append_X = function(dq, X, var="TARGET") {
 }
 
 
-#' Produce a data.table of queries and variables for the FMAT.
+#' Prepare a data.table of queries and variables for the FMAT.
 #'
 #' @param query Query text (should be a character string/vector
 #' with at least one \code{[MASK]} token).
@@ -265,8 +265,6 @@ append_X = function(dq, X, var="TARGET") {
 #' A data.table of queries and variables.
 #'
 #' @seealso
-#' \code{\link{FMAT}}
-#'
 #' \code{\link{FMAT_load}}
 #'
 #' \code{\link{FMAT_query_bind}}
@@ -300,7 +298,7 @@ append_X = function(dq, X, var="TARGET") {
 #'
 #' @export
 FMAT_query = function(
-    query = "[MASK] is {TARGET}.",
+    query = "[MASK] must be in query, {TARGET} and {ATTRIB} are optional.",
     MASK = .(),
     TARGET = .(),
     ATTRIB = .(),
@@ -312,17 +310,21 @@ FMAT_query = function(
     stop("Please specify `MASK` (the targets of [MASK])!", call.=FALSE)
   } else if(length(TARGET)==0 & length(ATTRIB)==0) {
     # No TARGET or ATTRIB
+    type = "M"
     dq = map_query(query, expand_pair, MASK)
   } else if(length(TARGET)>0 & length(ATTRIB)==0) {
     # Only TARGET
+    type = "MT"
     dq = append_X(map_query(query, expand_pair, MASK),
                   TARGET, "TARGET")
   } else if(length(TARGET)==0 & length(ATTRIB)>0) {
     # Only ATTRIB
+    type = "MA"
     dq = append_X(map_query(query, expand_pair, MASK),
                   ATTRIB, "ATTRIB")
   } else if(length(TARGET)>0 & length(ATTRIB)>0) {
     # Both TARGET and ATTRIB
+    type = "MTA"
     dm = map_query(query, expand_pair, MASK)
     dx = map_query(query, function(q, target, attrib) {
       rbind(
@@ -338,20 +340,19 @@ FMAT_query = function(
     dq$unmask.id = as.integer(unmask.id)
   if(length(query) > 1)
     dq = cbind(data.table(qid = as.factor(as.numeric(dq$query))), dq)
+  attr(dq, "type") = type
   return(dq[order(query)])
 }
 
 
 #' Combine multiple query data.tables and renumber query ids.
 #'
-#' @param ... Query data.tables returned from \code{\link{FMAT_query}}.
+#' @param ... Query data.tables returned by \code{\link{FMAT_query}}.
 #'
 #' @return
 #' A data.table of queries and variables.
 #'
 #' @seealso
-#' \code{\link{FMAT}}
-#'
 #' \code{\link{FMAT_load}}
 #'
 #' \code{\link{FMAT_query}}
@@ -374,9 +375,14 @@ FMAT_query = function(
 #'
 #' @export
 FMAT_query_bind = function(...) {
+  types = sapply(list(...), attr, "type")
+  type = unique(types)
+  if(length(type) > 1)
+    stop("Queries should have the same structure.", call.=FALSE)
   dqs = rbind(...)
   if("qid" %in% names(dqs)) dqs$qid = NULL
   dqs = cbind(data.table(qid = as.factor(as.numeric(dqs$query))), dqs)
+  attr(dqs, "type") = type
   return(dqs)
 }
 
@@ -395,17 +401,19 @@ FMAT_query_bind = function(...) {
 # stopCluster(cl)
 
 
-#' Run the fill-mask pipeline on multiple models.
+#' Run the mask filling pipeline on multiple models.
 #'
 #' @param models Language model(s):
 #' \itemize{
 #'   \item{Model names (usually the BERT-based models) at
-#'         \href{https://huggingface.co/models}{HuggingFace}.}
-#'   \item{A list of fill-mask pipelines loaded by \code{\link{FMAT_load}}.
-#'         You should \strong{rerun} \code{\link{FMAT_load}}
-#'         if you \strong{restart} the R session.}
+#'    \href{
+#'    https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers
+#'    }{HuggingFace}.}
+#'   \item{A list of mask filling pipelines loaded by \code{\link{FMAT_load}}.
+#'    You should \strong{rerun} \code{\link{FMAT_load}}
+#'    if you \strong{restart} the R session.}
 #' }
-#' @param data A data.table returned from
+#' @param data A data.table returned by
 #' \code{\link{FMAT_query}} or \code{\link{FMAT_query_bind}}.
 #' @param progress Show a progress bar:
 #' \code{"text"} (default), \code{"time"}, \code{"none"}.
@@ -419,9 +427,24 @@ FMAT_query_bind = function(...) {
 #' @param ncores Number of CPU cores to be used in parallel processing.
 #' Defaults to the minimum of the number of models and your CPU cores.
 #'
-#' @seealso
-#' \code{\link{FMAT}}
+#' @return
+#' A data.table (of new class \code{fmat}) appending \code{data}
+#' with these new variables:
+#' \itemize{
+#'   \item{\code{model}: model name}
+#'   \item{\code{output}: complete sentence output with unmasked token}
+#'   \item{\code{token}: actual token to be filled in the blank mask
+#'   (a note "out-of-vocabulary" will be added
+#'   if the original word is not found in the model vocabulary)}
+#'   \item{\code{prop}: (raw) conditional probability of the unmasked token
+#'   given the context, estimated by the corresponding language model
 #'
+#'   NOT SUGGESTED to directly interpret the raw probabilities
+#'   because the contrast between a pair of probabilities is more meaningful.
+#'   See \code{\link{summary.fmat}} for detail.)}
+#' }
+#'
+#' @seealso
 #' \code{\link{FMAT_load}}
 #'
 #' \code{\link{FMAT_query}}
@@ -438,8 +461,20 @@ FMAT_query_bind = function(...) {
 #'   MASK = .(Male="He", Female="She"),
 #'   TARGET = .(Occupation=s("a doctor, a nurse, an artist"))
 #' )
+#' data1 = FMAT_run(models, dq)
+#' summary(data1)
 #'
-#' data = FMAT_run(models, dq)
+#' data2 = FMAT_run(
+#'   models,
+#'   FMAT_query(
+#'     "The {TARGET} has a [MASK] association with {ATTRIB}.",
+#'     MASK = .(H="high", L="low"),
+#'     TARGET = .(Flower=s("rose, iris, lily"),
+#'                Insect=s("ant, cockroach, spider")),
+#'     ATTRIB = .(Pos=s("health, happiness, love, peace"),
+#'                Neg=s("death, sickness, hatred, disaster"))
+#'   ))
+#' summary(data2)
 #' }
 #' @export
 FMAT_run = function(
@@ -451,6 +486,7 @@ FMAT_run = function(
 ) {
   t0 = Sys.time()
   progress = match.arg(progress)
+  type = attr(data, "type")
 
   text_initialized()
   cli::cli_alert_success("Environment initialized ({dtime(t0)})")
@@ -460,7 +496,7 @@ FMAT_run = function(
       t1 = Sys.time()
       transformers = reticulate::import("transformers")
       reticulate::py_capture_output({
-        fill_mask = transformers$pipeline("fill-mask", model=model)
+        fill_mask = transformers$pipeline(task="fill-mask", model=model)
       })
       cli::cli_h1("{model} (model loaded: {dtime(t1)})")
     }
@@ -519,60 +555,88 @@ FMAT_run = function(
     data = rbindlist(lapply(models, onerun, data=data))
     cn()
   }
+  attr(data, "type") = type
+  class(data) = c("fmat", class(data))
 
+  gc()
   cli::cli_alert_success("Task completed (total time cost = {dtime(t0)})")
 
   return(data)
 }
 
 
-#' The Fill-Mask Association Test (\code{FMAT_query()} & \code{FMAT_run()}).
+#' [S3 method] Summarize results of the FMAT.
 #'
-#' @inheritParams FMAT_query
-#' @inheritParams FMAT_run
+#' Summarize the results of \emph{Log Probability Ratio} (LPR) for the FMAT.
+#'
+#' @param fmat A data.table (of new class \code{fmat})
+#' returned by \code{\link{FMAT_run}}.
+## @param digits Number of decimal places of output. Defaults to \code{3}.
+#' @param ... Other arguments (currently not used).
+#'
+#' @return
+#' A data.table of summarized results.
 #'
 #' @seealso
-#' \code{\link{FMAT_load}}
-#'
-#' \code{\link{FMAT_query}}
-#'
-#' \code{\link{FMAT_query_bind}}
-#'
 #' \code{\link{FMAT_run}}
 #'
-#' @examples
-#' # Running the example requires models downloaded
-#' \donttest{
-#' models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
-#'
-#' data = FMAT(
-#'   models,
-#'   "The {TARGET} has a [MASK] association with {ATTRIB}.",
-#'   MASK = .(H="high", L="low"),
-#'   TARGET = .(Flower=s("rose, iris, lily"),
-#'              Insect=s("ant, cockroach, spider")),
-#'   ATTRIB = .(Pos=s("health, happiness, love, peace"),
-#'              Neg=s("death, sickness, hatred, disaster"))
-#' )
-#' }
 #' @export
-FMAT = function(
-    models = "bert-base-uncased",
-    query = "[MASK] is {TARGET}.",
-    MASK = .(),
-    TARGET = .(),
-    ATTRIB = .(),
-    unmask.id = 1,
-    progress = c("text", "time", "none"),
-    parallel = FALSE,
-    ncores = min(length(models), parallel::detectCores())
-) {
-  # Many Queries
-  dq = FMAT_query(query, MASK, TARGET, ATTRIB, unmask.id)
+summary.fmat = function(fmat, ...) {
+  type = attr(fmat, "type")
+  gvars.1 = c("model", "query", "M_pair",
+              "TARGET", "T_pair", "T_word",
+              "ATTRIB", "A_pair", "A_word")
+  grouping.vars = intersect(names(fmat), gvars.1)
+  M_word = T_word = A_word = MASK = TARGET = ATTRIB = prop = LPR = NULL
 
-  # Many Models
-  data = FMAT_run(models, dq, progress, parallel, ncores)
+  dt = fmat[, .(
+    MASK = paste(MASK[1], "-", MASK[2]),
+    M_contr = paste(M_word[1], "-", M_word[2]),
+    LPR = log(prop[1]) - log(prop[2])
+  ), keyby = grouping.vars]
+  dt$MASK = as_factor(dt$MASK)
+  dt$M_contr = as_factor(dt$M_contr)
+  dt$M_pair = NULL
 
-  return(data)
+  if(type=="MT") {
+    if(nlevels(dt$TARGET)==2) {
+      dt = dt[, .(
+        TARGET = paste(TARGET[1], "-", TARGET[2]),
+        T_contr = paste(T_word[1], "-", T_word[2]),
+        LPR = LPR[1] - LPR[2]
+      ), keyby = c("model", "query", "MASK", "M_contr", "T_pair")]
+      dt$TARGET = as_factor(dt$TARGET)
+      dt$T_contr = as_factor(dt$T_contr)
+      dt$T_pair = NULL
+    }
+  }
+
+  if(type=="MA") {
+    if(nlevels(dt$ATTRIB)==2) {
+      dt = dt[, .(
+        ATTRIB = paste(ATTRIB[1], "-", ATTRIB[2]),
+        A_contr = paste(A_word[1], "-", A_word[2]),
+        LPR = LPR[1] - LPR[2]
+      ), keyby = c("model", "query", "MASK", "M_contr", "A_pair")]
+      dt$ATTRIB = as_factor(dt$ATTRIB)
+      dt$A_contr = as_factor(dt$A_contr)
+      dt$A_pair = NULL
+    }
+  }
+
+  if(type=="MTA") {
+    dt = dt[, .(
+      LPR = mean(LPR)
+    ), keyby = c("model", "query", "MASK", "M_contr",
+                 "TARGET", "T_word", "ATTRIB")]
+    dt = dt[, .(
+      ATTRIB = paste(ATTRIB[1], "-", ATTRIB[2]),
+      LPR = LPR[1] - LPR[2]
+    ), keyby = c("model", "query", "MASK", "M_contr",
+                 "TARGET", "T_word")]
+  }
+
+  return(dt)
 }
+
 

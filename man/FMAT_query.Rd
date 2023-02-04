@@ -2,10 +2,10 @@
 % Please edit documentation in R/FMAT.R
 \name{FMAT_query}
 \alias{FMAT_query}
-\title{Produce a data.table of queries and variables for the FMAT.}
+\title{Prepare a data.table of queries and variables for the FMAT.}
 \usage{
 FMAT_query(
-  query = "[MASK] is {TARGET}.",
+  query = "[MASK] must be in query, {TARGET} and {ATTRIB} are optional.",
   MASK = .(),
   TARGET = .(),
   ATTRIB = .(),
@@ -40,7 +40,7 @@ Defaults to the 1st \code{[MASK]}.}
 A data.table of queries and variables.
 }
 \description{
-Produce a data.table of queries and variables for the FMAT.
+Prepare a data.table of queries and variables for the FMAT.
 }
 \examples{
 FMAT_query("[MASK] is a nurse.", MASK = .(Male="He", Female="She"))
@@ -69,8 +69,6 @@ FMAT_query(
 
 }
 \seealso{
-\code{\link{FMAT}}
-
 \code{\link{FMAT_load}}
 
 \code{\link{FMAT_query_bind}}
