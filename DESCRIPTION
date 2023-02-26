@@ -1,7 +1,7 @@
 Package: FMAT
 Title: The Fill-Mask Association Test
-Version: 0.0.3
-Date: 2023-02-02
+Version: 0.0.4
+Date: 2023-02-26
 Authors@R:
     c(person(given = "Han-Wu-Shuang",
              family = "Bao",
@@ -11,7 +11,7 @@ Author: Han-Wu-Shuang Bao [aut, cre]
 Maintainer: Han-Wu-Shuang Bao <baohws@foxmail.com>
 Description:
     The Fill-Mask Association Test (FMAT) is a generic,
-    probability-based method that utilizes masked language models
+    probability-based method that employs masked language models
     (e.g., BERT) to measure conceptual associations.
 License: GPL-3
 Encoding: UTF-8

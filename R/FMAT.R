@@ -141,12 +141,15 @@ dtime = function(t0) {
 #' Initialize running environment and (down)load language models.
 #'
 #' @param models Language model names (usually the BERT-based models) at
-#' \href{
-#' https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers
-#' }{HuggingFace}.
+#' \href{https://huggingface.co/models}{HuggingFace}.
+#'
+#' For a full list of available models, see
+#' \url{https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers}
 #'
 #' @return
 #' A named list of fill-mask pipelines obtained from the models.
+#' The returned object \emph{cannot} be saved as any RData.
+#' You will need to \emph{rerun} this function if you restart the R session.
 #'
 #' @seealso
 #' \code{\link{FMAT_query}}
@@ -243,20 +246,20 @@ append_X = function(dq, X, var="TARGET") {
 #'
 #' @param query Query text (should be a character string/vector
 #' with at least one \code{[MASK]} token).
-#' Multiple queries would share the same
+#' Multiple queries share the same set of
 #' \code{MASK}, \code{TARGET}, and \code{ATTRIB}.
 #' For multiple queries with different
 #' \code{MASK}, \code{TARGET}, and/or \code{ATTRIB},
 #' please use \code{\link{FMAT_query_bind}} to combine them.
 #' @param MASK A named list of \code{[MASK]} target words.
 #' Must be single words in the vocabulary of a certain masked language model.
-#' Note that infrequent words usually do not exist in a model's vocabulary,
-#' and in such a situation you may insert the words into the context by
+#' Note that infrequent words may be not included in a model's vocabulary,
+#' and in this case you may insert the words into the context by
 #' specifying either \code{TARGET} or \code{ATTRIB}.
 #' @param TARGET,ATTRIB A named list of Target/Attribute words or phrases.
 #' If specified, then \code{query} must contain
-#' \code{{TARGET}} and/or \code{{ATTRIB}} that would be
-#' replaced by the words/phrases.
+#' \code{{TARGET}} and/or \code{{ATTRIB}} (in all uppercase and in braces)
+#' to be replaced by the words/phrases.
 #' @param unmask.id If there are multiple \code{[MASK]} in \code{query},
 #' this argument will be used to determine which one is to be unmasked.
 #' Defaults to the 1st \code{[MASK]}.
@@ -347,7 +350,7 @@ FMAT_query = function(
 
 #' Combine multiple query data.tables and renumber query ids.
 #'
-#' @param ... Query data.tables returned by \code{\link{FMAT_query}}.
+#' @param ... Query data.tables returned from \code{\link{FMAT_query}}.
 #'
 #' @return
 #' A data.table of queries and variables.
@@ -406,14 +409,13 @@ FMAT_query_bind = function(...) {
 #' @param models Language model(s):
 #' \itemize{
 #'   \item{Model names (usually the BERT-based models) at
-#'    \href{
-#'    https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers
-#'    }{HuggingFace}.}
+#'    \href{https://huggingface.co/models}{HuggingFace}.}
 #'   \item{A list of mask filling pipelines loaded by \code{\link{FMAT_load}}.
-#'    You should \strong{rerun} \code{\link{FMAT_load}}
+#'
+#'    * You will need to \strong{rerun} \code{\link{FMAT_load}}
 #'    if you \strong{restart} the R session.}
 #' }
-#' @param data A data.table returned by
+#' @param data A data.table returned from
 #' \code{\link{FMAT_query}} or \code{\link{FMAT_query_bind}}.
 #' @param progress Show a progress bar:
 #' \code{"text"} (default), \code{"time"}, \code{"none"}.
@@ -421,8 +423,8 @@ FMAT_query_bind = function(...) {
 #' If \code{TRUE}, then \code{models} must be model names
 #' rather than from \code{\link{FMAT_load}}.
 #'
-#' Note that for a small \code{data},
-#' parallel processing would instead be slower
+#' * For small-scale \code{data},
+#' parallel processing would instead be \emph{slower}
 #' because it takes time to create a parallel cluster.
 #' @param ncores Number of CPU cores to be used in parallel processing.
 #' Defaults to the minimum of the number of models and your CPU cores.
@@ -431,17 +433,17 @@ FMAT_query_bind = function(...) {
 #' A data.table (of new class \code{fmat}) appending \code{data}
 #' with these new variables:
 #' \itemize{
-#'   \item{\code{model}: model name}
-#'   \item{\code{output}: complete sentence output with unmasked token}
+#'   \item{\code{model}: model name.}
+#'   \item{\code{output}: complete sentence output with unmasked token.}
 #'   \item{\code{token}: actual token to be filled in the blank mask
 #'   (a note "out-of-vocabulary" will be added
-#'   if the original word is not found in the model vocabulary)}
+#'   if the original word is not found in the model vocabulary).}
 #'   \item{\code{prop}: (raw) conditional probability of the unmasked token
-#'   given the context, estimated by the corresponding language model
+#'   given the provided context, estimated by the masked language model.
 #'
-#'   NOT SUGGESTED to directly interpret the raw probabilities
-#'   because the contrast between a pair of probabilities is more meaningful.
-#'   See \code{\link{summary.fmat}} for detail.)}
+#'   * It is NOT SUGGESTED to directly interpret the raw probabilities
+#'   because the \emph{contrast} between a pair of probabilities
+#'   is more interpretable. See \code{\link{summary.fmat}}.}
 #' }
 #'
 #' @seealso
@@ -451,8 +453,11 @@ FMAT_query_bind = function(...) {
 #'
 #' \code{\link{FMAT_query_bind}}
 #'
+#' \code{\link{summary.fmat}}
+#'
 #' @examples
-#' # Running the example requires models downloaded
+#' # Running the example requires the models downloaded
+#' # You will need to rerun `FMAT_load` if you restart the R session
 #' \donttest{
 #' models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
 #'
@@ -508,6 +513,7 @@ FMAT_run = function(
 
     uncased = str_detect(model, "uncased|albert")
     prefix = str_detect(model, "xlm-roberta|albert")
+    mask2 = str_detect(model, "roberta")
 
     unmask = function(d) {
       if("TARGET" %in% names(d))
@@ -515,10 +521,12 @@ FMAT_run = function(
       if("ATTRIB" %in% names(d))
         ATTRIB = as.character(d$A_word)
       uid = if("unmask.id" %in% names(d)) d$unmask.id else 1
-      query = glue::glue(as.character(d$query))
+      query = str_replace_all(d$query, "\\[mask\\]", "[MASK]")
+      query = glue::glue(as.character(query))
       mask = as.character(d$M_word)
       if(uncased) mask = tolower(mask)
       if(prefix) mask = paste0("\u2581", mask)
+      if(mask2) query = str_replace_all(query, "\\[MASK\\]", "<mask>")
       oov = reticulate::py_capture_output({
         res = fill_mask(query, targets=mask, top_k=1L)[[uid]]
       })
@@ -565,31 +573,42 @@ FMAT_run = function(
 }
 
 
-#' [S3 method] Summarize results of the FMAT.
+#' [S3 method] Summarize the results for the FMAT.
 #'
-#' Summarize the results of \emph{Log Probability Ratio} (LPR) for the FMAT.
+#' @description
+#' Summarize the results of \emph{Log Probability Ratio} (LPR),
+#' which indicates the \emph{relative} (vs. \emph{absolute})
+#' association between concepts.
 #'
-#' @param fmat A data.table (of new class \code{fmat})
-#' returned by \code{\link{FMAT_run}}.
+#' The LPR of just one contrast (e.g., only between a pair of attributes)
+#' may \emph{not} be sufficient for a proper interpretation of the results,
+#' and may further require a second contrast (e.g., between a pair of targets).
+#'
+#' Users are encouraged to use linear mixed models
+#' (with the R packages \code{nlme} or \code{lme4}/\code{lmerTest})
+#' to perform the formal analyses and hypothesis tests based on the LPR.
+#'
+#' @param object A data.table (of new class \code{fmat})
+#' returned from \code{\link{FMAT_run}}.
 ## @param digits Number of decimal places of output. Defaults to \code{3}.
 #' @param ... Other arguments (currently not used).
 #'
 #' @return
-#' A data.table of summarized results.
+#' A data.table of the summarized results with Log Probability Ratio (LPR).
 #'
 #' @seealso
 #' \code{\link{FMAT_run}}
 #'
 #' @export
-summary.fmat = function(fmat, ...) {
-  type = attr(fmat, "type")
+summary.fmat = function(object, ...) {
+  type = attr(object, "type")
   gvars.1 = c("model", "query", "M_pair",
               "TARGET", "T_pair", "T_word",
               "ATTRIB", "A_pair", "A_word")
-  grouping.vars = intersect(names(fmat), gvars.1)
+  grouping.vars = intersect(names(object), gvars.1)
   M_word = T_word = A_word = MASK = TARGET = ATTRIB = prop = LPR = NULL
 
-  dt = fmat[, .(
+  dt = object[, .(
     MASK = paste(MASK[1], "-", MASK[2]),
     M_contr = paste(M_word[1], "-", M_word[2]),
     LPR = log(prop[1]) - log(prop[2])

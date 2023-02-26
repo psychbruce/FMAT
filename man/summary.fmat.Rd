@@ -2,21 +2,31 @@
 % Please edit documentation in R/FMAT.R
 \name{summary.fmat}
 \alias{summary.fmat}
-\title{[S3 method] Summarize results of the FMAT.}
+\title{[S3 method] Summarize the results for the FMAT.}
 \usage{
-\method{summary}{fmat}(fmat, ...)
+\method{summary}{fmat}(object, ...)
 }
 \arguments{
-\item{fmat}{A data.table (of new class \code{fmat})
-returned by \code{\link{FMAT_run}}.}
+\item{object}{A data.table (of new class \code{fmat})
+returned from \code{\link{FMAT_run}}.}
 
 \item{...}{Other arguments (currently not used).}
 }
 \value{
-A data.table of summarized results.
+A data.table of the summarized results with Log Probability Ratio (LPR).
 }
 \description{
-Summarize the results of \emph{Log Probability Ratio} (LPR) for the FMAT.
+Summarize the results of \emph{Log Probability Ratio} (LPR),
+which indicates the \emph{relative} (vs. \emph{absolute})
+association between concepts.
+
+The LPR of just one contrast (e.g., only between a pair of attributes)
+may \emph{not} be sufficient for a proper interpretation of the results,
+and may further require a second contrast (e.g., between a pair of targets).
+
+Users are encouraged to use linear mixed models
+(with the R packages \code{nlme} or \code{lme4}/\code{lmerTest})
+to perform the formal analyses and hypothesis tests based on the LPR.
 }
 \seealso{
 \code{\link{FMAT_run}}

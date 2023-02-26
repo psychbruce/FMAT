@@ -7,7 +7,7 @@
 FMAT_query_bind(...)
 }
 \arguments{
-\item{...}{Query data.tables returned by \code{\link{FMAT_query}}.}
+\item{...}{Query data.tables returned from \code{\link{FMAT_query}}.}
 }
 \value{
 A data.table of queries and variables.

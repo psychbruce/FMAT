@@ -15,7 +15,7 @@ FMAT_query(
 \arguments{
 \item{query}{Query text (should be a character string/vector
 with at least one \code{[MASK]} token).
-Multiple queries would share the same
+Multiple queries share the same set of
 \code{MASK}, \code{TARGET}, and \code{ATTRIB}.
 For multiple queries with different
 \code{MASK}, \code{TARGET}, and/or \code{ATTRIB},
@@ -23,14 +23,14 @@ please use \code{\link{FMAT_query_bind}} to combine them.}
 
 \item{MASK}{A named list of \code{[MASK]} target words.
 Must be single words in the vocabulary of a certain masked language model.
-Note that infrequent words usually do not exist in a model's vocabulary,
-and in such a situation you may insert the words into the context by
+Note that infrequent words may be not included in a model's vocabulary,
+and in this case you may insert the words into the context by
 specifying either \code{TARGET} or \code{ATTRIB}.}
 
 \item{TARGET, ATTRIB}{A named list of Target/Attribute words or phrases.
 If specified, then \code{query} must contain
-\code{{TARGET}} and/or \code{{ATTRIB}} that would be
-replaced by the words/phrases.}
+\code{{TARGET}} and/or \code{{ATTRIB}} (in all uppercase and in braces)
+to be replaced by the words/phrases.}
 
 \item{unmask.id}{If there are multiple \code{[MASK]} in \code{query},
 this argument will be used to determine which one is to be unmasked.

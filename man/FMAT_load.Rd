@@ -8,12 +8,15 @@ FMAT_load(models)
 }
 \arguments{
 \item{models}{Language model names (usually the BERT-based models) at
-\href{
-https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers
-}{HuggingFace}.}
+\href{https://huggingface.co/models}{HuggingFace}.
+
+For a full list of available models, see
+\url{https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers}}
 }
 \value{
 A named list of fill-mask pipelines obtained from the models.
+The returned object \emph{cannot} be saved as any RData.
+You will need to \emph{rerun} this function if you restart the R session.
 }
 \description{
 Initialize running environment and (down)load language models.

@@ -16,15 +16,14 @@ FMAT_run(
 \item{models}{Language model(s):
 \itemize{
   \item{Model names (usually the BERT-based models) at
-   \href{
-   https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers
-   }{HuggingFace}.}
+   \href{https://huggingface.co/models}{HuggingFace}.}
   \item{A list of mask filling pipelines loaded by \code{\link{FMAT_load}}.
-   You should \strong{rerun} \code{\link{FMAT_load}}
+
+   * You will need to \strong{rerun} \code{\link{FMAT_load}}
    if you \strong{restart} the R session.}
 }}
 
-\item{data}{A data.table returned by
+\item{data}{A data.table returned from
 \code{\link{FMAT_query}} or \code{\link{FMAT_query_bind}}.}
 
 \item{progress}{Show a progress bar:
@@ -34,8 +33,8 @@ FMAT_run(
 If \code{TRUE}, then \code{models} must be model names
 rather than from \code{\link{FMAT_load}}.
 
-Note that for a small \code{data},
-parallel processing would instead be slower
+* For small-scale \code{data},
+parallel processing would instead be \emph{slower}
 because it takes time to create a parallel cluster.}
 
 \item{ncores}{Number of CPU cores to be used in parallel processing.
@@ -45,24 +44,25 @@ Defaults to the minimum of the number of models and your CPU cores.}
 A data.table (of new class \code{fmat}) appending \code{data}
 with these new variables:
 \itemize{
-  \item{\code{model}: model name}
-  \item{\code{output}: complete sentence output with unmasked token}
+  \item{\code{model}: model name.}
+  \item{\code{output}: complete sentence output with unmasked token.}
   \item{\code{token}: actual token to be filled in the blank mask
   (a note "out-of-vocabulary" will be added
-  if the original word is not found in the model vocabulary)}
+  if the original word is not found in the model vocabulary).}
   \item{\code{prop}: (raw) conditional probability of the unmasked token
-  given the context, estimated by the corresponding language model
+  given the provided context, estimated by the masked language model.
 
-  NOT SUGGESTED to directly interpret the raw probabilities
-  because the contrast between a pair of probabilities is more meaningful.
-  See \code{\link{summary.fmat}} for detail.)}
+  * It is NOT SUGGESTED to directly interpret the raw probabilities
+  because the \emph{contrast} between a pair of probabilities
+  is more interpretable. See \code{\link{summary.fmat}}.}
 }
 }
 \description{
 Run the mask filling pipeline on multiple models.
 }
 \examples{
-# Running the example requires models downloaded
+# Running the example requires the models downloaded
+# You will need to rerun `FMAT_load` if you restart the R session
 \donttest{
 models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
 
@@ -93,4 +93,6 @@ summary(data2)
 \code{\link{FMAT_query}}
 
 \code{\link{FMAT_query_bind}}
+
+\code{\link{summary.fmat}}
 }
