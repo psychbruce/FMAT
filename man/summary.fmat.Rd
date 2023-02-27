@@ -4,11 +4,13 @@
 \alias{summary.fmat}
 \title{[S3 method] Summarize the results for the FMAT.}
 \usage{
-\method{summary}{fmat}(object, ...)
+\method{summary}{fmat}(object, warning = TRUE, ...)
 }
 \arguments{
 \item{object}{A data.table (of new class \code{fmat})
 returned from \code{\link{FMAT_run}}.}
+
+\item{warning}{Warning of out-of-vocabulary word(s). Defaults to \code{TRUE}.}
 
 \item{...}{Other arguments (currently not used).}
 }

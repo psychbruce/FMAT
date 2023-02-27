@@ -1,7 +1,7 @@
 Package: FMAT
 Title: The Fill-Mask Association Test
-Version: 0.0.4
-Date: 2023-02-26
+Version: 0.0.5
+Date: 2023-02-27
 Authors@R:
     c(person(given = "Han-Wu-Shuang",
              family = "Bao",
@@ -20,5 +20,6 @@ BugReports: https://github.com/psychbruce/FMAT/issues
 Depends: R (>= 4.0.0)
 Imports: reticulate, text, data.table, stringr, forcats,
          glue, cli, purrr, plyr, parallel
-Suggests: bruceR, PsychWordVec
+Suggests: bruceR, PsychWordVec, nlme, knitr, rmarkdown
 RoxygenNote: 7.2.3
+VignetteBuilder: knitr

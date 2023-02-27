@@ -49,3 +49,4 @@ research
 ignore
 docs
 pkgdown
+inst/doc

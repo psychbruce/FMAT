@@ -309,23 +309,23 @@ FMAT_query = function(
 ) {
   if(any(str_detect(query, "\\[MASK\\]", negate=TRUE)))
     stop("`query` should contain a [MASK] token!", call.=FALSE)
-  if(length(MASK)==0) {
+  if(length(MASK) == 0) {
     stop("Please specify `MASK` (the targets of [MASK])!", call.=FALSE)
-  } else if(length(TARGET)==0 & length(ATTRIB)==0) {
+  } else if(length(TARGET) == 0 & length(ATTRIB) == 0) {
     # No TARGET or ATTRIB
     type = "M"
     dq = map_query(query, expand_pair, MASK)
-  } else if(length(TARGET)>0 & length(ATTRIB)==0) {
+  } else if(length(TARGET) > 0 & length(ATTRIB) == 0) {
     # Only TARGET
     type = "MT"
     dq = append_X(map_query(query, expand_pair, MASK),
                   TARGET, "TARGET")
-  } else if(length(TARGET)==0 & length(ATTRIB)>0) {
+  } else if(length(TARGET) == 0 & length(ATTRIB) > 0) {
     # Only ATTRIB
     type = "MA"
     dq = append_X(map_query(query, expand_pair, MASK),
                   ATTRIB, "ATTRIB")
-  } else if(length(TARGET)>0 & length(ATTRIB)>0) {
+  } else if(length(TARGET) > 0 & length(ATTRIB) > 0) {
     # Both TARGET and ATTRIB
     type = "MTA"
     dm = map_query(query, expand_pair, MASK)
@@ -428,6 +428,7 @@ FMAT_query_bind = function(...) {
 #' because it takes time to create a parallel cluster.
 #' @param ncores Number of CPU cores to be used in parallel processing.
 #' Defaults to the minimum of the number of models and your CPU cores.
+#' @param warning Warning of out-of-vocabulary word(s). Defaults to \code{TRUE}.
 #'
 #' @return
 #' A data.table (of new class \code{fmat}) appending \code{data}
@@ -487,7 +488,8 @@ FMAT_run = function(
     data,
     progress = c("text", "time", "none"),
     parallel = FALSE,
-    ncores = min(length(models), parallel::detectCores())
+    ncores = min(length(models), parallel::detectCores()),
+    warning = TRUE
 ) {
   t0 = Sys.time()
   progress = match.arg(progress)
@@ -569,7 +571,24 @@ FMAT_run = function(
   gc()
   cli::cli_alert_success("Task completed (total time cost = {dtime(t0)})")
 
+  if(warning) warning_oov(data)
+
   return(data)
+}
+
+
+warning_oov = function(data) {
+  d.oov = unique(data[str_detect(data$token, "out-of-vocabulary"),
+                      c("M_word", "token")])
+  d.oov$token = str_remove(d.oov$token, " \\(out-of-vocabulary\\)")
+  if(nrow(d.oov) > 0) {
+    oov0 = unique(d.oov$M_word)
+    for(oov in oov0) {
+      di = d.oov[d.oov$M_word==oov]
+      cli::cli_alert_warning("
+      Replaced out-of-vocabulary word {.val {oov}} by: {.val {di$token}}")
+    }
+  }
 }
 
 
@@ -588,6 +607,7 @@ FMAT_run = function(
 #' (with the R packages \code{nlme} or \code{lme4}/\code{lmerTest})
 #' to perform the formal analyses and hypothesis tests based on the LPR.
 #'
+#' @inheritParams FMAT_run
 #' @param object A data.table (of new class \code{fmat})
 #' returned from \code{\link{FMAT_run}}.
 ## @param digits Number of decimal places of output. Defaults to \code{3}.
@@ -600,7 +620,8 @@ FMAT_run = function(
 #' \code{\link{FMAT_run}}
 #'
 #' @export
-summary.fmat = function(object, ...) {
+summary.fmat = function(object, warning=TRUE, ...) {
+  if(warning) warning_oov(object)
   type = attr(object, "type")
   gvars.1 = c("model", "query", "M_pair",
               "TARGET", "T_pair", "T_word",

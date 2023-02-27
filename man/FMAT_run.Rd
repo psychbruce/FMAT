@@ -9,7 +9,8 @@ FMAT_run(
   data,
   progress = c("text", "time", "none"),
   parallel = FALSE,
-  ncores = min(length(models), parallel::detectCores())
+  ncores = min(length(models), parallel::detectCores()),
+  warning = TRUE
 )
 }
 \arguments{
@@ -39,6 +40,8 @@ because it takes time to create a parallel cluster.}
 
 \item{ncores}{Number of CPU cores to be used in parallel processing.
 Defaults to the minimum of the number of models and your CPU cores.}
+
+\item{warning}{Warning of out-of-vocabulary word(s). Defaults to \code{TRUE}.}
 }
 \value{
 A data.table (of new class \code{fmat}) appending \code{data}
