@@ -5,7 +5,7 @@
 \title{Prepare a data.table of queries and variables for the FMAT.}
 \usage{
 FMAT_query(
-  query = "[MASK] must be in query, {TARGET} and {ATTRIB} are optional.",
+  query = "Text with [MASK], optionally with {TARGET} and/or {ATTRIB}.",
   MASK = .(),
   TARGET = .(),
   ATTRIB = .(),

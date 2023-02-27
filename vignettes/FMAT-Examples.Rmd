@@ -32,12 +32,12 @@ vignette: >
 ```
 ```{r, include=FALSE}
 options(rmarkdown.html_vignette.check_title = FALSE,
-        digits = 4)
+        digits = 3)
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.width = 8,
-  fig.height = 6,
+  fig.width = 6,
+  fig.height = 4,
   dpi = 100
 )
 ```
@@ -51,6 +51,10 @@ library(FMAT)
 library(nlme)
 library(knitr)
 library(bruceR)
+
+## Default contrast method used in model fitting
+## "contr.sum" is necessary for accurate results of main effects in ANOVA
+options(contrasts=c("contr.sum", "contr.poly"))
 ```
 
 # Load BERT Models
@@ -61,52 +65,108 @@ models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
 
 # Examples
 
-## Basic Principles
+## Basic principles
 
-1.  `[MASK]`, `{TARGET}`, `{ATTRIB}` should all be *named* lists. For example, `list(Name = c("item1", "item2", "item3"))`, or its equivalent simplified version `.(Name = s("item1, item2, item3"))`.
+The **FMAT (Fill-Mask Association Test)** is a generic, probability-based method that employs masked language models (e.g., BERT) to measure conceptual associations. In contrast with the use of *cosine similarity* in the WEAT (Word-Embedding Association Test; Caliskan et al., 2017), the FMAT typically calculates the *log probability* of specific words that are likely to be filled in the blank `[MASK]` in language models such as BERT. The final index used in the FMAT is the **log probability ratio (LPR)**, which should often have been contrasted between attributes and between targets.
+
+$$
+\text{Conditional Probability} = P(w | context_w)
+$$
+
+$$
+\text{Log Probability Ratio} = \text{LPR}(w)_{a \text{ vs } b} = \log \frac {P(w|context_a)} {P(w|context_b)} = \log P(w|context_a) - \log P(w|context_b)
+$$
+
+$$
+\text{LPR}(w)_{A \text{ vs } B} = \text{mean}_{a \in A} \log P(w|context_a) - \text{mean}_{b \in B} \log P(w|context_b)
+$$
+
+$$
+\text{FMAT}(X \text{ vs } Y)_{A \text{ vs } B} = \text{mean}_{x \in X} \text{LPR}(x)_{A \text{ vs } B} - \text{mean}_{y \in Y} \text{LPR}(y)_{A \text{ vs } B}
+$$
+
+The FMAT is flexible in design, but is also subject to the following basic principles in practice:
+
+1.  `[MASK]`, `{TARGET}`, `{ATTRIB}` should all be *named* lists. For example, `list(Name = c("item1", "item2", "item3"))`, or its equivalent simplified version `.(Name = s("item1, item2, item3"))`. The names will be used as the labels/levels of the variables.
 2.  `[MASK]`, `{TARGET}`, `{ATTRIB}` may be either *pairwise* (items will be pairwise contrasted and the order matters) or *listwise* (item order does not matter). However, even in the case of listwise, the scores (both probability and LPR) should always be contrasted with a reference level/group and interpreted as relative (vs. absolute) associations.
 3.  `[MASK]` should always be included in `query`, since the FMAT is based on the *masked language models*. The target words of `[MASK]` must be in the model's vocabulary; otherwise, users may consider using `{TARGET}` and/or `{ATTRIB}`, which can be specified as out-of-vocabulary words or any phrases (much more flexible than `[MASK]`).
-4.  If only `{TARGET}` or `{ATTRIB}` (not both) is included in `query`, they indeed operate in the same way. Thus, in this case, users may specify either `TARGET` or `ATTRIB` (see Ex.2 and Ex.3, where `TARGET` and `ATTRIB` are actually interchangeable).
-5.  If both `{TARGET}` and `{ATTRIB}` are specified, both of them must be (and will be forced to) *listwise*; that is, all combinations of the targets and the attributes will be produced and each combination will be used for one query. This is the generic design of the FMAT. Then, the `summary()` function will produce the *mean LPR score* for each target word, averaged across all attribute words within one level of attributes (see Ex.4, where `TARGET` and `ATTRIB` are treated differently).
-6.  Regarding the correspondence between the FMAT and the WEAT/WEFAT (Caliskan et al., 2017), a conceptual replication of WEFAT or SC-WEAT (single-category target × two attributes) requires the design of "`[MASK]` (pairwise) + `{TARGET}` (listwise)" (see Ex.2), whereas a conceptual replication of WEAT (two targets × two attributes) requires the generic design of "`[MASK]` (pairwise) + `{TARGET}` (listwise) + `{ATTRIB}` (listwise)" (see Ex.4). In this way, we see that the WEAT and the WEFAT/SC-WEAT may be understood as word-level special cases of the FMAT.
+4.  If only `{TARGET}` or `{ATTRIB}` (not both) is specified, they operate in exactly the same way (see Ex.2, where `TARGET` and `ATTRIB` are actually interchangeable).
+5.  If both `{TARGET}` and `{ATTRIB}` are specified, both of them must be (and will be forced to) *listwise*; that is, all combinations of the targets and the attributes will be produced and each combination will be used for one query. This is the generic design of the FMAT. Then, the `summary()` function will produce the *mean LPR score* for each target word, averaged across all attribute words within one level of attributes (see Ex.3, where `TARGET` and `ATTRIB` are treated differently).
 
-## Ex.1: `[MASK]` (pairwise or listwise)
+> Regarding the correspondence between the FMAT and the WEAT/WEFAT (Caliskan et al., 2017), a conceptual replication of WEFAT or SC-WEAT (single-category target × two attributes) requires the design of "`[MASK]` (pairwise) + `{TARGET}` (listwise)" (see Ex.2b), whereas a conceptual replication of WEAT (two targets × two attributes) requires the generic design of "`[MASK]` (pairwise) + `{TARGET}` (listwise) + `{ATTRIB}` (listwise)" (see Ex.3a). In this way, we see that the WEAT and the WEFAT/SC-WEAT may be understood as word-level special cases of the FMAT.
 
-### Ex.1a: `[MASK]` (pairwise; simplest)
+## Ex.1: `[MASK]` only
+
+### Ex.1a: `[MASK]` (pairwise)
 
 ```{r Ex1a}
+## FMAT
 q1a = FMAT_query(
   c("[MASK] is a nurse.", "[MASK] works as a nurse."),
   MASK = .(Male="He", Female="She")
 )
 d1a = FMAT_run(models, q1a, progress="none")  # progress="text"
 summary(d1a) %>% kable()
-mean(summary(d1a)$LPR)
-lm(log(prop) ~ MASK * model, data=d1a) %>%
-  emmeans("MASK") %>% contrast(method="pairwise") %>% kable(digits=5)
+## Linear Model
+## contrasts: contr.sum
+lm = lm(LPR ~ MASK * model, data=summary(d1a, mask.pair=FALSE))
+car::Anova(lm, type=3)
+emmeans(lm, "MASK") %>% contrast(method="pairwise") %>% kable(digits=6)
 ```
 
-### Ex.1b: `[MASK]` (pairwise or listwise; equivalent)
+### Ex.1b: `[MASK]` (listwise)
 
 ```{r Ex1b}
+## FMAT
 q1b = FMAT_query(
   c("[MASK] is a nurse.", "[MASK] works as a nurse."),
-  MASK = .(Male=s("Albert, Bruce, Charles"),
-           Female=s("Alice, Betty, Chloe"))
+  MASK = .(Male=s("Albert, Bruce, Charles, Daniel, Smith"),
+           Female=s("Alice, Betty, Chloe, Daisy"))
 )
 d1b = FMAT_run(models, q1b, progress="none")  # progress="text"
-summary(d1b) %>% kable()
-mean(summary(d1b)$LPR)
-lme(log(prop) ~ MASK * model, data=d1b, random = ~ 1 | M_word) %>%
-  emmeans("MASK") %>% contrast(method="pairwise") %>% kable()
+summary(d1b, mask.pair=FALSE) %>% kable()
+## Linear Model
+## contrasts: contr.sum
+lm = lm(LPR ~ MASK * model, data=summary(d1b, mask.pair=FALSE))
+car::Anova(lm, type=3)
+emmeans(lm, "MASK") %>% contrast(method="pairwise") %>% kable(digits=6)
+## Linear Mixed Model
+## (more conservative and suitable for large number of random items)
+lmm = lme(LPR ~ MASK * model,
+          random = ~ 1 | M_word,
+          data=summary(d1b, mask.pair=FALSE))
+anova(lmm) %>% kable()
+emmeans(lmm, "MASK") %>% contrast(method="pairwise") %>% kable()
 ```
 
-## Ex.2: `[MASK]` (pairwise) + `{TARGET}` (listwise)
+## Ex.2: `[MASK]` + `{TARGET}`/`{ATTRIB}`
 
-In this case, `{TARGET}` and `{ATTRIB}` are interchangeable and will operate in the same way.
+In this case (i.e., `[MASK]` + one `{...}`), `{TARGET}` and `{ATTRIB}` are *interchangeable* and will operate in exactly the same way. Both of them can be either pairwise or listwise. Here are two illustrative examples for the cases of pairwise (using `{ATTRIB}` as an example) and listwise (using `{TARGET}` as an example).
 
-```{r Ex2}
-q2 = FMAT_query_bind(
+### Ex.2a: `[MASK]` (pairwise) + `{ATTRIB}` (pairwise)
+
+```{r Ex2a}
+## FMAT
+q2a = FMAT_query(
+  "The [MASK] {ATTRIB}.",
+  MASK = .(Male=s("man, boy"), Female=s("woman, girl")),
+  ATTRIB = .(Masc=s("is masculine, has a masculine personality"),
+             Femi=s("is feminine, has a feminine personality"))
+)
+d2a = FMAT_run(models, q2a, progress="none")  # progress="text"
+summary(d2a) %>% kable()
+## Linear Model
+## contrasts: contr.sum
+lm = lm(LPR ~ MASK * model, data=summary(d2a, mask.pair=FALSE))
+car::Anova(lm, type=3)
+emmeans(lm, "MASK") %>% contrast(method="pairwise") %>% kable()
+```
+
+### Ex.2b: `[MASK]` (pairwise) + `{TARGET}` (listwise)
+
+```{r Ex2b}
+## FMAT
+q2b = FMAT_query_bind(
   FMAT_query(
     "[MASK] is {TARGET}.",
     MASK = .(Male="He", Female="She"),
@@ -118,41 +178,25 @@ q2 = FMAT_query_bind(
     TARGET = .(Occupation=s("doctor, nurse, artist"))
   )
 )
-d2 = FMAT_run(models, q2, progress="none")  # progress="text"
-summary(d2) %>% kable()
-d2new = summary(d2)
-d2new$T_word = as_factor(str_remove(d2new$T_word, "a |an "))
-d2new[, .(MASK = MASK[1], LPR_mean = mean(LPR)), keyby=T_word] %>% kable()
+d2b = FMAT_run(models, q2b, progress="none")  # progress="text"
+summary(d2b) %>% kable()
+## Mean Score for Each Item
+d2b.sum = summary(d2b)
+d2b.sum$T_word = as_factor(str_remove(d2b.sum$T_word, "a |an "))
+d2b.sum[, .(MASK = MASK[1], LPR_mean = mean(LPR)), keyby=T_word] %>% kable()
 ```
 
-## Ex.3: `[MASK]` (pairwise) + `{ATTRIB}` (pairwise)
-
-In this case, `{TARGET}` and `{ATTRIB}` are interchangeable and will operate in the same way.
-
-```{r Ex3}
-q3 = FMAT_query(
-  "The [MASK] {ATTRIB}.",
-  MASK = .(Male=s("man, boy"), Female=s("woman, girl")),
-  ATTRIB = .(Masc=s("is masculine, has a masculine personality"),
-             Femi=s("is feminine, has a feminine personality"))
-)
-d3 = FMAT_run(models, q3, progress="none")  # progress="text"
-summary(d3) %>% kable()
-mean(summary(d3)$LPR)
-d3new = d3[, .(
-  LPR = log(prop[1]) - log(prop[2]),
-  pair = as_factor(paste(M_pair, A_pair, sep="-"))
-), keyby=.(model, query, MASK, M_pair, M_word, A_pair)]
-lme(LPR ~ MASK * model, data=d3new, random = ~ 1 | pair) %>%
-  emmeans("MASK") %>% contrast(method="pairwise") %>% kable()
-```
-
-## Ex.4: `[MASK]` (pairwise) + `{TARGET}` (listwise) + `{ATTRIB}` (listwise)
+## Ex.3: `[MASK]` + `{TARGET}` + `{ATTRIB}`
 
 This is the generic design of the FMAT. When both `{TARGET}` and `{ATTRIB}` are specified, they will be forced to *listwise*.
 
-```{r Ex4}
-q4 = FMAT_query(
+### Ex.3a: `[MASK]` (pairwise) + `{TARGET}` (listwise) + `{ATTRIB}` (listwise)
+
+> *Note*: From this example, we also see that even the *mean LPR score* for each target word (contrasted between two levels of attribute words; e.g., Pos vs. Neg) is ***insufficient*** for a proper interpretation of the association. The LPR scores should be further contrasted between two levels of target words. Therefore, the FMAT (and the WEAT) results are only interpretable and meaningful when the scores (log probability in FMAT, cosine similarity in WEAT) have been contrasted *both* between two attributes *and* between two targets. Single-target results without any contrasts may be misleading.
+
+```{r Ex3a}
+## FMAT
+q3a = FMAT_query(
   "The {TARGET} has a [MASK] association with {ATTRIB}.",
   MASK = .(H="high", L="low"),
   TARGET = .(Flower=s("rose, iris, lily"),
@@ -160,14 +204,66 @@ q4 = FMAT_query(
   ATTRIB = .(Pos=s("health, happiness, love, peace"),
              Neg=s("death, sickness, hatred, disaster"))
 )
-d4 = FMAT_run(models, q4, progress="none")  # progress="text"
-summary(d4) %>% kable()
+d3a = FMAT_run(models, q3a, progress="none")  # progress="text"
+summary(d3a) %>% kable()
+## Linear Mixed Model
+## (more conservative and suitable for large number of random items)
 lmm = lme(LPR ~ TARGET * model,
-          data = summary(d4),
-          random = ~ 1 | T_word)
-anova(lmm) %>% kable()
-emmeans(lmm, "TARGET") %>% contrast(method="pairwise") %>% kable()
+          random = ~ 1 | T_word,
+          data = summary(d3a))
+anova(lmm) %>% kable(digits=4)
+emmeans(lmm, "TARGET") %>% contrast(method="pairwise") %>% kable(digits=4)
+## For more usage of `emmip`, see help page: ?emmeans::emmip()
 emmip(lmm, ~ TARGET | model, CIs=TRUE) +
   labs(x="Target", y="Log Probability Ratio (LPR)") +
   theme_bw(base_size=16)
+```
+
+### Ex.3b: `[MASK]` (pairwise) + `{TARGET}` (pairwise) + `{ATTRIB}` (pairwise)
+
+Both `{TARGET}` and `{ATTRIB}` are still forced to *listwise* but are only designed in a *pairwise* way.
+
+```{r Ex3b}
+## FMAT
+q3b = FMAT_query(
+  "Most {TARGET} American people put [MASK] emphasis on {ATTRIB}.",
+  MASK = .(H="high", L="low"),
+  TARGET = .(Young=s("young, younger"),
+             Old=s("old, older")),
+  ATTRIB = .(IND=s("individualism, being individualists"),
+             COL=s("collectivism, being collectivists"))
+)
+d3b = FMAT_run(models, q3b, progress="none")  # progress="text"
+summary(d3b) %>% kable()
+## Linear Model
+## contrasts: contr.sum
+lm = lm(LPR ~ TARGET * model, data=summary(d3b))
+car::Anova(lm, type=3)
+emmeans(lm, "TARGET") %>% contrast(method="pairwise") %>% kable()
+```
+
+## Ex.4: `[MASK]` = years (for detecting changes over time)
+
+```{r Ex4}
+## FMAT
+q4 = FMAT_query(
+  "Most American people valued {ATTRIB} in the year [MASK].",
+  MASK = .(Year=1980:2000),
+  ATTRIB = .(IND="individualism",
+             COL="collectivism")
+)
+d4 = FMAT_run(models, q4, progress="none")  # progress="text"
+
+## Time Series Plot
+d4.sum = summary(d4, mask.pair=FALSE)
+d4.sum$Year = as.numeric(as.character(d4.sum$M_word))
+d4.sum[, LPR_relative := LPR - LPR[1], by=model]
+ggplot(d4.sum, aes(x=Year, y=LPR_relative, color=model)) +
+  geom_path(alpha=0.8, linewidth=0.8) +
+  labs(x="Year",
+       y="Log Probability Ratio (LPR)\n(Reference Year = 1980)",
+       color="Model",
+       title="Fill-Mask Association Test",
+       subtitle="Individualism (vs. Collectivism) of American People") +
+  theme_bw(base_size=14)
 ```

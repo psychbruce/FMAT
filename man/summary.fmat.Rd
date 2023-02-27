@@ -4,11 +4,13 @@
 \alias{summary.fmat}
 \title{[S3 method] Summarize the results for the FMAT.}
 \usage{
-\method{summary}{fmat}(object, warning = TRUE, ...)
+\method{summary}{fmat}(object, mask.pair = TRUE, warning = TRUE, ...)
 }
 \arguments{
 \item{object}{A data.table (of new class \code{fmat})
 returned from \code{\link{FMAT_run}}.}
+
+\item{mask.pair}{Pairwise contrast of \code{[MASK]}? Defaults to \code{TRUE}.}
 
 \item{warning}{Warning of out-of-vocabulary word(s). Defaults to \code{TRUE}.}
 

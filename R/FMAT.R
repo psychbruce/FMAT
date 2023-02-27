@@ -4,6 +4,7 @@
 #' @import stringr
 #' @import data.table
 #' @importFrom forcats as_factor
+#' @importFrom stats na.omit
 .onAttach = function(libname, pkgname) {
   inst.ver = as.character(utils::packageVersion("FMAT"))
   pkgs = c("data.table", "stringr")
@@ -185,11 +186,26 @@ FMAT_load = function(models) {
 }
 
 
+fix_pair = function(X, var="MASK") {
+  ns = sapply(X, length)
+  if(length(unique(ns)) > 1) {
+    cli::cli_alert_warning("Unequal number of items in {var}.")
+    nmax = max(ns)
+    for(i in 1:length(X)) {
+      if(ns[i] < nmax)
+        X[[i]] = c(X[[i]], rep(NA, nmax - ns[i]))
+    }
+  }
+  return(X)
+}
+
+
 # query = "[MASK] is ABC."
 # expand_pair(query, .(High=s("high, strong"), Low=s("low, weak")))
 # expand_pair(query, .(H="high", M="medium", L="low"))
 # X = .(Flower=s("rose, iris, lily"), Pos=s("health, happiness, love, peace"))
 # expand_full(query, X)
+
 
 expand_pair = function(query, X, var="MASK") {
   d = data.frame(X)
@@ -301,7 +317,7 @@ append_X = function(dq, X, var="TARGET") {
 #'
 #' @export
 FMAT_query = function(
-    query = "[MASK] must be in query, {TARGET} and {ATTRIB} are optional.",
+    query = "Text with [MASK], optionally with {TARGET} and/or {ATTRIB}.",
     MASK = .(),
     TARGET = .(),
     ATTRIB = .(),
@@ -311,7 +327,11 @@ FMAT_query = function(
     stop("`query` should contain a [MASK] token!", call.=FALSE)
   if(length(MASK) == 0) {
     stop("Please specify `MASK` (the targets of [MASK])!", call.=FALSE)
-  } else if(length(TARGET) == 0 & length(ATTRIB) == 0) {
+  } else {
+    MASK = fix_pair(MASK)
+  }
+
+  if(length(TARGET) == 0 & length(ATTRIB) == 0) {
     # No TARGET or ATTRIB
     type = "M"
     dq = map_query(query, expand_pair, MASK)
@@ -339,12 +359,13 @@ FMAT_query = function(
     }, TARGET, ATTRIB)
     dq = plyr::adply(dx, 1, function(x) cbind(dm, x))
   }
+
   if(any(str_count(query, "\\[MASK\\]") > 1))
     dq$unmask.id = as.integer(unmask.id)
   if(length(query) > 1)
     dq = cbind(data.table(qid = as.factor(as.numeric(dq$query))), dq)
   attr(dq, "type") = type
-  return(dq[order(query)])
+  return(na.omit(dq[order(query)]))
 }
 
 
@@ -611,6 +632,7 @@ warning_oov = function(data) {
 #' @param object A data.table (of new class \code{fmat})
 #' returned from \code{\link{FMAT_run}}.
 ## @param digits Number of decimal places of output. Defaults to \code{3}.
+#' @param mask.pair Pairwise contrast of \code{[MASK]}? Defaults to \code{TRUE}.
 #' @param ... Other arguments (currently not used).
 #'
 #' @return
@@ -620,33 +642,44 @@ warning_oov = function(data) {
 #' \code{\link{FMAT_run}}
 #'
 #' @export
-summary.fmat = function(object, warning=TRUE, ...) {
+summary.fmat = function(object, mask.pair=TRUE, warning=TRUE, ...) {
   if(warning) warning_oov(object)
   type = attr(object, "type")
-  gvars.1 = c("model", "query", "M_pair",
-              "TARGET", "T_pair", "T_word",
-              "ATTRIB", "A_pair", "A_word")
-  grouping.vars = intersect(names(object), gvars.1)
   M_word = T_word = A_word = MASK = TARGET = ATTRIB = prop = LPR = NULL
 
-  dt = object[, .(
-    MASK = paste(MASK[1], "-", MASK[2]),
-    M_contr = paste(M_word[1], "-", M_word[2]),
-    LPR = log(prop[1]) - log(prop[2])
-  ), keyby = grouping.vars]
-  dt$MASK = as_factor(dt$MASK)
-  dt$M_contr = as_factor(dt$M_contr)
-  dt$M_pair = NULL
+  if(mask.pair) {
+    gvars = c("model", "query", "M_pair",
+              "TARGET", "T_pair", "T_word",
+              "ATTRIB", "A_pair", "A_word")
+    grouping.vars = intersect(names(object), gvars)
+    dt = object[, .(
+      MASK = paste(MASK[1], "-", MASK[2]),
+      M_word = paste(M_word[1], "-", M_word[2]),
+      LPR = log(prop[1]) - log(prop[2])
+    ), keyby = grouping.vars]
+    dt$MASK = as_factor(dt$MASK)
+    dt$M_word = as_factor(dt$M_word)
+    dt$M_pair = NULL
+  } else {
+    dvars = c("model", "query", "MASK", "M_word",
+              "TARGET", "T_pair", "T_word",
+              "ATTRIB", "A_pair", "A_word",
+              "prop")
+    dt.vars = intersect(names(object), dvars)
+    dt = object[, dt.vars, with=FALSE]
+    dt$LPR = log(dt$prop)
+    dt$prop = NULL
+  }
 
   if(type=="MT") {
     if(nlevels(dt$TARGET)==2) {
       dt = dt[, .(
         TARGET = paste(TARGET[1], "-", TARGET[2]),
-        T_contr = paste(T_word[1], "-", T_word[2]),
+        T_word = paste(T_word[1], "-", T_word[2]),
         LPR = LPR[1] - LPR[2]
-      ), keyby = c("model", "query", "MASK", "M_contr", "T_pair")]
+      ), keyby = c("model", "query", "MASK", "M_word", "T_pair")]
       dt$TARGET = as_factor(dt$TARGET)
-      dt$T_contr = as_factor(dt$T_contr)
+      dt$T_word = as_factor(dt$T_word)
       dt$T_pair = NULL
     }
   }
@@ -655,11 +688,11 @@ summary.fmat = function(object, warning=TRUE, ...) {
     if(nlevels(dt$ATTRIB)==2) {
       dt = dt[, .(
         ATTRIB = paste(ATTRIB[1], "-", ATTRIB[2]),
-        A_contr = paste(A_word[1], "-", A_word[2]),
+        A_word = paste(A_word[1], "-", A_word[2]),
         LPR = LPR[1] - LPR[2]
-      ), keyby = c("model", "query", "MASK", "M_contr", "A_pair")]
+      ), keyby = c("model", "query", "MASK", "M_word", "A_pair")]
       dt$ATTRIB = as_factor(dt$ATTRIB)
-      dt$A_contr = as_factor(dt$A_contr)
+      dt$A_word = as_factor(dt$A_word)
       dt$A_pair = NULL
     }
   }
@@ -667,12 +700,12 @@ summary.fmat = function(object, warning=TRUE, ...) {
   if(type=="MTA") {
     dt = dt[, .(
       LPR = mean(LPR)
-    ), keyby = c("model", "query", "MASK", "M_contr",
+    ), keyby = c("model", "query", "MASK", "M_word",
                  "TARGET", "T_word", "ATTRIB")]
     dt = dt[, .(
       ATTRIB = paste(ATTRIB[1], "-", ATTRIB[2]),
       LPR = LPR[1] - LPR[2]
-    ), keyby = c("model", "query", "MASK", "M_contr",
+    ), keyby = c("model", "query", "MASK", "M_word",
                  "TARGET", "T_word")]
   }
 
