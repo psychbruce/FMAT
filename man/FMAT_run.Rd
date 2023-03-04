@@ -7,7 +7,8 @@
 FMAT_run(
   models,
   data,
-  progress = c("text", "time", "none"),
+  file = NULL,
+  progress = c(FALSE, TRUE, "none", "text", "time"),
   parallel = FALSE,
   ncores = min(length(models), parallel::detectCores()),
   warning = TRUE
@@ -27,8 +28,10 @@ FMAT_run(
 \item{data}{A data.table returned from
 \code{\link{FMAT_query}} or \code{\link{FMAT_query_bind}}.}
 
+\item{file}{File name of \code{.RData} to save the returned data.}
+
 \item{progress}{Show a progress bar:
-\code{"text"} (default), \code{"time"}, \code{"none"}.}
+\code{"none"} (\code{FALSE}), \code{"text"} (\code{TRUE}), \code{"time"}.}
 
 \item{parallel}{Parallel processing. Defaults to \code{FALSE}.
 If \code{TRUE}, then \code{models} must be model names
@@ -63,6 +66,21 @@ with these new variables:
 \description{
 Run the mask filling pipeline on multiple models.
 }
+\details{
+The function will also automatically adjust for
+the compatibility of tokens used in certain models:
+(1) for uncased models (e.g., ALBERT), it turns tokens to lowercase;
+(2) for models that use \code{<mask>} rather than \code{[MASK]},
+it automatically uses the corrected mask token;
+(3) for models that require a prefix to estimate whole words than subwords
+(e.g., ALBERT, RoBERTa), it adds a certain prefix (usually a white space;
+\\u2581 for ALBERT and XLM-RoBERTa, \\u0120 for RoBERTa and DistilRoBERTa).
+
+Note that these changes only affect the \code{token} variable
+in the returned data, but will not affect the \code{M_word} variable.z
+Thus, users may analyze their data based on the unchanged \code{M_word}
+rather than the \code{token}.
+}
 \examples{
 # Running the example requires the models downloaded
 # You will need to rerun `FMAT_load` if you restart the R session
@@ -72,7 +90,7 @@ models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
 dq = FMAT_query(
   c("[MASK] is {TARGET}.", "[MASK] works as {TARGET}."),
   MASK = .(Male="He", Female="She"),
-  TARGET = .(Occupation=s("a doctor, a nurse, an artist"))
+  TARGET = .(Occupation=cc("a doctor, a nurse, an artist"))
 )
 data1 = FMAT_run(models, dq)
 summary(data1)
@@ -82,10 +100,10 @@ data2 = FMAT_run(
   FMAT_query(
     "The {TARGET} has a [MASK] association with {ATTRIB}.",
     MASK = .(H="high", L="low"),
-    TARGET = .(Flower=s("rose, iris, lily"),
-               Insect=s("ant, cockroach, spider")),
-    ATTRIB = .(Pos=s("health, happiness, love, peace"),
-               Neg=s("death, sickness, hatred, disaster"))
+    TARGET = .(Flower=cc("rose, iris, lily"),
+               Insect=cc("ant, cockroach, spider")),
+    ATTRIB = .(Pos=cc("health, happiness, love, peace"),
+               Neg=cc("death, sickness, hatred, disaster"))
   ))
 summary(data2)
 }

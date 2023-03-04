@@ -7,19 +7,25 @@
 #' @importFrom stats na.omit
 .onAttach = function(libname, pkgname) {
   inst.ver = as.character(utils::packageVersion("FMAT"))
-  pkgs = c("data.table", "stringr")
+  pkgs = c("data.table", "stringr", "forcats")
   suppressMessages({
     suppressWarnings({
       loaded = sapply(pkgs, require, character.only=TRUE)
     })
   })
   if(all(loaded)) {
-    cli::cli_h1("FMAT (v{inst.ver})")
-    cn()
-    cli::cli_alert_success("
-    Packages also loaded: {.pkg data.table, stringr}
-    ")
-    cn()
+    packageStartupMessage(glue::glue_col("
+
+    {magenta FMAT (v{inst.ver})}
+    {blue The Fill-Mask Association Test}
+
+    {magenta Packages also loaded:}
+    {green \u2714 data.table, stringr, forcats}
+
+    {magenta Online documentation:}
+    {underline https://psychbruce.github.io/FMAT}
+
+    "))
   }
 }
 
@@ -27,66 +33,14 @@
 #### Basic ####
 
 
-cn = function() cat("\n")
-
-#' A wrapper of \code{list()}.
-#'
-#' A simple version of the \code{\link{list}} function.
-#'
-#' @param ... Objects (possibly named) passed to \code{\link{list}}.
-#'
-#' @return A list.
-#'
-#' @examples
-#' .(Male=s("man, he, his"), Female=s("woman, she, her"))
-#'
 #' @export
-. = function(...) list(...)
+. = list
 
-#' Split a string (with separators) into a character vector.
-#'
-#' @param x Character string.
-#' Separators can be: \code{,} \code{;} \code{|} \code{\\n} \code{\\t}.
-#'
-#' @return Character vector.
-#'
-#' @examples
-#' s("a, b, c, d, e")
-#'
+
+#' @importFrom PsychWordVec cc
 #' @export
-s = function(x) {
-  as.character(str_split(str_trim(x), "\\s*[,;\\|\\n\\t]\\s*", simplify=TRUE))
-}
+PsychWordVec::cc
 
-text_init = function() {
-  suppressMessages({
-    suppressWarnings({
-      text::textrpp_install(prompt=FALSE)
-    })
-  })
-  cn()
-  cli::cli_alert_success("{.pkg Installed Python modules in conda environment.}")
-
-  error = TRUE
-  try({
-    suppressMessages({
-      suppressWarnings({
-        text::textrpp_initialize(save_profile=TRUE, prompt=FALSE)
-      })
-    })
-    error = FALSE
-  }, silent=TRUE)
-  if(error)
-    stop("No valid Python or conda environment.
-
-       You may need to specify the version of Python:
-         RStudio -> Tools -> Global/Project Options
-         -> Python -> Select -> Conda Environments
-         -> Choose \".../textrpp_condaenv/python.exe\"",
-       call.=FALSE)
-  cn()
-  cli::cli_alert_success("{.pkg Initialized the Python modules.}")
-}
 
 text_initialized = function() {
   error = TRUE
@@ -94,33 +48,9 @@ text_initialized = function() {
     text::textModels()
     error = FALSE
   }, silent=TRUE)
-  if(error) text_init()
+  if(error) PsychWordVec::text_init()
 }
 
-model_download = function(model=NULL) {
-  text_initialized()
-  if(!is.null(model)) {
-    for(m in model) {
-      cli::cli_h1("Downloading model \"{m}\"")
-      transformers = reticulate::import("transformers")
-      cli::cli_text("Downloading configuration...")
-      config = transformers$AutoConfig$from_pretrained(m)
-      cli::cli_text("Downloading tokenizer...")
-      tokenizer = transformers$AutoTokenizer$from_pretrained(m)
-      cli::cli_text("Downloading model...")
-      model = transformers$AutoModel$from_pretrained(m)
-      cli::cli_alert_success("Successfully downloaded model \"{m}\"")
-      gc()
-    }
-  }
-  cli::cli_h2("Currently downloaded language models:")
-  models = text::textModels()
-  models[[1]] = sort(models[[1]])
-  models[[2]] = sort(models[[2]])
-  cli::cli_li(paste0("\"", models$Downloaded_models, "\""))
-  cn()
-  invisible(models)
-}
 
 dtime = function(t0) {
   diff = as.numeric(difftime(Sys.time(), t0, units="secs"))
@@ -168,7 +98,7 @@ FMAT_load = function(models) {
   text_initialized()
   old.models = text::textModels()$Downloaded_models
   new.models = setdiff(models, old.models)
-  if(length(new.models) > 0) model_download(new.models)
+  if(length(new.models) > 0) PsychWordVec::text_model_download(new.models)
 
   cli::cli_text("Loading models...")
   transformers = reticulate::import("transformers")
@@ -201,9 +131,9 @@ fix_pair = function(X, var="MASK") {
 
 
 # query = "[MASK] is ABC."
-# expand_pair(query, .(High=s("high, strong"), Low=s("low, weak")))
+# expand_pair(query, .(High=cc("high, strong"), Low=cc("low, weak")))
 # expand_pair(query, .(H="high", M="medium", L="low"))
-# X = .(Flower=s("rose, iris, lily"), Pos=s("health, happiness, love, peace"))
+# X = .(Flower=cc("rose, iris, lily"), Pos=cc("health, happiness, love, peace"))
 # expand_full(query, X)
 
 
@@ -296,23 +226,24 @@ append_X = function(dq, X, var="TARGET") {
 #' FMAT_query(
 #'   c("[MASK] is {TARGET}.", "[MASK] works as {TARGET}."),
 #'   MASK = .(Male="He", Female="She"),
-#'   TARGET = .(Occupation=s("a doctor, a nurse, an artist"))
+#'   TARGET = .(Occupation=cc("a doctor, a nurse, an artist"))
 #' )
 #'
 #' FMAT_query(
 #'   "The [MASK] {ATTRIB}.",
-#'   MASK = .(Male=s("man, boy"), Female=s("woman, girl")),
-#'   ATTRIB = .(Masc=s("is masculine, has a masculine personality"),
-#'              Femi=s("is feminine, has a feminine personality"))
+#'   MASK = .(Male=cc("man, boy"),
+#'            Female=cc("woman, girl")),
+#'   ATTRIB = .(Masc=cc("is masculine, has a masculine personality"),
+#'              Femi=cc("is feminine, has a feminine personality"))
 #' )
 #'
 #' FMAT_query(
 #'   "The {TARGET} has a [MASK] association with {ATTRIB}.",
 #'   MASK = .(H="high", L="low"),
-#'   TARGET = .(Flower=s("rose, iris, lily"),
-#'              Insect=s("ant, cockroach, spider")),
-#'   ATTRIB = .(Pos=s("health, happiness, love, peace"),
-#'              Neg=s("death, sickness, hatred, disaster"))
+#'   TARGET = .(Flower=cc("rose, iris, lily"),
+#'              Insect=cc("ant, cockroach, spider")),
+#'   ATTRIB = .(Pos=cc("health, happiness, love, peace"),
+#'              Neg=cc("death, sickness, hatred, disaster"))
 #' )
 #'
 #' @export
@@ -388,12 +319,12 @@ FMAT_query = function(
 #'   FMAT_query(
 #'     "[MASK] is {TARGET}.",
 #'     MASK = .(Male="He", Female="She"),
-#'     TARGET = .(Occupation=s("a doctor, a nurse, an artist"))
+#'     TARGET = .(Occupation=cc("a doctor, a nurse, an artist"))
 #'   ),
 #'   FMAT_query(
 #'     "[MASK] occupation is {TARGET}.",
 #'     MASK = .(Male="His", Female="Her"),
-#'     TARGET = .(Occupation=s("doctor, nurse, artist"))
+#'     TARGET = .(Occupation=cc("doctor, nurse, artist"))
 #'   )
 #' )
 #'
@@ -427,6 +358,21 @@ FMAT_query_bind = function(...) {
 
 #' Run the mask filling pipeline on multiple models.
 #'
+#' @details
+#' The function will also automatically adjust for
+#' the compatibility of tokens used in certain models:
+#' (1) for uncased models (e.g., ALBERT), it turns tokens to lowercase;
+#' (2) for models that use \code{<mask>} rather than \code{[MASK]},
+#' it automatically uses the corrected mask token;
+#' (3) for models that require a prefix to estimate whole words than subwords
+#' (e.g., ALBERT, RoBERTa), it adds a certain prefix (usually a white space;
+#' \\u2581 for ALBERT and XLM-RoBERTa, \\u0120 for RoBERTa and DistilRoBERTa).
+#'
+#' Note that these changes only affect the \code{token} variable
+#' in the returned data, but will not affect the \code{M_word} variable.z
+#' Thus, users may analyze their data based on the unchanged \code{M_word}
+#' rather than the \code{token}.
+#'
 #' @param models Language model(s):
 #' \itemize{
 #'   \item{Model names (usually the BERT-based models) at
@@ -438,8 +384,9 @@ FMAT_query_bind = function(...) {
 #' }
 #' @param data A data.table returned from
 #' \code{\link{FMAT_query}} or \code{\link{FMAT_query_bind}}.
+#' @param file File name of \code{.RData} to save the returned data.
 #' @param progress Show a progress bar:
-#' \code{"text"} (default), \code{"time"}, \code{"none"}.
+#' \code{"none"} (\code{FALSE}), \code{"text"} (\code{TRUE}), \code{"time"}.
 #' @param parallel Parallel processing. Defaults to \code{FALSE}.
 #' If \code{TRUE}, then \code{models} must be model names
 #' rather than from \code{\link{FMAT_load}}.
@@ -486,7 +433,7 @@ FMAT_query_bind = function(...) {
 #' dq = FMAT_query(
 #'   c("[MASK] is {TARGET}.", "[MASK] works as {TARGET}."),
 #'   MASK = .(Male="He", Female="She"),
-#'   TARGET = .(Occupation=s("a doctor, a nurse, an artist"))
+#'   TARGET = .(Occupation=cc("a doctor, a nurse, an artist"))
 #' )
 #' data1 = FMAT_run(models, dq)
 #' summary(data1)
@@ -496,10 +443,10 @@ FMAT_query_bind = function(...) {
 #'   FMAT_query(
 #'     "The {TARGET} has a [MASK] association with {ATTRIB}.",
 #'     MASK = .(H="high", L="low"),
-#'     TARGET = .(Flower=s("rose, iris, lily"),
-#'                Insect=s("ant, cockroach, spider")),
-#'     ATTRIB = .(Pos=s("health, happiness, love, peace"),
-#'                Neg=s("death, sickness, hatred, disaster"))
+#'     TARGET = .(Flower=cc("rose, iris, lily"),
+#'                Insect=cc("ant, cockroach, spider")),
+#'     ATTRIB = .(Pos=cc("health, happiness, love, peace"),
+#'                Neg=cc("death, sickness, hatred, disaster"))
 #'   ))
 #' summary(data2)
 #' }
@@ -507,13 +454,16 @@ FMAT_query_bind = function(...) {
 FMAT_run = function(
     models,
     data,
-    progress = c("text", "time", "none"),
+    file = NULL,
+    progress = c(FALSE, TRUE, "none", "text", "time"),
     parallel = FALSE,
     ncores = min(length(models), parallel::detectCores()),
     warning = TRUE
 ) {
   t0 = Sys.time()
   progress = match.arg(progress)
+  if(progress=="FALSE") progress = "none"
+  if(progress=="TRUE") progress = "text"
   type = attr(data, "type")
 
   text_initialized()
@@ -535,8 +485,9 @@ FMAT_run = function(
     }
 
     uncased = str_detect(model, "uncased|albert")
-    prefix = str_detect(model, "xlm-roberta|albert")
-    mask2 = str_detect(model, "roberta")
+    prefix.u2581 = str_detect(model, "xlm-roberta|albert")
+    prefix.u0120 = str_detect(model, "roberta") & !str_detect(model, "xlm")
+    mask.lower = str_detect(model, "roberta")
 
     unmask = function(d) {
       if("TARGET" %in% names(d))
@@ -547,16 +498,18 @@ FMAT_run = function(
       query = str_replace_all(d$query, "\\[mask\\]", "[MASK]")
       query = glue::glue(as.character(query))
       mask = as.character(d$M_word)
+      mask.begin = str_sub(query, 1, 6) == "[MASK]" & uid == 1
       if(uncased) mask = tolower(mask)
-      if(prefix) mask = paste0("\u2581", mask)
-      if(mask2) query = str_replace_all(query, "\\[MASK\\]", "<mask>")
+      if(prefix.u2581) mask = paste0("\u2581", mask)
+      if(prefix.u0120 & !mask.begin) mask = paste0("\u0120", mask)
+      if(mask.lower) query = str_replace_all(query, "\\[MASK\\]", "<mask>")
       oov = reticulate::py_capture_output({
         res = fill_mask(query, targets=mask, top_k=1L)[[uid]]
       })
       return(data.table(
         output = res$sequence,
         token = ifelse(
-          oov=="",
+          oov=="",  # no extra output from python
           res$token_str,
           paste(res$token_str, "(out-of-vocabulary)")),
         prop = res$score
@@ -584,7 +537,7 @@ FMAT_run = function(
     parallel::stopCluster(cl)
   } else {
     data = rbindlist(lapply(models, onerun, data=data))
-    cn()
+    cat("\n")
   }
   attr(data, "type") = type
   class(data) = c("fmat", class(data))
@@ -593,6 +546,13 @@ FMAT_run = function(
   cli::cli_alert_success("Task completed (total time cost = {dtime(t0)})")
 
   if(warning) warning_oov(data)
+
+  if(!is.null(file)) {
+    if(!str_detect(file, "\\.[Rr][Dd]a|\\.[Rr][Dd]ata"))
+      file = paste0(file, ".RData")
+    save(data, file=file)
+    cli::cli_alert_success("Data saved to {.val {file}}")
+  }
 
   return(data)
 }

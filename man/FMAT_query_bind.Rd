@@ -20,12 +20,12 @@ FMAT_query_bind(
   FMAT_query(
     "[MASK] is {TARGET}.",
     MASK = .(Male="He", Female="She"),
-    TARGET = .(Occupation=s("a doctor, a nurse, an artist"))
+    TARGET = .(Occupation=cc("a doctor, a nurse, an artist"))
   ),
   FMAT_query(
     "[MASK] occupation is {TARGET}.",
     MASK = .(Male="His", Female="Her"),
-    TARGET = .(Occupation=s("doctor, nurse, artist"))
+    TARGET = .(Occupation=cc("doctor, nurse, artist"))
   )
 )
 
