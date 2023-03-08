@@ -1,15 +1,11 @@
 ---
 title: "FMAT: Basic Principles and Examples"
 author: "Han-Wu-Shuang Bao"
+date: "`r Sys.Date()`"
 output:
   html_vignette:
-  # html_document:
     toc: true
     toc_depth: 2
-    # toc_float:
-    #   collapsed: false
-    #   smooth_scroll: false
-    # code_download: false
     anchor_sections: true
     df_print: kable
 vignette: >
@@ -35,6 +31,8 @@ vignette: >
   table thead { background-color: #f0f0f0; }
   table tr.even { background-color: #f5f5f5; }
   pre code { font-family: "Consolas", "Monaco", monospace; }
+  pre code span.do { font-weight: bold; }
+  pre code span.fu { color: #8959a8; }
 </style>
 ```
 ```{r Config, include=FALSE}
@@ -94,7 +92,7 @@ The FMAT is flexible in design, but is also subject to the following basic princ
 ## Setup
 
 ```{r Setup, message=FALSE}
-## Load R packages:
+## Load R packages
 
 library(FMAT)
 library(nlme)
@@ -118,7 +116,7 @@ Note that these two BERT models are only the most popular and basic ones among a
 read.csv("https://psychbruce.github.io/HuggingFace_Models.csv", encoding="UTF-8")
 ```
 
-\* *Note*. The accuracy of the FMAT results is subject to the selected models, their pre-training corpora, and your design of queries, but not to the FMAT methodology.
+\* *Note*. The accuracy of the FMAT results is subject to the selected models, the pre-training corpora, and the design of queries, but not to the FMAT methodology.
 
 Abbreviations: wiki = [Wikipedia](https://huggingface.co/datasets/wikipedia); book = [BookCorpus](https://huggingface.co/datasets/bookcorpus); cc = [CommonCrawl](https://commoncrawl.org/); open = [OpenWebText](https://github.com/jcpeterson/openwebtext).
 
@@ -215,12 +213,12 @@ q2b = FMAT_query_bind(
   )
 )
 d2b = FMAT_run(models, q2b)
-summary(d2b)
+summary(d2b, target.pair=FALSE)
 ```
 
 ```{r Ex2b Results, message=FALSE}
 ## Mean Score for Each Item
-d2b.sum = summary(d2b)
+d2b.sum = summary(d2b, target.pair=FALSE)
 d2b.sum$T_word = as_factor(str_remove(d2b.sum$T_word, "a |an "))
 d2b.sum[, .(MASK = MASK[1], LPR_mean = mean(LPR)), keyby=T_word]
 ```

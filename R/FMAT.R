@@ -140,7 +140,10 @@ fix_pair = function(X, var="MASK") {
 expand_pair = function(query, X, var="MASK") {
   d = data.frame(X)
   dt = rbindlist(lapply(names(d), function(var) {
-    data.table(query=query, var=var, pair=seq_len(nrow(d)), word=d[[var]])
+    data.table(query = query,
+               var = var,
+               pair = seq_len(nrow(d)),
+               word = d[[var]])
   }))
   dt$var = as_factor(dt$var)
   dt$pair = as_factor(dt$pair)
@@ -171,12 +174,13 @@ map_query = function(.x, .f, ...) {
 
 append_X = function(dq, X, var="TARGET") {
   n = nrow(dq)
+  prefix = paste(names(X), collapse="-")
 
   dx = data.frame(X)
   dx = rbindlist(lapply(names(dx), function(x) {
-    data.table(x=rep(x, each=n),
-               pair=rep(seq_len(nrow(dx)), each=n),
-               word=rep(dx[[x]], each=n))
+    data.table(x = rep(x, each=n),
+               pair = rep(paste0(prefix, ".", seq_len(nrow(dx))), each=n),
+               word = rep(dx[[x]], each=n))
   }))
   dx$x = as_factor(dx$x)
   dx$pair = as_factor(dx$pair)
@@ -199,6 +203,9 @@ append_X = function(dq, X, var="TARGET") {
 #' please use \code{\link{FMAT_query_bind}} to combine them.
 #' @param MASK A named list of \code{[MASK]} target words.
 #' Must be single words in the vocabulary of a certain masked language model.
+#' For model vocabulary, see, e.g.,
+#' \url{https://huggingface.co/bert-base-uncased/raw/main/vocab.txt}
+#'
 #' Note that infrequent words may be not included in a model's vocabulary,
 #' and in this case you may insert the words into the context by
 #' specifying either \code{TARGET} or \code{ATTRIB}.
@@ -334,9 +341,12 @@ FMAT_query_bind = function(...) {
   type = unique(types)
   if(length(type) > 1)
     stop("Queries should have the same structure.", call.=FALSE)
+
   dqs = rbind(...)
+
   if("qid" %in% names(dqs)) dqs$qid = NULL
   dqs = cbind(data.table(qid = as.factor(as.numeric(dqs$query))), dqs)
+
   attr(dqs, "type") = type
   return(dqs)
 }
@@ -592,7 +602,9 @@ warning_oov = function(data) {
 #' @param object A data.table (of new class \code{fmat})
 #' returned from \code{\link{FMAT_run}}.
 ## @param digits Number of decimal places of output. Defaults to \code{3}.
-#' @param mask.pair Pairwise contrast of \code{[MASK]}? Defaults to \code{TRUE}.
+#' @param mask.pair,target.pair,attrib.pair Pairwise contrast of
+#' \code{[MASK]}, \code{TARGET}, \code{ATTRIB}?
+#' Defaults to \code{TRUE}.
 #' @param ... Other arguments (currently not used).
 #'
 #' @return
@@ -602,7 +614,12 @@ warning_oov = function(data) {
 #' \code{\link{FMAT_run}}
 #'
 #' @export
-summary.fmat = function(object, mask.pair=TRUE, warning=TRUE, ...) {
+summary.fmat = function(object,
+                        mask.pair=TRUE,
+                        target.pair=TRUE,
+                        attrib.pair=TRUE,
+                        warning=TRUE,
+                        ...) {
   if(warning) warning_oov(object)
   type = attr(object, "type")
   M_word = T_word = A_word = MASK = TARGET = ATTRIB = prop = LPR = NULL
@@ -632,7 +649,7 @@ summary.fmat = function(object, mask.pair=TRUE, warning=TRUE, ...) {
   }
 
   if(type=="MT") {
-    if(nlevels(dt$TARGET)==2) {
+    if(target.pair) {
       dt = dt[, .(
         TARGET = paste(TARGET[1], "-", TARGET[2]),
         T_word = paste(T_word[1], "-", T_word[2]),
@@ -645,7 +662,7 @@ summary.fmat = function(object, mask.pair=TRUE, warning=TRUE, ...) {
   }
 
   if(type=="MA") {
-    if(nlevels(dt$ATTRIB)==2) {
+    if(attrib.pair) {
       dt = dt[, .(
         ATTRIB = paste(ATTRIB[1], "-", ATTRIB[2]),
         A_word = paste(A_word[1], "-", A_word[2]),

@@ -23,6 +23,9 @@ please use \code{\link{FMAT_query_bind}} to combine them.}
 
 \item{MASK}{A named list of \code{[MASK]} target words.
 Must be single words in the vocabulary of a certain masked language model.
+For model vocabulary, see, e.g.,
+\url{https://huggingface.co/bert-base-uncased/raw/main/vocab.txt}
+
 Note that infrequent words may be not included in a model's vocabulary,
 and in this case you may insert the words into the context by
 specifying either \code{TARGET} or \code{ATTRIB}.}
