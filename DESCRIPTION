@@ -11,8 +11,9 @@ Author: Han-Wu-Shuang Bao [aut, cre]
 Maintainer: Han-Wu-Shuang Bao <baohws@foxmail.com>
 Description:
     The Fill-Mask Association Test (FMAT) is a versatile,
-    probability-based method that employs masked language models
-    (BERT) to measure conceptual associations.
+    probability-based method that employs Masked Language Models (BERT) to
+    measure conceptual associations (e.g., attitudes, biases, stereotypes)
+    in natural language.
 License: GPL-3
 Encoding: UTF-8
 URL: https://psychbruce.github.io/FMAT/
