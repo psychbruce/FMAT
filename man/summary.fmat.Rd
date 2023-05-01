@@ -37,7 +37,7 @@ The LPR of just one contrast (e.g., only between a pair of attributes)
 may \emph{not} be sufficient for a proper interpretation of the results,
 and may further require a second contrast (e.g., between a pair of targets).
 
-Users are encouraged to use linear mixed models
+Users are suggested to use linear mixed models
 (with the R packages \code{nlme} or \code{lme4}/\code{lmerTest})
 to perform the formal analyses and hypothesis tests based on the LPR.
 }
