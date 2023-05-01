@@ -90,8 +90,9 @@ dtime = function(t0) {
 #' \code{\link{FMAT_run}}
 #'
 #' @examples
-#' \donttest{models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))}
-#'
+#' \dontrun{
+#' models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
+#' }
 #' @export
 FMAT_load = function(models) {
   cli::cli_text("Initializing environment...")
@@ -437,7 +438,8 @@ FMAT_query_bind = function(...) {
 #' @examples
 #' # Running the example requires the models downloaded
 #' # You will need to rerun `FMAT_load` if you restart the R session
-#' \donttest{
+#'
+#' \dontrun{
 #' models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
 #'
 #' dq = FMAT_query(

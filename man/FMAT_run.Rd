@@ -84,7 +84,8 @@ rather than the \code{token}.
 \examples{
 # Running the example requires the models downloaded
 # You will need to rerun `FMAT_load` if you restart the R session
-\donttest{
+
+\dontrun{
 models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
 
 dq = FMAT_query(

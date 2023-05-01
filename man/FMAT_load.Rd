@@ -22,8 +22,9 @@ You will need to \emph{rerun} this function if you restart the R session.
 Initialize running environment and (down)load language models.
 }
 \examples{
-\donttest{models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))}
-
+\dontrun{
+models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
+}
 }
 \seealso{
 \code{\link{FMAT_query}}
