@@ -1,36 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/404.html</loc>
+    <loc>https://psychbruce.github.io/FMAT/404.html</loc>
   </url>
   <url>
-    <loc>/LICENSE-text.html</loc>
+    <loc>https://psychbruce.github.io/FMAT/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>/authors.html</loc>
+    <loc>https://psychbruce.github.io/FMAT/authors.html</loc>
   </url>
   <url>
-    <loc>/index.html</loc>
+    <loc>https://psychbruce.github.io/FMAT/index.html</loc>
   </url>
   <url>
-    <loc>/reference/FMAT_load.html</loc>
+    <loc>https://psychbruce.github.io/FMAT/news/index.html</loc>
   </url>
   <url>
-    <loc>/reference/FMAT_query.html</loc>
+    <loc>https://psychbruce.github.io/FMAT/reference/FMAT_load.html</loc>
   </url>
   <url>
-    <loc>/reference/FMAT_query_bind.html</loc>
+    <loc>https://psychbruce.github.io/FMAT/reference/FMAT_query.html</loc>
   </url>
   <url>
-    <loc>/reference/FMAT_run.html</loc>
+    <loc>https://psychbruce.github.io/FMAT/reference/FMAT_query_bind.html</loc>
   </url>
   <url>
-    <loc>/reference/index.html</loc>
+    <loc>https://psychbruce.github.io/FMAT/reference/FMAT_run.html</loc>
   </url>
   <url>
-    <loc>/reference/reexports.html</loc>
+    <loc>https://psychbruce.github.io/FMAT/reference/index.html</loc>
   </url>
   <url>
-    <loc>/reference/summary.fmat.html</loc>
+    <loc>https://psychbruce.github.io/FMAT/reference/reexports.html</loc>
+  </url>
+  <url>
+    <loc>https://psychbruce.github.io/FMAT/reference/summary.fmat.html</loc>
   </url>
 </urlset>
