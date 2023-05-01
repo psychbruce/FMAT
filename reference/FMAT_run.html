@@ -145,20 +145,9 @@ rather than the <code>token</code>.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Running the example requires the models downloaded</span></span></span>
 <span class="r-in"><span><span class="co"># You will need to rerun `FMAT_load` if you restart the R session</span></span></span>
-<span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="va">models</span> <span class="op">=</span> <span class="fu"><a href="FMAT_load.html">FMAT_load</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"bert-base-uncased"</span>, <span class="st">"bert-base-cased"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Initializing environment...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Using existing conda environment  textrpp_condaenv  for text installation</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> . </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> text: torch==1.11.0, transformers==4.19.2, numpy, nltk will be installed.  Installing text required python packages...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">Successfully installed Python modules in conda environment.</span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> No valid Python or conda environment.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-err co"><span class="r-pr">#&gt;</span>        You may need to specify the version of Python:</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span>          RStudio -&gt; Tools -&gt; Global/Project Options</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span>          -&gt; Python -&gt; Select -&gt; Conda Environments</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span>          -&gt; Choose ".../textrpp_condaenv/python.exe"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">dq</span> <span class="op">=</span> <span class="fu"><a href="FMAT_query.html">FMAT_query</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"[MASK] is {TARGET}."</span>, <span class="st">"[MASK] works as {TARGET}."</span><span class="op">)</span>,</span></span>
@@ -166,19 +155,7 @@ rather than the <code>token</code>.</p>
 <span class="r-in"><span>  TARGET <span class="op">=</span> <span class="fu">.</span><span class="op">(</span>Occupation<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"a doctor, a nurse, an artist"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">data1</span> <span class="op">=</span> <span class="fu">FMAT_run</span><span class="op">(</span><span class="va">models</span>, <span class="va">dq</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Using existing conda environment  textrpp_condaenv  for text installation</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> . </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> text: torch==1.11.0, transformers==4.19.2, numpy, nltk will be installed.  Installing text required python packages...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">Successfully installed Python modules in conda environment.</span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> No valid Python or conda environment.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-err co"><span class="r-pr">#&gt;</span>        You may need to specify the version of Python:</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span>          RStudio -&gt; Tools -&gt; Global/Project Options</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span>          -&gt; Python -&gt; Select -&gt; Conda Environments</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span>          -&gt; Choose ".../textrpp_condaenv/python.exe"</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">data1</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'data1' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">data2</span> <span class="op">=</span> <span class="fu">FMAT_run</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">models</span>,</span></span>
@@ -190,20 +167,8 @@ rather than the <code>token</code>.</p>
 <span class="r-in"><span>    ATTRIB <span class="op">=</span> <span class="fu">.</span><span class="op">(</span>Pos<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"health, happiness, love, peace"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>               Neg<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"death, sickness, hatred, disaster"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Using existing conda environment  textrpp_condaenv  for text installation</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> . </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> text: torch==1.11.0, transformers==4.19.2, numpy, nltk will be installed.  Installing text required python packages...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">Successfully installed Python modules in conda environment.</span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> No valid Python or conda environment.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-err co"><span class="r-pr">#&gt;</span>        You may need to specify the version of Python:</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span>          RStudio -&gt; Tools -&gt; Global/Project Options</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span>          -&gt; Python -&gt; Select -&gt; Conda Environments</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span>          -&gt; Choose ".../textrpp_condaenv/python.exe"</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">data2</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'data2' not found</span>
-<span class="r-in"><span><span class="co"># }</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
