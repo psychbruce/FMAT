@@ -22,7 +22,18 @@ Homepage: [psychbruce.github.io](https://psychbruce.github.io)
 
 ## Citation
 
-Bao, H.-W.-S. (2023). *Unmasking human society in natural language: The Fill-Mask Association Test (FMAT)*. Manuscript in preparation.
+-   Bao, H.-W.-S. (2023). *Unmasking human society in natural language: The Fill-Mask Association Test (FMAT)*. Manuscript in preparation.
+
+## Installation
+
+```{r}
+## Method 1: Install from CRAN
+install.packages("FMAT")
+
+## Method 2: Install from GitHub
+install.packages("devtools")
+devtools::install_github("psychbruce/FMAT", force=TRUE)
+```
 
 ## BERT Models
 

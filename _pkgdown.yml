@@ -1,4 +1,7 @@
-url: ~
+url: https://psychbruce.github.io/FMAT
 template:
   bootstrap: 5
-
+  bootswatch: simplex
+  bslib:
+    heading_font: {google: "Nunito Sans"}
+    base_font: {google: "Nunito"}
