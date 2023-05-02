@@ -22,7 +22,7 @@ Homepage: [psychbruce.github.io](https://psychbruce.github.io)
 
 ## Citation
 
--   Bao, H.-W.-S. (2023). *Unmasking human society in natural language: The Fill-Mask Association Test (FMAT)*. Manuscript in preparation.
+-   Bao, H.-W.-S. (2023). *Using AI language models to unmask society and culture: The Fill-Mask Association Test (FMAT)*. Manuscript in preparation.
 
 ## Installation
 
