@@ -1,4 +1,4 @@
-# FMAT
+# FMAT <img src="man/figures/logo.png" align="right" height="160"/>
 
 😷 The Fill-Mask Association Test.
 
@@ -42,6 +42,6 @@ If you are new to [BERT](https://arxiv.org/abs/1810.04805), please read:
 -   [BERT Explained](https://towardsdatascience.com/bert-explained-state-of-the-art-language-model-for-nlp-f8b21a9b6270)
 -   [Breaking BERT Down](https://towardsdatascience.com/breaking-bert-down-430461f60efb)
 -   [Illustrated BERT](https://jalammar.github.io/illustrated-bert/)
--   [Visual Guide to BERT](http://jalammar.github.io/a-visual-guide-to-using-bert-for-the-first-time/)
+-   [Visual Guide to BERT](https://jalammar.github.io/a-visual-guide-to-using-bert-for-the-first-time/)
 -   [BERT Model Documentation](https://huggingface.co/docs/transformers/main/en/model_doc/bert)
--   [Fill-Mask Task](https://huggingface.co/tasks/fill-mask)
+-   [What is Fill-Mask?](https://huggingface.co/tasks/fill-mask)
