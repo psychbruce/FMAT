@@ -418,7 +418,7 @@ FMAT_query_bind = function(...) {
 #'   \item{\code{token}: actual token to be filled in the blank mask
 #'   (a note "out-of-vocabulary" will be added
 #'   if the original word is not found in the model vocabulary).}
-#'   \item{\code{prop}: (raw) conditional probability of the unmasked token
+#'   \item{\code{prob}: (raw) conditional probability of the unmasked token
 #'   given the provided context, estimated by the masked language model.
 #'
 #'   * It is NOT SUGGESTED to directly interpret the raw probabilities
@@ -498,8 +498,8 @@ FMAT_run = function(
 
     uncased = str_detect(model, "uncased|albert")
     prefix.u2581 = str_detect(model, "xlm-roberta|albert")
-    prefix.u0120 = str_detect(model, "roberta") & !str_detect(model, "xlm")
-    mask.lower = str_detect(model, "roberta")
+    prefix.u0120 = str_detect(model, "roberta|bertweet-large") & !str_detect(model, "xlm")
+    mask.lower = str_detect(model, "roberta|bertweet")
 
     unmask = function(d) {
       if("TARGET" %in% names(d))
@@ -524,7 +524,7 @@ FMAT_run = function(
           oov=="",  # no extra output from python
           res$token_str,
           paste(res$token_str, "(out-of-vocabulary)")),
-        prop = res$score
+        prob = res$score
       ))
     }
 
@@ -616,15 +616,16 @@ warning_oov = function(data) {
 #' \code{\link{FMAT_run}}
 #'
 #' @export
-summary.fmat = function(object,
-                        mask.pair=TRUE,
-                        target.pair=TRUE,
-                        attrib.pair=TRUE,
-                        warning=TRUE,
-                        ...) {
+summary.fmat = function(
+    object,
+    mask.pair=TRUE,
+    target.pair=TRUE,
+    attrib.pair=TRUE,
+    warning=TRUE,
+    ...) {
   if(warning) warning_oov(object)
   type = attr(object, "type")
-  M_word = T_word = A_word = MASK = TARGET = ATTRIB = prop = LPR = NULL
+  M_word = T_word = A_word = MASK = TARGET = ATTRIB = prob = LPR = NULL
 
   if(mask.pair) {
     gvars = c("model", "query", "M_pair",
@@ -634,7 +635,7 @@ summary.fmat = function(object,
     dt = object[, .(
       MASK = paste(MASK[1], "-", MASK[2]),
       M_word = paste(M_word[1], "-", M_word[2]),
-      LPR = log(prop[1]) - log(prop[2])
+      LPR = log(prob[1]) - log(prob[2])
     ), keyby = grouping.vars]
     dt$MASK = as_factor(dt$MASK)
     dt$M_word = as_factor(dt$M_word)
@@ -643,11 +644,11 @@ summary.fmat = function(object,
     dvars = c("model", "query", "MASK", "M_word",
               "TARGET", "T_pair", "T_word",
               "ATTRIB", "A_pair", "A_word",
-              "prop")
+              "prob")
     dt.vars = intersect(names(object), dvars)
     dt = object[, dt.vars, with=FALSE]
-    dt$LPR = log(dt$prop)
-    dt$prop = NULL
+    dt$LPR = log(dt$prob)
+    dt$prob = NULL
   }
 
   if(type=="MT") {
@@ -691,4 +692,46 @@ summary.fmat = function(object,
   return(dt)
 }
 
+
+#' Reliability analysis (Cronbach's \eqn{\alpha}) of LPR.
+#'
+#' @param fmat A data.table returned from \code{\link{summary.fmat}}.
+#' @param item Reliability of multiple \code{"query"} (default),
+#' \code{"T_word"}, or \code{"A_word"}.
+#' @param by Variable(s) to split data by.
+#' Options can be \code{"model"}, \code{"TARGET"}, \code{"ATTRIB"},
+#' or any combination of them.
+#'
+#' @return
+#' A data.table of Cronbach's \eqn{\alpha}.
+#'
+#' @export
+LPR_reliability = function(
+    fmat,
+    item=c("query", "T_word", "A_word"),
+    by=NULL) {
+  item = match.arg(item)
+  alphas = plyr::ddply(fmat, by, function(x) {
+    x = as.data.frame(x)
+    x[[item]] = as.numeric(x[[item]])
+    if("T_pair" %in% names(x)) x$T_pair = NULL
+    if("A_pair" %in% names(x)) x$A_pair = NULL
+    x = tidyr::pivot_wider(
+      x,
+      names_from = item,
+      names_glue = paste0("LPR.{", item, "}"),
+      values_from = "LPR")
+    suppressWarnings({
+      suppressMessages({
+        alpha = psych::alpha(dplyr::select(x, tidyr::starts_with("LPR")),
+                             delete=FALSE, warnings=FALSE)
+      })
+    })
+    data.frame(n.obs = nrow(x),
+               k.items = alpha$nvar,
+               alpha = alpha$total$raw_alpha)
+  })
+  if(is.null(by)) alphas[[1]] = NULL
+  return(as.data.table(alphas))
+}
 

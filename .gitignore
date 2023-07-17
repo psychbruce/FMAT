@@ -46,6 +46,7 @@ vignettes/*.pdf
 # Others
 data-raw
 research
+logo
 ignore
 docs
 pkgdown

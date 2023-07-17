@@ -1,5 +1,6 @@
 data-raw
 research
+logo
 ^.*\.pdf$
 ^.*\.docx$
 ^.Rhistory$

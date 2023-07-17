@@ -55,7 +55,7 @@ with these new variables:
   \item{\code{token}: actual token to be filled in the blank mask
   (a note "out-of-vocabulary" will be added
   if the original word is not found in the model vocabulary).}
-  \item{\code{prop}: (raw) conditional probability of the unmasked token
+  \item{\code{prob}: (raw) conditional probability of the unmasked token
   given the provided context, estimated by the masked language model.
 
   * It is NOT SUGGESTED to directly interpret the raw probabilities

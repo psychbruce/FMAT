@@ -1,8 +1,8 @@
 # FMAT <img src="man/figures/logo.png" align="right" height="160"/>
 
-😷 The Fill-Mask Association Test.
+😷 The Fill-Mask Association Test (掩码填空联系测验).
 
-The *Fill-Mask Association Test* (FMAT) is a versatile, probability-based method that employs Masked Language Models ([BERT](https://arxiv.org/abs/1810.04805)) to measure conceptual associations (e.g., attitudes, biases, stereotypes) in natural language.
+The *Fill-Mask Association Test* (FMAT) is an integrative, versatile, and probability-based method that employs Masked Language Models ([BERT](https://arxiv.org/abs/1810.04805)) to measure conceptual associations (e.g., attitudes, biases, stereotypes) in natural language.
 
 <!-- badges: start -->
 
@@ -22,7 +22,7 @@ Homepage: [psychbruce.github.io](https://psychbruce.github.io)
 
 ## Citation
 
--   Bao, H.-W.-S. (2023). *Using AI language models to unmask society and culture: The Fill-Mask Association Test (FMAT)*. Manuscript in preparation.
+-   Bao, H.-W.-S. (2023). *The Fill-Mask Association Test (FMAT): Using AI language models to understand society and culture* [Manuscript in preparation].
 
 ## Installation
 
