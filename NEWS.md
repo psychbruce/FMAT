@@ -1,8 +1,10 @@
 **Please check the [latest news (change log)](https://psychbruce.github.io/FMAT/news/index.html) and keep this package updated.**
 
-# FMAT 0.1.0 (Jul 2023)
+# FMAT 0.1.0 (Aug 2023)
 
+-   CRAN publication.
 -   Fixed bugs and improved functions.
+-   Provided more examples.
 
 # FMAT 0.0.9 (May 2023)
 
@@ -11,3 +13,4 @@
 # FMAT 0.0.1 (Jan 2023)
 
 -   Designed basic functions.
+

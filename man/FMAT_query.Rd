@@ -63,8 +63,8 @@ FMAT_query(
 )
 
 FMAT_query(
-  "The {TARGET} has a [MASK] association with {ATTRIB}.",
-  MASK = .(H="high", L="low"),
+  "The association between {TARGET} and {ATTRIB} is [MASK].",
+  MASK = .(H="strong", L="weak"),
   TARGET = .(Flower=cc("rose, iris, lily"),
              Insect=cc("ant, cockroach, spider")),
   ATTRIB = .(Pos=cc("health, happiness, love, peace"),

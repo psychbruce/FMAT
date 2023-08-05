@@ -10,7 +10,7 @@ FMAT_run(
   file = NULL,
   progress = c(FALSE, TRUE, "none", "text", "time"),
   parallel = FALSE,
-  ncores = min(length(models), parallel::detectCores()),
+  ncores = 4,
   warning = TRUE
 )
 }
@@ -33,7 +33,8 @@ FMAT_run(
 \item{progress}{Show a progress bar:
 \code{"none"} (\code{FALSE}), \code{"text"} (\code{TRUE}), \code{"time"}.}
 
-\item{parallel}{Parallel processing. Defaults to \code{FALSE}.
+\item{parallel}{Parallel processing (NOT suggested).
+Defaults to \code{FALSE}.
 If \code{TRUE}, then \code{models} must be model names
 rather than from \code{\link{FMAT_load}}.
 
@@ -41,8 +42,7 @@ rather than from \code{\link{FMAT_load}}.
 parallel processing would instead be \emph{slower}
 because it takes time to create a parallel cluster.}
 
-\item{ncores}{Number of CPU cores to be used in parallel processing.
-Defaults to the minimum of the number of models and your CPU cores.}
+\item{ncores}{Number of CPU cores to be used in parallel processing.}
 
 \item{warning}{Warning of out-of-vocabulary word(s). Defaults to \code{TRUE}.}
 }
@@ -88,25 +88,36 @@ rather than the \code{token}.
 \dontrun{
 models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
 
-dq = FMAT_query(
+query1 = FMAT_query(
   c("[MASK] is {TARGET}.", "[MASK] works as {TARGET}."),
   MASK = .(Male="He", Female="She"),
   TARGET = .(Occupation=cc("a doctor, a nurse, an artist"))
 )
-data1 = FMAT_run(models, dq)
-summary(data1)
+data1 = FMAT_run(models, query1)
+summary(data1, target.pair=FALSE)
 
-data2 = FMAT_run(
-  models,
-  FMAT_query(
-    "The {TARGET} has a [MASK] association with {ATTRIB}.",
-    MASK = .(H="high", L="low"),
-    TARGET = .(Flower=cc("rose, iris, lily"),
-               Insect=cc("ant, cockroach, spider")),
-    ATTRIB = .(Pos=cc("health, happiness, love, peace"),
-               Neg=cc("death, sickness, hatred, disaster"))
-  ))
+query2 = FMAT_query(
+  "The [MASK] {ATTRIB}.",
+  MASK = .(Male=cc("man, boy"),
+           Female=cc("woman, girl")),
+  ATTRIB = .(Masc=cc("is masculine, has a masculine personality"),
+             Femi=cc("is feminine, has a feminine personality"))
+)
+data2 = FMAT_run(models, query2)
+summary(data2, mask.pair=FALSE)
 summary(data2)
+
+query3 = FMAT_query(
+  "The association between {TARGET} and {ATTRIB} is [MASK].",
+  MASK = .(H="strong", L="weak"),
+  TARGET = .(Flower=cc("rose, iris, lily"),
+             Insect=cc("ant, cockroach, spider")),
+  ATTRIB = .(Pos=cc("health, happiness, love, peace"),
+             Neg=cc("death, sickness, hatred, disaster"))
+)
+data3 = FMAT_run(models, query3)
+summary(data3, attrib.pair=FALSE)
+summary(data3)
 }
 }
 \seealso{

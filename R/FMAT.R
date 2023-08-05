@@ -33,13 +33,21 @@
 #### Basic ####
 
 
-#' @export
-. = list
-
-
 #' @importFrom PsychWordVec cc
 #' @export
 PsychWordVec::cc
+
+
+#' A simple function equivalent to \code{list}.
+#'
+#' @param ... Named objects (usually character vectors for this package).
+#'
+#' @examples
+#' .(Male=cc("he, his"), Female=cc("she, her"))
+#' list(Male=cc("he, his"), Female=cc("she, her"))  # the same
+#'
+#' @export
+. = function(...) list(...)
 
 
 text_initialized = function() {
@@ -81,6 +89,9 @@ dtime = function(t0) {
 #' A named list of fill-mask pipelines obtained from the models.
 #' The returned object \emph{cannot} be saved as any RData.
 #' You will need to \emph{rerun} this function if you restart the R session.
+#'
+#' All downloaded models are saved
+#' at your local folder "C:/Users/[YourUserName]/.cache/".
 #'
 #' @seealso
 #' \code{\link{FMAT_query}}
@@ -246,8 +257,8 @@ append_X = function(dq, X, var="TARGET") {
 #' )
 #'
 #' FMAT_query(
-#'   "The {TARGET} has a [MASK] association with {ATTRIB}.",
-#'   MASK = .(H="high", L="low"),
+#'   "The association between {TARGET} and {ATTRIB} is [MASK].",
+#'   MASK = .(H="strong", L="weak"),
 #'   TARGET = .(Flower=cc("rose, iris, lily"),
 #'              Insect=cc("ant, cockroach, spider")),
 #'   ATTRIB = .(Pos=cc("health, happiness, love, peace"),
@@ -398,7 +409,8 @@ FMAT_query_bind = function(...) {
 #' @param file File name of \code{.RData} to save the returned data.
 #' @param progress Show a progress bar:
 #' \code{"none"} (\code{FALSE}), \code{"text"} (\code{TRUE}), \code{"time"}.
-#' @param parallel Parallel processing. Defaults to \code{FALSE}.
+#' @param parallel Parallel processing (NOT suggested).
+#' Defaults to \code{FALSE}.
 #' If \code{TRUE}, then \code{models} must be model names
 #' rather than from \code{\link{FMAT_load}}.
 #'
@@ -406,7 +418,6 @@ FMAT_query_bind = function(...) {
 #' parallel processing would instead be \emph{slower}
 #' because it takes time to create a parallel cluster.
 #' @param ncores Number of CPU cores to be used in parallel processing.
-#' Defaults to the minimum of the number of models and your CPU cores.
 #' @param warning Warning of out-of-vocabulary word(s). Defaults to \code{TRUE}.
 #'
 #' @return
@@ -442,25 +453,36 @@ FMAT_query_bind = function(...) {
 #' \dontrun{
 #' models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
 #'
-#' dq = FMAT_query(
+#' query1 = FMAT_query(
 #'   c("[MASK] is {TARGET}.", "[MASK] works as {TARGET}."),
 #'   MASK = .(Male="He", Female="She"),
 #'   TARGET = .(Occupation=cc("a doctor, a nurse, an artist"))
 #' )
-#' data1 = FMAT_run(models, dq)
-#' summary(data1)
+#' data1 = FMAT_run(models, query1)
+#' summary(data1, target.pair=FALSE)
 #'
-#' data2 = FMAT_run(
-#'   models,
-#'   FMAT_query(
-#'     "The {TARGET} has a [MASK] association with {ATTRIB}.",
-#'     MASK = .(H="high", L="low"),
-#'     TARGET = .(Flower=cc("rose, iris, lily"),
-#'                Insect=cc("ant, cockroach, spider")),
-#'     ATTRIB = .(Pos=cc("health, happiness, love, peace"),
-#'                Neg=cc("death, sickness, hatred, disaster"))
-#'   ))
+#' query2 = FMAT_query(
+#'   "The [MASK] {ATTRIB}.",
+#'   MASK = .(Male=cc("man, boy"),
+#'            Female=cc("woman, girl")),
+#'   ATTRIB = .(Masc=cc("is masculine, has a masculine personality"),
+#'              Femi=cc("is feminine, has a feminine personality"))
+#' )
+#' data2 = FMAT_run(models, query2)
+#' summary(data2, mask.pair=FALSE)
 #' summary(data2)
+#'
+#' query3 = FMAT_query(
+#'   "The association between {TARGET} and {ATTRIB} is [MASK].",
+#'   MASK = .(H="strong", L="weak"),
+#'   TARGET = .(Flower=cc("rose, iris, lily"),
+#'              Insect=cc("ant, cockroach, spider")),
+#'   ATTRIB = .(Pos=cc("health, happiness, love, peace"),
+#'              Neg=cc("death, sickness, hatred, disaster"))
+#' )
+#' data3 = FMAT_run(models, query3)
+#' summary(data3, attrib.pair=FALSE)
+#' summary(data3)
 #' }
 #' @export
 FMAT_run = function(
@@ -469,7 +491,7 @@ FMAT_run = function(
     file = NULL,
     progress = c(FALSE, TRUE, "none", "text", "time"),
     parallel = FALSE,
-    ncores = min(length(models), parallel::detectCores()),
+    ncores = 4,
     warning = TRUE
 ) {
   t0 = Sys.time()
@@ -678,15 +700,17 @@ summary.fmat = function(
   }
 
   if(type=="MTA") {
-    dt = dt[, .(
-      LPR = mean(LPR)
-    ), keyby = c("model", "query", "MASK", "M_word",
-                 "TARGET", "T_word", "ATTRIB")]
-    dt = dt[, .(
-      ATTRIB = paste(ATTRIB[1], "-", ATTRIB[2]),
-      LPR = LPR[1] - LPR[2]
-    ), keyby = c("model", "query", "MASK", "M_word",
-                 "TARGET", "T_word")]
+    if(attrib.pair) {
+      dt = dt[, .(
+        LPR = mean(LPR)
+      ), keyby = c("model", "query", "MASK", "M_word",
+                   "TARGET", "T_word", "ATTRIB")]
+      dt = dt[, .(
+        ATTRIB = paste(ATTRIB[1], "-", ATTRIB[2]),
+        LPR = LPR[1] - LPR[2]
+      ), keyby = c("model", "query", "MASK", "M_word",
+                   "TARGET", "T_word")]
+    }
   }
 
   return(dt)

@@ -17,6 +17,9 @@ For a full list of available models, see
 A named list of fill-mask pipelines obtained from the models.
 The returned object \emph{cannot} be saved as any RData.
 You will need to \emph{rerun} this function if you restart the R session.
+
+All downloaded models are saved
+at your local folder "C:/Users/[YourUserName]/.cache/".
 }
 \description{
 Initialize running environment and (down)load language models.
