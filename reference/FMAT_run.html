@@ -57,7 +57,7 @@
 <span>  file <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  progress <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="cn">TRUE</span>, <span class="st">"none"</span>, <span class="st">"text"</span>, <span class="st">"time"</span><span class="op">)</span>,</span>
 <span>  parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  ncores <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">models</span><span class="op">)</span>, <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">detectCores</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  ncores <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  warning <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -87,7 +87,8 @@
 
 
 <dt>parallel</dt>
-<dd><p>Parallel processing. Defaults to <code>FALSE</code>.
+<dd><p>Parallel processing (NOT suggested).
+Defaults to <code>FALSE</code>.
 If <code>TRUE</code>, then <code>models</code> must be model names
 rather than from <code><a href="FMAT_load.html">FMAT_load</a></code>.</p>
 <p>* For small-scale <code>data</code>,
@@ -96,8 +97,7 @@ because it takes time to create a parallel cluster.</p></dd>
 
 
 <dt>ncores</dt>
-<dd><p>Number of CPU cores to be used in parallel processing.
-Defaults to the minimum of the number of models and your CPU cores.</p></dd>
+<dd><p>Number of CPU cores to be used in parallel processing.</p></dd>
 
 
 <dt>warning</dt>
@@ -152,25 +152,36 @@ rather than the <code>token</code>.</p>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="va">models</span> <span class="op">=</span> <span class="fu"><a href="FMAT_load.html">FMAT_load</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"bert-base-uncased"</span>, <span class="st">"bert-base-cased"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">dq</span> <span class="op">=</span> <span class="fu"><a href="FMAT_query.html">FMAT_query</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span><span class="va">query1</span> <span class="op">=</span> <span class="fu"><a href="FMAT_query.html">FMAT_query</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"[MASK] is {TARGET}."</span>, <span class="st">"[MASK] works as {TARGET}."</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  MASK <span class="op">=</span> <span class="fu">.</span><span class="op">(</span>Male<span class="op">=</span><span class="st">"He"</span>, Female<span class="op">=</span><span class="st">"She"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  TARGET <span class="op">=</span> <span class="fu">.</span><span class="op">(</span>Occupation<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"a doctor, a nurse, an artist"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  MASK <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>Male<span class="op">=</span><span class="st">"He"</span>, Female<span class="op">=</span><span class="st">"She"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  TARGET <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>Occupation<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"a doctor, a nurse, an artist"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">data1</span> <span class="op">=</span> <span class="fu">FMAT_run</span><span class="op">(</span><span class="va">models</span>, <span class="va">dq</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">data1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">data1</span> <span class="op">=</span> <span class="fu">FMAT_run</span><span class="op">(</span><span class="va">models</span>, <span class="va">query1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">data1</span>, target.pair<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">data2</span> <span class="op">=</span> <span class="fu">FMAT_run</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">models</span>,</span></span>
-<span class="r-in"><span>  <span class="fu"><a href="FMAT_query.html">FMAT_query</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="st">"The {TARGET} has a [MASK] association with {ATTRIB}."</span>,</span></span>
-<span class="r-in"><span>    MASK <span class="op">=</span> <span class="fu">.</span><span class="op">(</span>H<span class="op">=</span><span class="st">"high"</span>, L<span class="op">=</span><span class="st">"low"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    TARGET <span class="op">=</span> <span class="fu">.</span><span class="op">(</span>Flower<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"rose, iris, lily"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>               Insect<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"ant, cockroach, spider"</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    ATTRIB <span class="op">=</span> <span class="fu">.</span><span class="op">(</span>Pos<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"health, happiness, love, peace"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>               Neg<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"death, sickness, hatred, disaster"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">query2</span> <span class="op">=</span> <span class="fu"><a href="FMAT_query.html">FMAT_query</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="st">"The [MASK] {ATTRIB}."</span>,</span></span>
+<span class="r-in"><span>  MASK <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>Male<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"man, boy"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>           Female<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"woman, girl"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  ATTRIB <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>Masc<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"is masculine, has a masculine personality"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>             Femi<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"is feminine, has a feminine personality"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">data2</span> <span class="op">=</span> <span class="fu">FMAT_run</span><span class="op">(</span><span class="va">models</span>, <span class="va">query2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">data2</span>, mask.pair<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">data2</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">query3</span> <span class="op">=</span> <span class="fu"><a href="FMAT_query.html">FMAT_query</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="st">"The association between {TARGET} and {ATTRIB} is [MASK]."</span>,</span></span>
+<span class="r-in"><span>  MASK <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>H<span class="op">=</span><span class="st">"strong"</span>, L<span class="op">=</span><span class="st">"weak"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  TARGET <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>Flower<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"rose, iris, lily"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>             Insect<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"ant, cockroach, spider"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  ATTRIB <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>Pos<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"health, happiness, love, peace"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>             Neg<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"death, sickness, hatred, disaster"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">data3</span> <span class="op">=</span> <span class="fu">FMAT_run</span><span class="op">(</span><span class="va">models</span>, <span class="va">query3</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">data3</span>, attrib.pair<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">data3</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>

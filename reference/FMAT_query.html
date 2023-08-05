@@ -53,9 +53,9 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">FMAT_query</span><span class="op">(</span></span>
 <span>  query <span class="op">=</span> <span class="st">"Text with [MASK], optionally with {TARGET} and/or {ATTRIB}."</span>,</span>
-<span>  MASK <span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  TARGET <span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  ATTRIB <span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  MASK <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  TARGET <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  ATTRIB <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  unmask.id <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -110,15 +110,15 @@ Defaults to the 1st <code>[MASK]</code>.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">FMAT_query</span><span class="op">(</span><span class="st">"[MASK] is a nurse."</span>, MASK <span class="op">=</span> <span class="fu">.</span><span class="op">(</span>Male<span class="op">=</span><span class="st">"He"</span>, Female<span class="op">=</span><span class="st">"She"</span><span class="op">)</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">FMAT_query</span><span class="op">(</span><span class="st">"[MASK] is a nurse."</span>, MASK <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>Male<span class="op">=</span><span class="st">"He"</span>, Female<span class="op">=</span><span class="st">"She"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                 query   MASK M_pair M_word</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: [MASK] is a nurse.   Male      1     He</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2: [MASK] is a nurse. Female      1    She</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FMAT_query</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"[MASK] is {TARGET}."</span>, <span class="st">"[MASK] works as {TARGET}."</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  MASK <span class="op">=</span> <span class="fu">.</span><span class="op">(</span>Male<span class="op">=</span><span class="st">"He"</span>, Female<span class="op">=</span><span class="st">"She"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  TARGET <span class="op">=</span> <span class="fu">.</span><span class="op">(</span>Occupation<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"a doctor, a nurse, an artist"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  MASK <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>Male<span class="op">=</span><span class="st">"He"</span>, Female<span class="op">=</span><span class="st">"She"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  TARGET <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>Occupation<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"a doctor, a nurse, an artist"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     qid                     query   MASK M_pair M_word     TARGET       T_pair</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:   1       [MASK] is {TARGET}.   Male      1     He Occupation Occupation.1</span>
@@ -149,9 +149,9 @@ Defaults to the 1st <code>[MASK]</code>.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FMAT_query</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="st">"The [MASK] {ATTRIB}."</span>,</span></span>
-<span class="r-in"><span>  MASK <span class="op">=</span> <span class="fu">.</span><span class="op">(</span>Male<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"man, boy"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  MASK <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>Male<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"man, boy"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>           Female<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"woman, girl"</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  ATTRIB <span class="op">=</span> <span class="fu">.</span><span class="op">(</span>Masc<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"is masculine, has a masculine personality"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  ATTRIB <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>Masc<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"is masculine, has a masculine personality"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>             Femi<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"is feminine, has a feminine personality"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                    query   MASK M_pair M_word ATTRIB      A_pair</span>
@@ -190,111 +190,111 @@ Defaults to the 1st <code>[MASK]</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 16:  has a feminine personality</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FMAT_query</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="st">"The {TARGET} has a [MASK] association with {ATTRIB}."</span>,</span></span>
-<span class="r-in"><span>  MASK <span class="op">=</span> <span class="fu">.</span><span class="op">(</span>H<span class="op">=</span><span class="st">"high"</span>, L<span class="op">=</span><span class="st">"low"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  TARGET <span class="op">=</span> <span class="fu">.</span><span class="op">(</span>Flower<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"rose, iris, lily"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"The association between {TARGET} and {ATTRIB} is [MASK]."</span>,</span></span>
+<span class="r-in"><span>  MASK <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>H<span class="op">=</span><span class="st">"strong"</span>, L<span class="op">=</span><span class="st">"weak"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  TARGET <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>Flower<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"rose, iris, lily"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>             Insect<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"ant, cockroach, spider"</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  ATTRIB <span class="op">=</span> <span class="fu">.</span><span class="op">(</span>Pos<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"health, happiness, love, peace"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  ATTRIB <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>Pos<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"health, happiness, love, peace"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>             Neg<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"death, sickness, hatred, disaster"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                    query MASK M_pair M_word</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 37: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 42: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 43: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 45: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 46: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 47: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 48: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 49: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 50: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 51: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 52: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 53: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 54: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 55: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 56: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 57: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 58: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 59: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 60: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 61: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 62: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 63: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 64: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 65: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 66: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 67: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 68: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 69: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 70: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 71: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 72: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 73: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 74: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 75: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 76: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 77: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 78: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 79: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 80: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 81: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 82: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 83: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 84: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 85: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 86: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 87: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 88: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 89: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 90: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 91: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 92: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 93: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 94: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 95: The {TARGET} has a [MASK] association with {ATTRIB}.    H      1   high</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 96: The {TARGET} has a [MASK] association with {ATTRIB}.    L      1    low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                    query MASK M_pair M_word</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                        query MASK M_pair M_word</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 43: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 45: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 46: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 47: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 48: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 49: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 50: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 51: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 52: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 53: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 54: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 55: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 56: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 57: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 58: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 60: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 61: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 62: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 63: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 64: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 65: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 66: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 67: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 68: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 69: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 70: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 71: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 72: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 73: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 74: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 75: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 76: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 77: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 78: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 79: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 80: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 81: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 82: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 83: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 84: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 85: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 86: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 87: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 88: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 89: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 90: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 91: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 92: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 93: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 94: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 95: The association between {TARGET} and {ATTRIB} is [MASK].    H      1 strong</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 96: The association between {TARGET} and {ATTRIB} is [MASK].    L      1   weak</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                        query MASK M_pair M_word</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     TARGET    T_word ATTRIB    A_word</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1: Flower      rose    Pos    health</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  2: Flower      rose    Pos    health</span>
