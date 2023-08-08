@@ -133,7 +133,7 @@ FMAT_load = function(models) {
     }, silent=TRUE)
     if(error) {
       warning(warning.init, call.=FALSE)
-      invisible(NULL)
+      return(NULL)
     }
   }
 
@@ -520,7 +520,7 @@ FMAT_run = function(
 ) {
   if(is.null(models)) {
     warning(warning.init, call.=FALSE)
-    invisible(NULL)
+    return(NULL)
   }
 
   t0 = Sys.time()
@@ -679,7 +679,7 @@ summary.fmat = function(
     ...) {
   if(is.null(object)) {
     warning(warning.init, call.=FALSE)
-    invisible(NULL)
+    return(NULL)
   }
 
   if(warning) warning_oov(object)
