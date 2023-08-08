@@ -122,20 +122,19 @@ dtime = function(t0) {
 #' @export
 FMAT_load = function(models) {
   cli::cli_text("Initializing environment...")
-  text_initialized()
+  try({
+    error = TRUE
+    text_initialized()
+    error = FALSE
+  }, silent=TRUE)
+  if(error) {
+    warning(warning.init, call.=FALSE)
+    return(NULL)
+  }
   old.models = text::textModels()$Downloaded_models
   new.models = setdiff(models, old.models)
-  if(length(new.models) > 0) {
-    try({
-      error = TRUE
-      PsychWordVec::text_model_download(new.models)
-      error = FALSE
-    }, silent=TRUE)
-    if(error) {
-      warning(warning.init, call.=FALSE)
-      return(NULL)
-    }
-  }
+  if(length(new.models) > 0)
+    PsychWordVec::text_model_download(new.models)
 
   cli::cli_text("Loading models...")
   transformers = reticulate::import("transformers")
