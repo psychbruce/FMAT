@@ -41,6 +41,10 @@ Users are suggested to use linear mixed models
 (with the R packages \code{nlme} or \code{lme4}/\code{lmerTest})
 to perform the formal analyses and hypothesis tests based on the LPR.
 }
+\examples{
+# see examples in `FMAT_run`
+
+}
 \seealso{
 \code{\link{FMAT_run}}
 }

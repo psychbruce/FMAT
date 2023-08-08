@@ -29,6 +29,8 @@ Initialize running environment and (down)load language models.
 }
 }
 \seealso{
+\code{\link[PsychWordVec:text_init]{PsychWordVec::text_init}}
+
 \code{\link{FMAT_query}}
 
 \code{\link{FMAT_query_bind}}

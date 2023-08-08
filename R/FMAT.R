@@ -52,6 +52,18 @@ PsychWordVec::cc
 . = function(...) list(...)
 
 
+warning.init = "
+    No valid Python or conda environment.
+
+    You may need to specify the version of Python:
+      RStudio -> Tools -> Global/Project Options
+      -> Python -> Select -> Conda Environments
+      -> Choose \".../textrpp_condaenv/python.exe\"
+
+    You may also use `PsychWordVec::text_init()`
+    to initialize the Python environment."
+
+
 text_initialized = function() {
   error = TRUE
   try({
@@ -96,6 +108,8 @@ dtime = function(t0) {
 #' at your local folder "C:/Users/[YourUserName]/.cache/".
 #'
 #' @seealso
+#' \code{\link[PsychWordVec:text_init]{PsychWordVec::text_init}}
+#'
 #' \code{\link{FMAT_query}}
 #'
 #' \code{\link{FMAT_query_bind}}
@@ -111,7 +125,17 @@ FMAT_load = function(models) {
   text_initialized()
   old.models = text::textModels()$Downloaded_models
   new.models = setdiff(models, old.models)
-  if(length(new.models) > 0) PsychWordVec::text_model_download(new.models)
+  if(length(new.models) > 0) {
+    try({
+      error = TRUE
+      PsychWordVec::text_model_download(new.models)
+      error = FALSE
+    }, silent=TRUE)
+    if(error) {
+      warning(warning.init, call.=FALSE)
+      invisible(NULL)
+    }
+  }
 
   cli::cli_text("Loading models...")
   transformers = reticulate::import("transformers")
@@ -494,6 +518,11 @@ FMAT_run = function(
     ncores = 4,
     warning = TRUE
 ) {
+  if(is.null(models)) {
+    warning(warning.init, call.=FALSE)
+    invisible(NULL)
+  }
+
   t0 = Sys.time()
   progress = match.arg(progress)
   if(progress=="FALSE") progress = "none"
@@ -637,6 +666,9 @@ warning_oov = function(data) {
 #' @seealso
 #' \code{\link{FMAT_run}}
 #'
+#' @examples
+#' # see examples in `FMAT_run`
+#'
 #' @export
 summary.fmat = function(
     object,
@@ -645,6 +677,11 @@ summary.fmat = function(
     attrib.pair=TRUE,
     warning=TRUE,
     ...) {
+  if(is.null(object)) {
+    warning(warning.init, call.=FALSE)
+    invisible(NULL)
+  }
+
   if(warning) warning_oov(object)
   type = attr(object, "type")
   M_word = T_word = A_word = MASK = TARGET = ATTRIB = prob = LPR = NULL
@@ -726,8 +763,7 @@ summary.fmat = function(
 #' Options can be \code{"model"}, \code{"TARGET"}, \code{"ATTRIB"},
 #' or any combination of them.
 #'
-#' @return
-#' A data.table of Cronbach's \eqn{\alpha}.
+#' @return A data.table of Cronbach's \eqn{\alpha}.
 #'
 #' @export
 LPR_reliability = function(
