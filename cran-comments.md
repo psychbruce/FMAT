@@ -1,6 +1,21 @@
 ## News
 
-This is the first submission of this package to CRAN.
+Thanks. This is the first (re)submission of this package to CRAN.
+
+I have revised it according to Victoria Wimmer's suggestions:
+
+1.  In the DESCRIPTION file, I added (1) single quotes for
+software names and API and (2) necessary references for
+'BERT' <arXiv:1810.04805> and 'Hugging Face' <https://huggingface.co/models?pipeline_tag=fill-mask>.
+Note that this package goes with a new method described in
+my working paper which has not been published yet.
+In future versions, should my research article be accepted
+or publicly available, I will add it as a reference in the
+DESCRIPTION file.
+
+2. Added return value description for dot-.Rd.
+
+3. Replaced all \dontrun{} with \donttest{} in examples.
 
 ## Test environments
 

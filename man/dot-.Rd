@@ -9,6 +9,9 @@
 \arguments{
 \item{...}{Named objects (usually character vectors for this package).}
 }
+\value{
+A list of named objects.
+}
 \description{
 A simple function equivalent to \code{list}.
 }

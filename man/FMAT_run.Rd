@@ -2,7 +2,7 @@
 % Please edit documentation in R/FMAT.R
 \name{FMAT_run}
 \alias{FMAT_run}
-\title{Run the mask filling pipeline on multiple models.}
+\title{Run the fill-mask pipeline on multiple models.}
 \usage{
 FMAT_run(
   models,
@@ -64,7 +64,7 @@ with these new variables:
 }
 }
 \description{
-Run the mask filling pipeline on multiple models.
+Run the fill-mask pipeline on multiple models.
 }
 \details{
 The function will also automatically adjust for
@@ -85,8 +85,7 @@ rather than the \code{token}.
 # Running the example requires the models downloaded
 # You will need to rerun `FMAT_load` if you restart the R session
 
-\dontrun{
-models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
+\donttest{models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
 
 query1 = FMAT_query(
   c("[MASK] is {TARGET}.", "[MASK] works as {TARGET}."),

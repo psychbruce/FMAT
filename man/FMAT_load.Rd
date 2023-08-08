@@ -25,8 +25,7 @@ at your local folder "C:/Users/[YourUserName]/.cache/".
 Initialize running environment and (down)load language models.
 }
 \examples{
-\dontrun{
-models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
+\donttest{models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
 }
 }
 \seealso{

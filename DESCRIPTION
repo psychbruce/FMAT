@@ -1,7 +1,7 @@
 Package: FMAT
 Title: The Fill-Mask Association Test
-Version: 0.1.0
-Date: 2023-08-05
+Version: 2023.8
+Date: 2023-08-08
 Authors@R:
     c(person(given = "Han-Wu-Shuang",
              family = "Bao",
@@ -11,9 +11,13 @@ Authors@R:
 Maintainer: Han-Wu-Shuang Bao <baohws@foxmail.com>
 Description:
     The Fill-Mask Association Test ('FMAT') is an integrative, versatile,
-    and probability-based method that uses Masked Language Models ('BERT')
+    and probability-based method that uses Masked Language Models
+    ('BERT' <arXiv:1810.04805> and its related models available at
+    'Hugging Face' <https://huggingface.co/models?pipeline_tag=fill-mask>)
     to measure conceptual associations (e.g., attitudes, biases, stereotypes)
     as propositional representations in natural language.
+    'Python' and the 'transformers' module also need to be installed
+    (see <https://huggingface.co/docs/transformers/installation>).
 License: GPL-3
 Encoding: UTF-8
 URL: https://psychbruce.github.io/FMAT/
@@ -21,8 +25,8 @@ BugReports: https://github.com/psychbruce/FMAT/issues
 SystemRequirements: Python (>= 3.6.0)
 Depends: R (>= 4.0.0)
 Imports:
-  PsychWordVec, psych, reticulate, text,
-  data.table, stringr, forcats,
-  glue, cli, purrr, plyr, dplyr, tidyr
+    PsychWordVec, psych, reticulate, text,
+    data.table, stringr, forcats,
+    glue, cli, purrr, plyr, dplyr, tidyr
 Suggests: bruceR, nlme, parallel
 RoxygenNote: 7.2.3

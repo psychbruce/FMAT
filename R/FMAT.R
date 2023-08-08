@@ -42,6 +42,8 @@ PsychWordVec::cc
 #'
 #' @param ... Named objects (usually character vectors for this package).
 #'
+#' @return A list of named objects.
+#'
 #' @examples
 #' .(Male=cc("he, his"), Female=cc("she, her"))
 #' list(Male=cc("he, his"), Female=cc("she, her"))  # the same
@@ -101,8 +103,7 @@ dtime = function(t0) {
 #' \code{\link{FMAT_run}}
 #'
 #' @examples
-#' \dontrun{
-#' models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
+#' \donttest{models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
 #' }
 #' @export
 FMAT_load = function(models) {
@@ -378,7 +379,7 @@ FMAT_query_bind = function(...) {
 # stopCluster(cl)
 
 
-#' Run the mask filling pipeline on multiple models.
+#' Run the fill-mask pipeline on multiple models.
 #'
 #' @details
 #' The function will also automatically adjust for
@@ -450,8 +451,7 @@ FMAT_query_bind = function(...) {
 #' # Running the example requires the models downloaded
 #' # You will need to rerun `FMAT_load` if you restart the R session
 #'
-#' \dontrun{
-#' models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
+#' \donttest{models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
 #'
 #' query1 = FMAT_query(
 #'   c("[MASK] is {TARGET}.", "[MASK] works as {TARGET}."),
