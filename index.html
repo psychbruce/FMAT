@@ -8,12 +8,17 @@
 <meta name="description" content="
     The Fill-Mask Association Test (FMAT) is an integrative, versatile,
     and probability-based method that uses Masked Language Models
-    (BERT &lt;arXiv:1810.04805&gt; and its related models available at
-    Hugging Face &lt;https://huggingface.co/models?pipeline_tag=fill-mask&gt;)
-    to measure conceptual associations (e.g., attitudes, biases, stereotypes)
+    to measure conceptual associations or relations
+    (e.g., attitudes, biases, stereotypes, social norms, cultural values)
     as propositional representations in natural language.
-    Python and the transformers module also need to be installed
-    (see &lt;https://huggingface.co/docs/transformers/installation&gt;).">
+    The supported language models include
+    BERT (Devlin et al., 2018) &lt;arXiv:1810.04805&gt;
+    and its model variants available at Hugging Face
+    &lt;https://huggingface.co/models?pipeline_tag=fill-mask&gt;.
+    Python (conda) environment and the transformers module can be
+    installed automatically using the FMAT_load() function.
+    Methodological references and technical details are provided at
+    &lt;https://psychbruce.github.io/FMAT/&gt;.">
 <title>The Fill-Mask Association Test • FMAT</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
@@ -31,12 +36,17 @@
 <meta property="og:description" content="
     The Fill-Mask Association Test (FMAT) is an integrative, versatile,
     and probability-based method that uses Masked Language Models
-    (BERT &lt;arXiv:1810.04805&gt; and its related models available at
-    Hugging Face &lt;https://huggingface.co/models?pipeline_tag=fill-mask&gt;)
-    to measure conceptual associations (e.g., attitudes, biases, stereotypes)
+    to measure conceptual associations or relations
+    (e.g., attitudes, biases, stereotypes, social norms, cultural values)
     as propositional representations in natural language.
-    Python and the transformers module also need to be installed
-    (see &lt;https://huggingface.co/docs/transformers/installation&gt;).">
+    The supported language models include
+    BERT (Devlin et al., 2018) &lt;arXiv:1810.04805&gt;
+    and its model variants available at Hugging Face
+    &lt;https://huggingface.co/models?pipeline_tag=fill-mask&gt;.
+    Python (conda) environment and the transformers module can be
+    installed automatically using the FMAT_load() function.
+    Methodological references and technical details are provided at
+    &lt;https://psychbruce.github.io/FMAT/&gt;.">
 <meta property="og:image" content="https://psychbruce.github.io/FMAT/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -91,7 +101,13 @@
 </h1>
 </div>
 <p>😷 The Fill-Mask Association Test (掩码填空联系测验).</p>
-<p>The <em>Fill-Mask Association Test</em> (FMAT) is an integrative, versatile, and probability-based method that uses Masked Language Models (<a href="https://arxiv.org/abs/1810.04805" class="external-link">BERT</a>) to measure conceptual associations (e.g., attitudes, biases, stereotypes) as propositional representations in natural language. <a href="https://www.anaconda.com/" class="external-link">Python</a> and the “<a href="https://huggingface.co/docs/transformers/installation" class="external-link">transformers</a>” module also need to be installed.</p>
+<p>The <em>Fill-Mask Association Test</em> (FMAT) is an integrative, versatile, and probability-based method that uses Masked Language Models (<a href="https://arxiv.org/abs/1810.04805" class="external-link">BERT</a>) to measure conceptual associations (e.g., attitudes, biases, stereotypes) as propositional representations in natural language.</p>
+<p><a href="https://www.anaconda.com/" class="external-link">Python</a> (conda) environment and the “<a href="https://huggingface.co/docs/transformers/installation" class="external-link">transformers</a>” module can be installed automatically using the <code><a href="reference/FMAT_load.html">FMAT_load()</a></code> function, but users must also specify the Python version in RStudio afterwards:</p>
+<blockquote>
+<p>RStudio → Tools → Global/Project Options<br>
+→ Python → Select → Conda Environments<br>
+→ Choose “…/textrpp_condaenv/python.exe”</p>
+</blockquote>
 <p>A full list of BERT-family models are available at <a href="https://huggingface.co/models?pipeline_tag=fill-mask&amp;library=transformers" class="external-link">Hugging Face</a>. Use the <code><a href="reference/FMAT_load.html">FMAT_load()</a></code> function to download and load specific BERT models. All downloaded model files are saved at your local folder “C:/Users/[YourUserName]/.cache/”.</p>
 <p>Several necessary pre-processing steps have been designed in the functions for easier and more direct use (see <code><a href="reference/FMAT_run.html">FMAT_run()</a></code> for details).</p>
 <ul>
@@ -114,7 +130,7 @@
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
 <ul>
-<li>Bao, H.-W.-S. (2023). <em>The Fill-Mask Association Test (FMAT)</em>. R package version 2023.8. <a href="https://CRAN.R-project.org/package=FMAT" class="external-link uri">https://CRAN.R-project.org/package=FMAT</a>
+<li>Bao, H.-W.-S. (2023). <em>FMAT: The Fill-Mask Association Test</em>. R package version 2023.8. <a href="https://CRAN.R-project.org/package=FMAT" class="external-link uri">https://CRAN.R-project.org/package=FMAT</a>
 </li>
 <li>Bao, H.-W.-S. (2023). <em>The Fill-Mask Association Test (FMAT): Using AI language models to better understand society and culture</em> [Manuscript submitted for publication].</li>
 </ul>
@@ -128,7 +144,6 @@
 <span><span class="co">## Method 2: Install from GitHub</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"psychbruce/FMAT"</span>, force<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre>
-<p>Since this package uses the “<a href="https://CRAN.R-project.org/package=reticulate" class="external-link">reticulate</a>” package for an R interface to the “transformers” Python module, you also need to install both <a href="https://www.anaconda.com/" class="external-link">Python</a> (with Anaconda) and the “<a href="https://huggingface.co/docs/transformers/installation" class="external-link">transformers</a>” module (with command <code>pip install transformers</code>) in your computer.</p>
 </div>
 <div class="section level2">
 <h2 id="bert-models">BERT Models<a class="anchor" aria-label="anchor" href="#bert-models"></a>
@@ -180,6 +195,7 @@
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
+<li><a href="https://cloud.r-project.org/package=FMAT" class="external-link">View on CRAN</a></li>
 <li><a href="https://github.com/psychbruce/FMAT/" class="external-link">Browse source code</a></li>
 <li><a href="https://github.com/psychbruce/FMAT/issues" class="external-link">Report a bug</a></li>
 </ul>
