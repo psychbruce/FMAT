@@ -12,12 +12,17 @@ Maintainer: Han-Wu-Shuang Bao <baohws@foxmail.com>
 Description:
     The Fill-Mask Association Test ('FMAT') is an integrative, versatile,
     and probability-based method that uses Masked Language Models
-    ('BERT' <arXiv:1810.04805> and its related models available at
-    'Hugging Face' <https://huggingface.co/models?pipeline_tag=fill-mask>)
-    to measure conceptual associations (e.g., attitudes, biases, stereotypes)
+    to measure conceptual associations or relations
+    (e.g., attitudes, biases, stereotypes, social norms, cultural values)
     as propositional representations in natural language.
-    'Python' and the 'transformers' module also need to be installed
-    (see <https://huggingface.co/docs/transformers/installation>).
+    The supported language models include
+    'BERT' (Devlin et al., 2018) <arXiv:1810.04805>
+    and its model variants available at 'Hugging Face'
+    <https://huggingface.co/models?pipeline_tag=fill-mask>.
+    'Python' ('conda') environment and the 'transformers' module can be
+    installed automatically using the FMAT_load() function.
+    Methodological references and technical details are provided at
+    <https://psychbruce.github.io/FMAT/>.
 License: GPL-3
 Encoding: UTF-8
 URL: https://psychbruce.github.io/FMAT/

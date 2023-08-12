@@ -2,7 +2,13 @@
 
 😷 The Fill-Mask Association Test (掩码填空联系测验).
 
-The *Fill-Mask Association Test* (FMAT) is an integrative, versatile, and probability-based method that uses Masked Language Models ([BERT](https://arxiv.org/abs/1810.04805)) to measure conceptual associations (e.g., attitudes, biases, stereotypes) as propositional representations in natural language. [Python](https://www.anaconda.com/) and the "[transformers](https://huggingface.co/docs/transformers/installation)" module also need to be installed.
+The *Fill-Mask Association Test* (FMAT) is an integrative, versatile, and probability-based method that uses Masked Language Models ([BERT](https://arxiv.org/abs/1810.04805)) to measure conceptual associations (e.g., attitudes, biases, stereotypes) as propositional representations in natural language.
+
+[Python](https://www.anaconda.com/) (conda) environment and the "[transformers](https://huggingface.co/docs/transformers/installation)" module can be installed automatically using the `FMAT_load()` function, but users must also specify the Python version in RStudio afterwards:
+
+> RStudio → Tools → Global/Project Options\
+> → Python → Select → Conda Environments\
+> → Choose ".../textrpp_condaenv/python.exe"
 
 A full list of BERT-family models are available at [Hugging Face](https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers). Use the `FMAT_load()` function to download and load specific BERT models. All downloaded model files are saved at your local folder "C:/Users/[YourUserName]/.cache/".
 
@@ -31,7 +37,7 @@ Han-Wu-Shuang (Bruce) Bao 包寒吴霜
 
 ## Citation
 
--   Bao, H.-W.-S. (2023). *The Fill-Mask Association Test (FMAT)*. R package version 2023.8. <https://CRAN.R-project.org/package=FMAT>
+-   Bao, H.-W.-S. (2023). *FMAT: The Fill-Mask Association Test*. R package version 2023.8. <https://CRAN.R-project.org/package=FMAT>
 -   Bao, H.-W.-S. (2023). *The Fill-Mask Association Test (FMAT): Using AI language models to better understand society and culture* [Manuscript submitted for publication].
 
 ## Installation
@@ -44,8 +50,6 @@ install.packages("FMAT")
 install.packages("devtools")
 devtools::install_github("psychbruce/FMAT", force=TRUE)
 ```
-
-Since this package uses the "[reticulate](https://CRAN.R-project.org/package=reticulate)" package for an R interface to the "transformers" Python module, you also need to install both [Python](https://www.anaconda.com/) (with Anaconda) and the "[transformers](https://huggingface.co/docs/transformers/installation)" module (with command `pip install transformers`) in your computer.
 
 ## BERT Models
 
