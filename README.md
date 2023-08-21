@@ -37,7 +37,7 @@ Han-Wu-Shuang (Bruce) Bao 包寒吴霜
 
 ## Citation
 
--   Bao, H.-W.-S. (2023). *FMAT: The Fill-Mask Association Test*. R package version 2023.8. <https://CRAN.R-project.org/package=FMAT>
+-   Bao, H.-W.-S. (2023). *FMAT: The Fill-Mask Association Test* (Version 2023.8) [Computer software]. <https://CRAN.R-project.org/package=FMAT>
 -   Bao, H.-W.-S. (2023). *The Fill-Mask Association Test (FMAT): Using AI language models to better understand society and culture* [Manuscript submitted for publication].
 
 ## Installation

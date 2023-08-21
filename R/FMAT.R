@@ -7,6 +7,7 @@
 #' @importFrom stats na.omit
 .onAttach = function(libname, pkgname) {
   inst.ver = as.character(utils::packageVersion("FMAT"))
+  pkg.date = substr(utils::packageDate("FMAT"), 1, 4)
   pkgs = c("data.table", "stringr", "forcats")
   suppressMessages({
     suppressWarnings({
@@ -25,7 +26,12 @@
     {magenta Online documentation:}
     {underline https://psychbruce.github.io/FMAT}
 
-    "))
+    {magenta To use this package in publications, please cite:}
+    Bao, H.-W.-S. ({pkg.date}). "),
+    glue::glue_col("{italic FMAT: The Fill-Mask Association Test}"),
+    glue::glue_col(" (Version {inst.ver}) [Computer software]. "),
+    glue::glue_col("{underline https://CRAN.R-project.org/package=FMAT}"),
+    "\n")
   }
 }
 
