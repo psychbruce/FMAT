@@ -10,6 +10,8 @@ The *Fill-Mask Association Test* (FMAT) is an integrative, versatile, and probab
 > → Python → Select → Conda Environments\
 > → Choose ".../textrpp_condaenv/python.exe"
 
+[![FMAT Workflow (Bao, 2023)](https://psychbruce.github.io/img/FMAT-Workflow.png)](https://psychbruce.github.io/img/FMAT-Workflow.png)
+
 A full list of BERT-family models are available at [Hugging Face](https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers). Use the `FMAT_load()` function to download and load specific BERT models. All downloaded model files are saved at your local folder "C:/Users/[YourUserName]/.cache/".
 
 Several necessary pre-processing steps have been designed in the functions for easier and more direct use (see `FMAT_run()` for details).
