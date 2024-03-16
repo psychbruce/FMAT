@@ -34,7 +34,7 @@ To use the FMAT, the R package `FMAT` and two Python packages (`transformers` an
 
 ### (1) R Package
 
-```{r}
+``` r
 ## Method 1: Install from CRAN
 install.packages("FMAT")
 
@@ -72,7 +72,7 @@ See [Guidance for GPU Acceleration] if you have an NVIDIA GPU device on your PC 
 
 (Not suggested) Besides the pip/conda installation in the *Conda Environment*, you might instead create and use a *Virtual Environment* (see R code below with the `reticulate` package), but then you need to specify the Python interpreter as **"\~/.virtualenvs/r-reticulate/Scripts/python.exe"** in RStudio.
 
-```{r}
+``` r
 ## DON'T RUN THIS UNLESS YOU PREFER VIRTUAL ENVIRONMENT
 library(reticulate)
 # install_python()
@@ -163,7 +163,7 @@ pip install torch --index-url https://download.pytorch.org/whl/cu121
 
 Check with the `FMAT` package.
 
-```{r}
+``` r
 library(FMAT)
 # BERT_download("bert-base-uncased")
 model = FMAT_load("bert-base-uncased", gpu=TRUE)
