@@ -1,7 +1,7 @@
 Package: FMAT
 Title: The Fill-Mask Association Test
-Version: 2023.8
-Date: 2023-08-08
+Version: 2024.3
+Date: 2024-03-16
 Authors@R:
     c(person(given = "Han-Wu-Shuang",
              family = "Bao",
@@ -10,19 +10,18 @@ Authors@R:
              comment = c(ORCID = "0000-0003-3043-710X")))
 Maintainer: Han-Wu-Shuang Bao <baohws@foxmail.com>
 Description:
-    The Fill-Mask Association Test ('FMAT') is an integrative, versatile,
-    and probability-based method that uses Masked Language Models
-    to measure conceptual associations or relations
+    The Fill-Mask Association Test ('FMAT') <doi:10.1037/pspa0000396>
+    is an integrative, versatile, and probability-based method
+    using Masked Language Models to measure conceptual associations
     (e.g., attitudes, biases, stereotypes, social norms, cultural values)
-    as propositional representations in natural language.
-    The supported language models include
-    'BERT' (Devlin et al., 2018) <arXiv:1810.04805>
-    and its model variants available at 'Hugging Face'
+    as propositions in natural language.
+    Supported language models include 'BERT' <arXiv:1810.04805>
+    and its variants available at 'Hugging Face'
     <https://huggingface.co/models?pipeline_tag=fill-mask>.
-    'Python' ('conda') environment and the 'transformers' module can be
-    installed automatically using the FMAT_load() function.
     Methodological references and technical details are provided at
-    <https://psychbruce.github.io/FMAT/>.
+    <https://psychbruce.github.io/FMAT/>,
+    including guidance for installing 'Python' ('Anaconda'),
+    'transformers' and 'torch' packages, and for using GPU acceleration.
 License: GPL-3
 Encoding: UTF-8
 URL: https://psychbruce.github.io/FMAT/
@@ -30,8 +29,8 @@ BugReports: https://github.com/psychbruce/FMAT/issues
 SystemRequirements: Python (>= 3.6.0)
 Depends: R (>= 4.0.0)
 Imports:
-    PsychWordVec, psych, reticulate, text,
-    data.table, stringr, forcats,
+    PsychWordVec, reticulate,
+    data.table, stringr, forcats, psych,
     glue, cli, purrr, plyr, dplyr, tidyr
-Suggests: bruceR, nlme, parallel
-RoxygenNote: 7.2.3
+Suggests: bruceR, text, nlme, parallel
+RoxygenNote: 7.3.1

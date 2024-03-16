@@ -58,28 +58,6 @@ PsychWordVec::cc
 . = function(...) list(...)
 
 
-warning.init = "
-    No valid Python or conda environment.
-
-    You may need to specify the version of Python:
-      RStudio -> Tools -> Global/Project Options
-      -> Python -> Select -> Conda Environments
-      -> Choose \".../textrpp_condaenv/python.exe\"
-
-    You may also use `PsychWordVec::text_init()`
-    to initialize the Python environment."
-
-
-text_initialized = function() {
-  error = TRUE
-  try({
-    text::textModels()
-    error = FALSE
-  }, silent=TRUE)
-  if(error) PsychWordVec::text_init()
-}
-
-
 dtime = function(t0) {
   diff = as.numeric(difftime(Sys.time(), t0, units="secs"))
   if(diff < 1) {
@@ -94,27 +72,146 @@ dtime = function(t0) {
 }
 
 
+gpu_to_device = function(gpu) {
+  if(is.logical(gpu))
+    device = ifelse(gpu, 0L, -1L)
+  if(is.numeric(gpu))
+    device = as.integer(device)
+  if(is.character(gpu))
+    device = gpu
+  return(device)
+}
+
+
+check_gpu_enabled = function(device) {
+  use.gpu = FALSE
+  if(is.integer(device)) if(device > -1) use.gpu = TRUE
+  if(is.character(device)) if(device != "cpu") use.gpu = TRUE
+  if(use.gpu) {
+    reticulate::py_capture_output({
+      torch = reticulate::import("torch")
+      if(!torch$cuda$is_available())
+        stop("
+      NVIDIA GPU CUDA is not enabled!
+      Try not setting the `gpu` parameter.
+      For guidance, see https://psychbruce.github.io/FMAT/",
+      call.=FALSE)
+    })
+  }
+}
+
+
+transformers_init = function() {
+  reticulate::py_capture_output({
+    os = reticulate::import("os")
+    os$environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+
+    torch = reticulate::import("torch")
+    torch.ver = torch$`__version__`
+    torch.cuda = torch$cuda$is_available()
+    if(torch.cuda) {
+      cuda.ver = torch$cuda_version
+      gpu.info = paste("GPU Devices:", paste(torch$cuda$get_device_name(), collapse=", "))
+    } else {
+      cuda.ver = "NULL"
+      gpu.info = paste("(To use GPU, install PyTorch with CUDA support,",
+                       "see https://pytorch.org/get-started)")
+    }
+
+    transformers = reticulate::import("transformers")
+    tf.ver = transformers$`__version__`
+  })
+  cli::cli_alert_info(cli::col_blue("Device Info:
+
+  Python Environment:
+  Package       Version
+  transformers  {tf.ver}
+  torch         {torch.ver}
+
+  NVIDIA GPU CUDA Support:
+  CUDA Enabled: {torch.cuda}
+  CUDA Version: {cuda.ver}
+  {gpu.info}
+  "))
+  return(transformers)
+}
+
+
+#### BERT ####
+
+
+#' DownLoad BERT models.
+#'
+#' DownLoad BERT models to local cache folder "\%USERPROFILE\%/.cache/huggingface".
+#'
+#' @param models Model names at \href{https://huggingface.co/models}{HuggingFace}.
+#'
+#' For a full list of available BERT models, see
+#' \url{https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers}
+#'
+#' @return
+#' No return value.
+#' Model files will be saved in "\%USERPROFILE\%/.cache/huggingface".
+#'
+#' @seealso
+#' \code{\link{FMAT_load}}
+#'
+#' @examples
+#' \dontrun{
+#' model.names = c("bert-base-uncased", "bert-base-cased")
+#' BERT_download(model.names)
+#' }
+#'
+#' @export
+BERT_download = function(models) {
+  transformers = transformers_init()
+  lapply(models, function(model) {
+    cli::cli_h1("Downloading model \"{m}\"")
+    cli::cli_text("Downloading configuration...")
+    config = transformers$AutoConfig$from_pretrained(model)
+    cli::cli_text("Downloading tokenizer...")
+    tokenizer = transformers$AutoTokenizer$from_pretrained(model)
+    cli::cli_text("Downloading model...")
+    model = transformers$AutoModel$from_pretrained(model)
+    cli::cli_alert_success("Successfully downloaded model \"{model}\"")
+    gc()
+  })
+}
+
+
 #### FMAT ####
 
 
-#' Initialize running environment and (down)load language models.
+#' (Down)Load BERT models.
 #'
-#' @param models Language model names (usually the BERT-based models) at
-#' \href{https://huggingface.co/models}{HuggingFace}.
+#' Load BERT models from local cache folder "\%USERPROFILE\%/.cache/huggingface".
+#' If the models have not been downloaded,\
+#' it can also automatically download them (silently).
 #'
-#' For a full list of available models, see
-#' \url{https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers}
+#' @inheritParams BERT_download
+#' @param gpu Use GPU (faster than CPU) to run the fill-mask pipeline?
+#' Defaults to \code{FALSE} (using CPU).
+#' An NVIDIA GPU device (e.g., GeForce RTX Series) is required to use GPU.
+#' For guidance, see \url{https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration}.
+#'
+#' Options passing to the \code{device} parameter in Python:
+#' \itemize{
+#'   \item{\code{FALSE}: CPU (\code{device = -1}).}
+#'   \item{\code{TRUE}: GPU (\code{device = 0}).}
+#'   \item{Any other value: passing to
+#'    \href{https://huggingface.co/docs/transformers/main_classes/pipelines#transformers.pipeline.device}{transformers.pipeline(device=...)}
+#'    which defines the device (e.g.,
+#'    \code{"cpu"}, \code{"cuda:0"}, or a GPU device id like \code{1})
+#'    on which the pipeline will be allocated.}
+#' }
 #'
 #' @return
 #' A named list of fill-mask pipelines obtained from the models.
 #' The returned object \emph{cannot} be saved as any RData.
 #' You will need to \emph{rerun} this function if you restart the R session.
 #'
-#' All downloaded models are saved
-#' at your local folder "C:/Users/[YourUserName]/.cache/".
-#'
 #' @seealso
-#' \code{\link[PsychWordVec:text_init]{PsychWordVec::text_init}}
+#' \code{\link{BERT_download}}
 #'
 #' \code{\link{FMAT_query}}
 #'
@@ -123,31 +220,21 @@ dtime = function(t0) {
 #' \code{\link{FMAT_run}}
 #'
 #' @examples
-#' \donttest{models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
+#' \dontrun{
+#' model.names = c("bert-base-uncased", "bert-base-cased")
+#' models = FMAT_load(model.names)  # load models from cache
 #' }
+#'
 #' @export
-FMAT_load = function(models) {
-  cli::cli_text("Initializing environment...")
-  try({
-    error = TRUE
-    text_initialized()
-    error = FALSE
-  }, silent=TRUE)
-  if(error) {
-    warning(warning.init, call.=FALSE)
-    return(NULL)
-  }
-  old.models = text::textModels()$Downloaded_models
-  new.models = setdiff(models, old.models)
-  if(length(new.models) > 0)
-    PsychWordVec::text_model_download(new.models)
-
+FMAT_load = function(models, gpu=FALSE) {
+  transformers = transformers_init()
+  device = gpu_to_device(gpu)
+  check_gpu_enabled(device)
   cli::cli_text("Loading models...")
-  transformers = reticulate::import("transformers")
   fms = lapply(models, function(model) {
     t0 = Sys.time()
     reticulate::py_capture_output({
-      fill_mask = transformers$pipeline("fill-mask", model=model)
+      fill_mask = transformers$pipeline("fill-mask", model=model, device=device)
     })
     cli::cli_alert_success("{model} ({dtime(t0)})")
     return(list(model.name=model, fill.mask=fill_mask))
@@ -425,29 +512,15 @@ FMAT_query_bind = function(...) {
 #' Thus, users may analyze their data based on the unchanged \code{M_word}
 #' rather than the \code{token}.
 #'
-#' @param models Language model(s):
-#' \itemize{
-#'   \item{Model names (usually the BERT-based models) at
-#'    \href{https://huggingface.co/models}{HuggingFace}.}
-#'   \item{A list of mask filling pipelines loaded by \code{\link{FMAT_load}}.
+#' @param models A list of fill-mask pipelines loaded by \code{\link{FMAT_load}}.
 #'
-#'    * You will need to \strong{rerun} \code{\link{FMAT_load}}
-#'    if you \strong{restart} the R session.}
-#' }
+#' * You will need to \strong{rerun} \code{\link{FMAT_load}}
+#' if you \strong{restart} the R session.
 #' @param data A data.table returned from
 #' \code{\link{FMAT_query}} or \code{\link{FMAT_query_bind}}.
 #' @param file File name of \code{.RData} to save the returned data.
 #' @param progress Show a progress bar:
 #' \code{"none"} (\code{FALSE}), \code{"text"} (\code{TRUE}), \code{"time"}.
-#' @param parallel Parallel processing (NOT suggested).
-#' Defaults to \code{FALSE}.
-#' If \code{TRUE}, then \code{models} must be model names
-#' rather than from \code{\link{FMAT_load}}.
-#'
-#' * For small-scale \code{data},
-#' parallel processing would instead be \emph{slower}
-#' because it takes time to create a parallel cluster.
-#' @param ncores Number of CPU cores to be used in parallel processing.
 #' @param warning Warning of out-of-vocabulary word(s). Defaults to \code{TRUE}.
 #'
 #' @return
@@ -468,6 +541,8 @@ FMAT_query_bind = function(...) {
 #' }
 #'
 #' @seealso
+#' \code{\link{BERT_download}}
+#'
 #' \code{\link{FMAT_load}}
 #'
 #' \code{\link{FMAT_query}}
@@ -477,10 +552,10 @@ FMAT_query_bind = function(...) {
 #' \code{\link{summary.fmat}}
 #'
 #' @examples
-#' # Running the example requires the models downloaded
-#' # You will need to rerun `FMAT_load` if you restart the R session
+#' ## Running the examples requires the models downloaded
 #'
-#' \donttest{models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
+#' \dontrun{
+#' models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
 #'
 #' query1 = FMAT_query(
 #'   c("[MASK] is {TARGET}.", "[MASK] works as {TARGET}."),
@@ -513,20 +588,17 @@ FMAT_query_bind = function(...) {
 #' summary(data3, attrib.pair=FALSE)
 #' summary(data3)
 #' }
+#'
 #' @export
 FMAT_run = function(
     models,
     data,
     file = NULL,
     progress = c(FALSE, TRUE, "none", "text", "time"),
-    parallel = FALSE,
-    ncores = 4,
     warning = TRUE
 ) {
-  if(is.null(models)) {
-    warning(warning.init, call.=FALSE)
-    return(NULL)
-  }
+  if(!inherits(models, "fill.mask"))
+    stop("Please first use `FMAT_load()` to load models.", call.=FALSE)
 
   t0 = Sys.time()
   progress = match.arg(progress)
@@ -534,23 +606,10 @@ FMAT_run = function(
   if(progress=="TRUE") progress = "text"
   type = attr(data, "type")
 
-  text_initialized()
-  cli::cli_alert_success("Environment initialized ({dtime(t0)})")
-
   onerun = function(model, data=data) {
-    if(is.character(model)) {
-      t1 = Sys.time()
-      transformers = reticulate::import("transformers")
-      reticulate::py_capture_output({
-        fill_mask = transformers$pipeline(task="fill-mask", model=model)
-      })
-      cli::cli_h1("{model} (model loaded: {dtime(t1)})")
-    }
-    if(is.list(model)) {
-      fill_mask = model$fill.mask
-      model = model$model.name
-      cli::cli_h1("{model}")
-    }
+    fill_mask = model$fill.mask
+    model = model$model.name
+    cli::cli_h1("{model}")
 
     uncased = str_detect(model, "uncased|albert")
     prefix.u2581 = str_detect(model, "xlm-roberta|albert")
@@ -571,52 +630,44 @@ FMAT_run = function(
       if(prefix.u2581) mask = paste0("\u2581", mask)
       if(prefix.u0120 & !mask.begin) mask = paste0("\u0120", mask)
       if(mask.lower) query = str_replace_all(query, "\\[MASK\\]", "<mask>")
-      oov = reticulate::py_capture_output({
+      out = reticulate::py_capture_output({
         res = fill_mask(query, targets=mask, top_k=1L)[[uid]]
       })
+      # UserWarning: You seem to be using the pipelines sequentially on GPU.
+      # In order to maximize efficiency please use a dataset.
       return(data.table(
         output = res$sequence,
         token = ifelse(
-          oov=="",  # no extra output from python
+          out=="" | str_detect(out, "UserWarning|GPU"),  # no extra output from python
           res$token_str,
-          paste(res$token_str, "(out-of-vocabulary)")),
+          paste(res$token_str,
+                ifelse(str_detect(out, "vocabulary"),
+                       "(out-of-vocabulary)", out))),
         prob = res$score
       ))
     }
 
     t2 = Sys.time()
     suppressWarnings({
-      data = plyr::adply(
-        data, 1, unmask,
-        .progress = if(parallel) "none" else progress
-      )
+      data = plyr::adply(data, 1, unmask, .progress=progress)
     })
     cat(paste0("  (", dtime(t2), ")\n"))
 
     return(cbind(data.table(model=as.factor(model)), data))
   }
 
-  cli::cli_alert_info(" Task: {length(models)} models * {nrow(data)} queries")
-
-  if(parallel) {
-    cl = parallel::makeCluster(ncores)
-    models = names(models)
-    data = rbindlist(parallel::parLapply(cl, models, onerun, data=data))
-    parallel::stopCluster(cl)
-  } else {
-    data = rbindlist(lapply(models, onerun, data=data))
-    cat("\n")
-  }
+  cli::cli_alert_info("Task: {length(models)} models * {nrow(data)} queries")
+  data = rbindlist(lapply(models, onerun, data=data))
+  cat("\n")
   attr(data, "type") = type
   class(data) = c("fmat", class(data))
-
   gc()
   cli::cli_alert_success("Task completed (total time cost = {dtime(t0)})")
 
   if(warning) warning_oov(data)
 
   if(!is.null(file)) {
-    if(!str_detect(file, "\\.[Rr][Dd]a|\\.[Rr][Dd]ata"))
+    if(!str_detect(file, "\\.[Rr][Dd]a(ta)?$"))
       file = paste0(file, ".RData")
     save(data, file=file)
     cli::cli_alert_success("Data saved to {.val {file}}")
@@ -682,11 +733,6 @@ summary.fmat = function(
     attrib.pair=TRUE,
     warning=TRUE,
     ...) {
-  if(is.null(object)) {
-    warning(warning.init, call.=FALSE)
-    return(NULL)
-  }
-
   if(warning) warning_oov(object)
   type = attr(object, "type")
   M_word = T_word = A_word = MASK = TARGET = ATTRIB = prob = LPR = NULL
@@ -799,4 +845,66 @@ LPR_reliability = function(
   if(is.null(by)) alphas[[1]] = NULL
   return(as.data.table(alphas))
 }
+
+
+#### Deprecated ####
+
+
+## Install Python modules and initialize local environment.
+##
+## Install required Python modules and
+## initialize a local "conda" environment.
+## Run this function only once after you have installed the package.
+##
+## @examples
+## \dontrun{
+## FMAT_init()  # run it only once
+##
+## # Then please specify the version of Python:
+## # RStudio -> Tools -> Global/Project Options
+## # -> Python -> Select -> Conda Environments
+## # -> Choose ".../textrpp_condaenv/python.exe"
+## }
+##
+## @export
+# FMAT_init = function() {
+#   suppressMessages({
+#     suppressWarnings({
+#       text::textrpp_install(prompt=FALSE)
+#     })
+#   })
+#   cat("\n")
+#   cli::cli_alert_success("{.pkg Successfully installed Python modules in conda environment.}")
+#
+#   try({
+#     error = TRUE
+#     suppressMessages({
+#       suppressWarnings({
+#         text::textrpp_initialize(save_profile=TRUE, prompt=FALSE)
+#       })
+#     })
+#     error = FALSE
+#   }, silent=TRUE)
+#   if(error)
+#     stop("
+#
+#       Please specify the version of Python:
+#         RStudio -> Tools -> Global/Project Options
+#         -> Python -> Select -> Conda Environments
+#         -> Choose \".../textrpp_condaenv/python.exe\"",
+#        call.=FALSE)
+#   cat("\n")
+#   cli::cli_alert_success("{.pkg Initialized the Python modules.}")
+# }
+
+
+# if(parallel) {
+#   cl = parallel::makeCluster(ncores)
+#   models = names(models)
+#   data = rbindlist(parallel::parLapply(cl, models, onerun, data=data))
+#   parallel::stopCluster(cl)
+# } else {
+#   data = rbindlist(lapply(models, onerun, data=data))
+#   cat("\n")
+# }
 

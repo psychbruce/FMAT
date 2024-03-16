@@ -9,21 +9,14 @@ FMAT_run(
   data,
   file = NULL,
   progress = c(FALSE, TRUE, "none", "text", "time"),
-  parallel = FALSE,
-  ncores = 4,
   warning = TRUE
 )
 }
 \arguments{
-\item{models}{Language model(s):
-\itemize{
-  \item{Model names (usually the BERT-based models) at
-   \href{https://huggingface.co/models}{HuggingFace}.}
-  \item{A list of mask filling pipelines loaded by \code{\link{FMAT_load}}.
+\item{models}{A list of fill-mask pipelines loaded by \code{\link{FMAT_load}}.
 
-   * You will need to \strong{rerun} \code{\link{FMAT_load}}
-   if you \strong{restart} the R session.}
-}}
+* You will need to \strong{rerun} \code{\link{FMAT_load}}
+if you \strong{restart} the R session.}
 
 \item{data}{A data.table returned from
 \code{\link{FMAT_query}} or \code{\link{FMAT_query_bind}}.}
@@ -32,17 +25,6 @@ FMAT_run(
 
 \item{progress}{Show a progress bar:
 \code{"none"} (\code{FALSE}), \code{"text"} (\code{TRUE}), \code{"time"}.}
-
-\item{parallel}{Parallel processing (NOT suggested).
-Defaults to \code{FALSE}.
-If \code{TRUE}, then \code{models} must be model names
-rather than from \code{\link{FMAT_load}}.
-
-* For small-scale \code{data},
-parallel processing would instead be \emph{slower}
-because it takes time to create a parallel cluster.}
-
-\item{ncores}{Number of CPU cores to be used in parallel processing.}
 
 \item{warning}{Warning of out-of-vocabulary word(s). Defaults to \code{TRUE}.}
 }
@@ -82,10 +64,10 @@ Thus, users may analyze their data based on the unchanged \code{M_word}
 rather than the \code{token}.
 }
 \examples{
-# Running the example requires the models downloaded
-# You will need to rerun `FMAT_load` if you restart the R session
+## Running the examples requires the models downloaded
 
-\donttest{models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
+\dontrun{
+models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
 
 query1 = FMAT_query(
   c("[MASK] is {TARGET}.", "[MASK] works as {TARGET}."),
@@ -118,8 +100,11 @@ data3 = FMAT_run(models, query3)
 summary(data3, attrib.pair=FALSE)
 summary(data3)
 }
+
 }
 \seealso{
+\code{\link{BERT_download}}
+
 \code{\link{FMAT_load}}
 
 \code{\link{FMAT_query}}

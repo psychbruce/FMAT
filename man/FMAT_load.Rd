@@ -2,34 +2,51 @@
 % Please edit documentation in R/FMAT.R
 \name{FMAT_load}
 \alias{FMAT_load}
-\title{Initialize running environment and (down)load language models.}
+\title{(Down)Load BERT models.}
 \usage{
-FMAT_load(models)
+FMAT_load(models, gpu = FALSE)
 }
 \arguments{
-\item{models}{Language model names (usually the BERT-based models) at
-\href{https://huggingface.co/models}{HuggingFace}.
+\item{models}{Model names at \href{https://huggingface.co/models}{HuggingFace}.
 
-For a full list of available models, see
+For a full list of available BERT models, see
 \url{https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers}}
+
+\item{gpu}{Use GPU (faster than CPU) to run the fill-mask pipeline?
+Defaults to \code{FALSE} (using CPU).
+An NVIDIA GPU device (e.g., GeForce RTX Series) is required to use GPU.
+For guidance, see \url{https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration}.
+
+Options passing to the \code{device} parameter in Python:
+\itemize{
+  \item{\code{FALSE}: CPU (\code{device = -1}).}
+  \item{\code{TRUE}: GPU (\code{device = 0}).}
+  \item{Any other value: passing to
+   \href{https://huggingface.co/docs/transformers/main_classes/pipelines#transformers.pipeline.device}{transformers.pipeline(device=...)}
+   which defines the device (e.g.,
+   \code{"cpu"}, \code{"cuda:0"}, or a GPU device id like \code{1})
+   on which the pipeline will be allocated.}
+}}
 }
 \value{
 A named list of fill-mask pipelines obtained from the models.
 The returned object \emph{cannot} be saved as any RData.
 You will need to \emph{rerun} this function if you restart the R session.
-
-All downloaded models are saved
-at your local folder "C:/Users/[YourUserName]/.cache/".
 }
 \description{
-Initialize running environment and (down)load language models.
+Load BERT models from local cache folder "\%USERPROFILE\%/.cache/huggingface".
+If the models have not been downloaded,\
+it can also automatically download them (silently).
 }
 \examples{
-\donttest{models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
+\dontrun{
+model.names = c("bert-base-uncased", "bert-base-cased")
+models = FMAT_load(model.names)  # load models from cache
 }
+
 }
 \seealso{
-\code{\link[PsychWordVec:text_init]{PsychWordVec::text_init}}
+\code{\link{BERT_download}}
 
 \code{\link{FMAT_query}}
 
