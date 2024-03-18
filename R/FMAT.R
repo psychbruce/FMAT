@@ -186,11 +186,11 @@ BERT_download = function(models=NULL) {
   if(!is.null(models)) {
     lapply(models, function(model) {
       cli::cli_h1("Downloading model {.val {model}}")
-      cli::cli_text("Downloading configuration...")
+      cli::cli_alert("(1) Downloading configuration...")
       transformers$AutoConfig$from_pretrained(model)
-      cli::cli_text("Downloading tokenizer...")
+      cli::cli_alert("(2) Downloading tokenizer...")
       transformers$AutoTokenizer$from_pretrained(model)
-      cli::cli_text("Downloading model...")
+      cli::cli_alert("(3) Downloading model...")
       transformers$AutoModel$from_pretrained(model)
       cli::cli_alert_success("Successfully downloaded model {.val {model}}")
       gc()

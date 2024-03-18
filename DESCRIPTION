@@ -10,18 +10,17 @@ Authors@R:
              comment = c(ORCID = "0000-0003-3043-710X")))
 Maintainer: Han-Wu-Shuang Bao <baohws@foxmail.com>
 Description:
-    The Fill-Mask Association Test ('FMAT') <doi:10.1037/pspa0000396>
-    is an integrative, versatile, and probability-based method
-    using Masked Language Models to measure conceptual associations
+    The Fill-Mask Association Test ('FMAT')
+    <doi:10.1037/pspa0000396>
+    is an integrative and probability-based method using
+    Masked Language Models to measure conceptual associations
     (e.g., attitudes, biases, stereotypes, social norms, cultural values)
     as propositions in natural language.
-    Supported language models include 'BERT' <arXiv:1810.04805>
-    and its variants available at 'Hugging Face'
+    Supported language models include 'BERT'
+    <arXiv:1810.04805> and its variants available at 'Hugging Face'
     <https://huggingface.co/models?pipeline_tag=fill-mask>.
-    Methodological references and technical details are provided at
-    <https://psychbruce.github.io/FMAT/>,
-    including guidance for installing 'Python' ('Anaconda'),
-    'transformers' and 'torch' packages, and for using GPU acceleration.
+    Methodological references and installation guidance are provided at
+    <https://psychbruce.github.io/FMAT/>.
 License: GPL-3
 Encoding: UTF-8
 URL: https://psychbruce.github.io/FMAT/
