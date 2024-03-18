@@ -2,41 +2,25 @@
 % Please edit documentation in R/FMAT.R
 \name{FMAT_load}
 \alias{FMAT_load}
-\title{(Down)Load BERT models.}
+\title{(Down)Load BERT models (useless for GPU).}
 \usage{
-FMAT_load(models, gpu = FALSE)
+FMAT_load(models)
 }
 \arguments{
-\item{models}{Model names at \href{https://huggingface.co/models}{HuggingFace}.
-
-For a full list of available BERT models, see
-\url{https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers}}
-
-\item{gpu}{Use GPU (faster than CPU) to run the fill-mask pipeline?
-Defaults to \code{FALSE} (using CPU).
-An NVIDIA GPU device (e.g., GeForce RTX Series) is required to use GPU.
-For guidance, see \url{https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration}.
-
-Options passing to the \code{device} parameter in Python:
-\itemize{
-  \item{\code{FALSE}: CPU (\code{device = -1}).}
-  \item{\code{TRUE}: GPU (\code{device = 0}).}
-  \item{Any other value: passing to
-   \href{https://huggingface.co/docs/transformers/main_classes/pipelines#transformers.pipeline.device}{transformers.pipeline(device=...)}
-   which defines the device (e.g.,
-   \code{"cpu"}, \code{"cuda:0"}, or a GPU device id like \code{1})
-   on which the pipeline will be allocated.}
-}}
+\item{models}{Model names at
+\href{https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers}{HuggingFace}.}
 }
 \value{
 A named list of fill-mask pipelines obtained from the models.
 The returned object \emph{cannot} be saved as any RData.
-You will need to \emph{rerun} this function if you restart the R session.
+You will need to \emph{rerun} this function if you \emph{restart} the R session.
 }
 \description{
 Load BERT models from local cache folder "\%USERPROFILE\%/.cache/huggingface".
-If the models have not been downloaded,\
-it can also automatically download them (silently).
+Models that have not been downloaded can also
+be automatically downloaded (but \emph{silently}).
+For \href{https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration}{GPU Acceleration},
+please directly use \code{\link{FMAT_run}} instead.
 }
 \examples{
 \dontrun{

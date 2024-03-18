@@ -66,7 +66,7 @@ Install the "[transformers](https://huggingface.co/docs/transformers/installatio
 pip install transformers torch
 ```
 
-See [Guidance for GPU Acceleration] if you have an NVIDIA GPU device on your PC and want to use GPU to accelerate the pipeline.
+See [Guidance for GPU Acceleration] for installation guidance if you have an NVIDIA GPU device on your PC and want to use GPU to accelerate the pipeline.
 
 #### Alternative Approach
 
@@ -90,7 +90,9 @@ Use `FMAT_query()` and/or `FMAT_query_bind()` to prepare a `data.table` of queri
 
 ### FMAT Step 2: Model Loading
 
-Use `BERT_download()` and `FMAT_load()` to (down)load [BERT models]. Model files are saved to your local folder "%USERPROFILE%/.cache/huggingface". A full list of BERT-family models are available at [Hugging Face](https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers).
+Use `BERT_download()` and `FMAT_load()` to (down)load [BERT models]. Model files are permanently saved to your local folder "%USERPROFILE%/.cache/huggingface". A full list of BERT-family models are available at [Hugging Face](https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers).
+
+If you want to use GPU (see [Guidance for GPU Acceleration]), please skip to [FMAT Step 3: Model Processing] and directly use `FMAT_run()` without `FMAT_load()`.
 
 ### FMAT Step 3: Model Processing
 
@@ -108,21 +110,14 @@ Several steps of pre-processing have been included in the function for easier us
 
 ## Guidance for GPU Acceleration
 
-### NVIDIA GPU Acceleration
+By default, the `FMAT` package uses CPU to enable the functionality for all users. But for advanced users who want to accelerate the pipeline with GPU, the `FMAT_run()` function now supports using a GPU device, about **3x faster** than CPU.
 
-By default, the `FMAT` package uses CPU to enable the functionality for all users. But for advanced users who want to accelerate the pipeline with GPU, the `FMAT_load()` function now supports using a GPU device, which may perform **3x faster** than CPU.
-
-### Step 1
-
-Ensure that you have an NVIDIA GPU device (e.g., GeForce RTX Series) and an NVIDIA GPU driver installed on your system.
-
-### Step 2
-
-Install PyTorch (Python `torch` package) with CUDA support (<https://pytorch.org/get-started/locally/>).
-
--   CUDA is only available on Windows and Linux, but not on MacOS.
--   If you have installed a version of `torch` without CUDA support, please first uninstall it (command: `pip uninstall torch`) and then install the suggested one.
--   You may also install the corresponding version of CUDA Toolkit (e.g., for the `torch` version supporting CUDA 12.1, the same version of [CUDA Toolkit 12.1](https://developer.nvidia.com/cuda-12-1-0-download-archive) may also be installed).
+1.  Ensure that you have an NVIDIA GPU device (e.g., GeForce RTX Series) and an NVIDIA GPU driver installed on your system.
+2.  Install PyTorch (Python `torch` package) with CUDA support.
+    -   Find guidance for installation command at <https://pytorch.org/get-started/locally/>.
+    -   CUDA is available only on Windows and Linux, but not on MacOS.
+    -   If you have installed a version of `torch` without CUDA support, please first uninstall it (command: `pip uninstall torch`) and then install the suggested one.
+    -   You may also install the corresponding version of CUDA Toolkit (e.g., for the `torch` version supporting CUDA 12.1, the same version of [CUDA Toolkit 12.1](https://developer.nvidia.com/cuda-12-1-0-download-archive) may also be installed).
 
 Example code for installing PyTorch with CUDA support:\
 (Windows Command / Anaconda Prompt / RStudio Terminal)
@@ -130,35 +125,6 @@ Example code for installing PyTorch with CUDA support:\
 ```         
 pip install torch --index-url https://download.pytorch.org/whl/cu121
 ```
-
-### Step 3
-
-Check with the `FMAT` package.
-
-``` r
-library(FMAT)
-# BERT_download("bert-base-uncased")
-model = FMAT_load("bert-base-uncased", gpu=TRUE)
-```
-
-```         
-ℹ Device Info:
-
-Python Environment:
-Package       Version
-transformers  4.38.2
-torch         2.2.1+cu121
-
-NVIDIA GPU CUDA Support:
-CUDA Enabled: TRUE
-CUDA Version: 12.1
-GPU (Device): NVIDIA GeForce RTX 2050
-
-Loading models from C:/Users/Bruce/.cache/huggingface/hub...
-✔ bert-base-uncased (1.1s) - GPU (device id = 0)
-```
-
-(Tested 2024/03 on the developer's computer: HP Probook 450 G10 Notebook PC)
 
 ## BERT Models
 

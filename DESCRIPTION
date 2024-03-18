@@ -31,5 +31,6 @@ Imports:
     PsychWordVec, reticulate,
     data.table, stringr, forcats, psych,
     glue, cli, purrr, plyr, dplyr, tidyr
-Suggests: bruceR, text, nlme, parallel
+Suggests: bruceR, text, nlme
 RoxygenNote: 7.3.1
+Roxygen: list(markdown = TRUE)

@@ -2,15 +2,13 @@
 % Please edit documentation in R/FMAT.R
 \name{BERT_download}
 \alias{BERT_download}
-\title{Download BERT models.}
+\title{Download and save BERT models to local cache folder.}
 \usage{
 BERT_download(models = NULL)
 }
 \arguments{
-\item{models}{Model names at \href{https://huggingface.co/models}{HuggingFace}.
-
-For a full list of available BERT models, see
-\url{https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers}}
+\item{models}{Model names at
+\href{https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers}{HuggingFace}.}
 }
 \value{
 No return value.

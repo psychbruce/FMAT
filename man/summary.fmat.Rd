@@ -18,10 +18,10 @@
 returned from \code{\link{FMAT_run}}.}
 
 \item{mask.pair, target.pair, attrib.pair}{Pairwise contrast of
-\code{[MASK]}, \code{TARGET}, \code{ATTRIB}?
+\verb{[MASK]}, \code{TARGET}, \code{ATTRIB}?
 Defaults to \code{TRUE}.}
 
-\item{warning}{Warning of out-of-vocabulary word(s). Defaults to \code{TRUE}.}
+\item{warning}{Alert warning of out-of-vocabulary word(s)? Defaults to \code{TRUE}.}
 
 \item{...}{Other arguments (currently not used).}
 }

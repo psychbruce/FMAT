@@ -44,7 +44,7 @@
 PsychWordVec::cc
 
 
-#' A simple function equivalent to \code{list}.
+#' A simple function equivalent to `list`.
 #'
 #' @param ... Named objects (usually character vectors for this package).
 #'
@@ -79,6 +79,7 @@ gpu_to_device = function(gpu) {
     device = as.integer(device)
   if(is.character(gpu))
     device = gpu
+  check_gpu_enabled(device)
   return(device)
 }
 
@@ -157,20 +158,18 @@ find_cached_models = function(cache.folder) {
 #### BERT ####
 
 
-#' Download BERT models.
+#' Download and save BERT models to local cache folder.
 #'
-#' Download and save BERT models to local cache folder "\%USERPROFILE\%/.cache/huggingface".
+#' Download and save BERT models to local cache folder "%USERPROFILE%/.cache/huggingface".
 #'
-#' @param models Model names at \href{https://huggingface.co/models}{HuggingFace}.
-#'
-#' For a full list of available BERT models, see
-#' \url{https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers}
+#' @param models Model names at
+#' [HuggingFace](https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers).
 #'
 #' @return
 #' No return value.
 #'
 #' @seealso
-#' \code{\link{FMAT_load}}
+#' [`FMAT_load`]
 #'
 #' @examples
 #' \dontrun{
@@ -209,42 +208,29 @@ BERT_download = function(models=NULL) {
 #### FMAT ####
 
 
-#' (Down)Load BERT models.
+#' (Down)Load BERT models (useless for GPU).
 #'
-#' Load BERT models from local cache folder "\%USERPROFILE\%/.cache/huggingface".
-#' If the models have not been downloaded,\
-#' it can also automatically download them (silently).
+#' Load BERT models from local cache folder "%USERPROFILE%/.cache/huggingface".
+#' Models that have not been downloaded can also
+#' be automatically downloaded (but *silently*).
+#' For [GPU Acceleration](https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration),
+#' please directly use [`FMAT_run`] instead.
 #'
 #' @inheritParams BERT_download
-#' @param gpu Use GPU (faster than CPU) to run the fill-mask pipeline?
-#' Defaults to \code{FALSE} (using CPU).
-#' An NVIDIA GPU device (e.g., GeForce RTX Series) is required to use GPU.
-#' For guidance, see \url{https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration}.
-#'
-#' Options passing to the \code{device} parameter in Python:
-#' \itemize{
-#'   \item{\code{FALSE}: CPU (\code{device = -1}).}
-#'   \item{\code{TRUE}: GPU (\code{device = 0}).}
-#'   \item{Any other value: passing to
-#'    \href{https://huggingface.co/docs/transformers/main_classes/pipelines#transformers.pipeline.device}{transformers.pipeline(device=...)}
-#'    which defines the device (e.g.,
-#'    \code{"cpu"}, \code{"cuda:0"}, or a GPU device id like \code{1})
-#'    on which the pipeline will be allocated.}
-#' }
 #'
 #' @return
 #' A named list of fill-mask pipelines obtained from the models.
-#' The returned object \emph{cannot} be saved as any RData.
-#' You will need to \emph{rerun} this function if you restart the R session.
+#' The returned object *cannot* be saved as any RData.
+#' You will need to *rerun* this function if you *restart* the R session.
 #'
 #' @seealso
-#' \code{\link{BERT_download}}
+#' [`BERT_download`]
 #'
-#' \code{\link{FMAT_query}}
+#' [`FMAT_query`]
 #'
-#' \code{\link{FMAT_query_bind}}
+#' [`FMAT_query_bind`]
 #'
-#' \code{\link{FMAT_run}}
+#' [`FMAT_run`]
 #'
 #' @examples
 #' \dontrun{
@@ -253,21 +239,16 @@ BERT_download = function(models=NULL) {
 #' }
 #'
 #' @export
-FMAT_load = function(models, gpu=FALSE) {
+FMAT_load = function(models) {
   transformers = transformers_init()
   cache.folder = str_replace_all(transformers$TRANSFORMERS_CACHE, "\\\\", "/")
-  device = gpu_to_device(gpu)
-  check_gpu_enabled(device)
-  cli::cli_text("Loading models from {.path {cache.folder}}...")
+  cli::cli_text("Loading models from {.path {cache.folder}} ...")
   fms = lapply(models, function(model) {
     t0 = Sys.time()
     reticulate::py_capture_output({
-      fill_mask = transformers$pipeline("fill-mask", model=model, device=device)
+      fill_mask = transformers$pipeline("fill-mask", model=model)
     })
-    if(device %in% c(-1L, "cpu"))
-      cli::cli_alert_success("{model} ({dtime(t0)}) - CPU")
-    else
-      cli::cli_alert_success("{model} ({dtime(t0)}) - GPU (device id = {device})")
+    cli::cli_alert_success("{model} ({dtime(t0)})")
     return(list(model.name=model, fill.mask=fill_mask))
   })
   names(fms) = models
@@ -355,37 +336,37 @@ append_X = function(dq, X, var="TARGET") {
 #' Prepare a data.table of queries and variables for the FMAT.
 #'
 #' @param query Query text (should be a character string/vector
-#' with at least one \code{[MASK]} token).
+#' with at least one `[MASK]` token).
 #' Multiple queries share the same set of
-#' \code{MASK}, \code{TARGET}, and \code{ATTRIB}.
+#' `MASK`, `TARGET`, and `ATTRIB`.
 #' For multiple queries with different
-#' \code{MASK}, \code{TARGET}, and/or \code{ATTRIB},
-#' please use \code{\link{FMAT_query_bind}} to combine them.
-#' @param MASK A named list of \code{[MASK]} target words.
+#' `MASK`, `TARGET`, and/or `ATTRIB`,
+#' please use [`FMAT_query_bind`] to combine them.
+#' @param MASK A named list of `[MASK]` target words.
 #' Must be single words in the vocabulary of a certain masked language model.
 #' For model vocabulary, see, e.g.,
-#' \url{https://huggingface.co/bert-base-uncased/raw/main/vocab.txt}
+#' <https://huggingface.co/bert-base-uncased/raw/main/vocab.txt>
 #'
 #' Note that infrequent words may be not included in a model's vocabulary,
 #' and in this case you may insert the words into the context by
-#' specifying either \code{TARGET} or \code{ATTRIB}.
+#' specifying either `TARGET` or `ATTRIB`.
 #' @param TARGET,ATTRIB A named list of Target/Attribute words or phrases.
-#' If specified, then \code{query} must contain
-#' \code{{TARGET}} and/or \code{{ATTRIB}} (in all uppercase and in braces)
+#' If specified, then `query` must contain
+#' `{TARGET}` and/or `{ATTRIB}` (in all uppercase and in braces)
 #' to be replaced by the words/phrases.
-#' @param unmask.id If there are multiple \code{[MASK]} in \code{query},
+#' @param unmask.id If there are multiple `[MASK]` in `query`,
 #' this argument will be used to determine which one is to be unmasked.
-#' Defaults to the 1st \code{[MASK]}.
+#' Defaults to the 1st `[MASK]`.
 #'
 #' @return
 #' A data.table of queries and variables.
 #'
 #' @seealso
-#' \code{\link{FMAT_load}}
+#' [`FMAT_load`]
 #'
-#' \code{\link{FMAT_query_bind}}
+#' [`FMAT_query_bind`]
 #'
-#' \code{\link{FMAT_run}}
+#' [`FMAT_run`]
 #'
 #' @examples
 #' FMAT_query("[MASK] is a nurse.", MASK = .(Male="He", Female="She"))
@@ -469,17 +450,17 @@ FMAT_query = function(
 
 #' Combine multiple query data.tables and renumber query ids.
 #'
-#' @param ... Query data.tables returned from \code{\link{FMAT_query}}.
+#' @param ... Query data.tables returned from [`FMAT_query`].
 #'
 #' @return
 #' A data.table of queries and variables.
 #'
 #' @seealso
-#' \code{\link{FMAT_load}}
+#' [`FMAT_load`]
 #'
-#' \code{\link{FMAT_query}}
+#' [`FMAT_query`]
 #'
-#' \code{\link{FMAT_run}}
+#' [`FMAT_run`]
 #'
 #' @examples
 #' FMAT_query_bind(
@@ -526,67 +507,83 @@ FMAT_query_bind = function(...) {
 # stopCluster(cl)
 
 
-#' Run the fill-mask pipeline on multiple models.
+#' Run the fill-mask pipeline on multiple models (CPU / GPU).
+#'
+#' Run the fill-mask pipeline on multiple models with CPU or GPU
+#' (faster but requiring an NVIDIA GPU device).
 #'
 #' @details
 #' The function will also automatically adjust for
 #' the compatibility of tokens used in certain models:
 #' (1) for uncased models (e.g., ALBERT), it turns tokens to lowercase;
-#' (2) for models that use \code{<mask>} rather than \code{[MASK]},
+#' (2) for models that use `<mask>` rather than `[MASK]`,
 #' it automatically uses the corrected mask token;
 #' (3) for models that require a prefix to estimate whole words than subwords
 #' (e.g., ALBERT, RoBERTa), it adds a certain prefix (usually a white space;
 #' \\u2581 for ALBERT and XLM-RoBERTa, \\u0120 for RoBERTa and DistilRoBERTa).
 #'
-#' Note that these changes only affect the \code{token} variable
-#' in the returned data, but will not affect the \code{M_word} variable.z
-#' Thus, users may analyze their data based on the unchanged \code{M_word}
-#' rather than the \code{token}.
+#' Note that these changes only affect the `token` variable
+#' in the returned data, but will not affect the `M_word` variable.z
+#' Thus, users may analyze their data based on the unchanged `M_word`
+#' rather than the `token`.
 #'
-#' @param models A list of fill-mask pipelines loaded by \code{\link{FMAT_load}}.
+#' @param models Options:
+#' - A character vector of model names at
+#'   [HuggingFace](https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers).
+#'   - Can be used for both CPU and GPU.
+#' - A returned object from [`FMAT_load`].
+#'   - Can ONLY be used for CPU.
+#'   - If you __*restart*__ the R session,
+#'     you will need to __*rerun*__ [`FMAT_load`].
+#' @param data A data.table returned from [`FMAT_query`] or [`FMAT_query_bind`].
+#' @param gpu Use GPU (3x faster than CPU) to run the fill-mask pipeline?
+#' Defaults to `FALSE` (using CPU).
+#' An NVIDIA GPU device (e.g., GeForce RTX Series) is required to use GPU.
 #'
-#' * You will need to \strong{rerun} \code{\link{FMAT_load}}
-#' if you \strong{restart} the R session.
-#' @param data A data.table returned from
-#' \code{\link{FMAT_query}} or \code{\link{FMAT_query_bind}}.
-#' @param file File name of \code{.RData} to save the returned data.
-#' @param progress Show a progress bar:
-#' \code{"none"} (\code{FALSE}), \code{"text"} (\code{TRUE}), \code{"time"}.
-#' @param warning Warning of out-of-vocabulary word(s). Defaults to \code{TRUE}.
+#' See [Guidance for GPU Acceleration](https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration).
+#'
+#' Options passing to the `device` parameter in Python:
+#' - `FALSE`: CPU (`device = -1`).
+#' - `TRUE`: GPU (`device = 0`).
+#' - Any other value: passing to
+#'   [transformers.pipeline(device=...)](https://huggingface.co/docs/transformers/main_classes/pipelines#transformers.pipeline.device)
+#'   which defines the device (e.g.,
+#'   `"cpu"`, `"cuda:0"`, or a GPU device id like `1`)
+#'   on which the pipeline will be allocated.
+#' @param file File name of `.RData` to save the returned data.
+#' @param progress Show a progress bar? Defaults to `TRUE`.
+#' @param warning Alert warning of out-of-vocabulary word(s)? Defaults to `TRUE`.
 #'
 #' @return
-#' A data.table (of new class \code{fmat}) appending \code{data}
-#' with these new variables:
-#' \itemize{
-#'   \item{\code{model}: model name.}
-#'   \item{\code{output}: complete sentence output with unmasked token.}
-#'   \item{\code{token}: actual token to be filled in the blank mask
+#' A data.table (of new class `fmat`) appending `data` with these new variables:
+#' - `model`: model name.
+#' - `output`: complete sentence output with unmasked token.
+#' - `token`: actual token to be filled in the blank mask
 #'   (a note "out-of-vocabulary" will be added
-#'   if the original word is not found in the model vocabulary).}
-#'   \item{\code{prob}: (raw) conditional probability of the unmasked token
+#'   if the original word is not found in the model vocabulary).
+#' - `prob`: (raw) conditional probability of the unmasked token
 #'   given the provided context, estimated by the masked language model.
-#'
-#'   * It is NOT SUGGESTED to directly interpret the raw probabilities
-#'   because the \emph{contrast} between a pair of probabilities
-#'   is more interpretable. See \code{\link{summary.fmat}}.}
-#' }
+#'   - It is NOT SUGGESTED to directly interpret the raw probabilities
+#'   because the *contrast* between a pair of probabilities
+#'   is more interpretable. See [`summary.fmat`].
 #'
 #' @seealso
-#' \code{\link{BERT_download}}
+#' [`BERT_download`]
 #'
-#' \code{\link{FMAT_load}}
+#' [`FMAT_load`]
 #'
-#' \code{\link{FMAT_query}}
+#' [`FMAT_query`]
 #'
-#' \code{\link{FMAT_query_bind}}
+#' [`FMAT_query_bind`]
 #'
-#' \code{\link{summary.fmat}}
+#' [`summary.fmat`]
 #'
 #' @examples
 #' ## Running the examples requires the models downloaded
 #'
 #' \dontrun{
 #' models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
+#' # for GPU acceleration, please use `FMAT_run()` directly
 #'
 #' query1 = FMAT_query(
 #'   c("[MASK] is {TARGET}.", "[MASK] works as {TARGET}."),
@@ -624,23 +621,41 @@ FMAT_query_bind = function(...) {
 FMAT_run = function(
     models,
     data,
+    gpu = FALSE,
     file = NULL,
-    progress = c(FALSE, TRUE, "none", "text", "time"),
+    progress = TRUE,
     warning = TRUE
 ) {
-  if(!inherits(models, "fill.mask"))
-    stop("Please first use `FMAT_load()` to load models.", call.=FALSE)
-
   t0 = Sys.time()
-  progress = match.arg(progress)
-  if(progress=="FALSE") progress = "none"
-  if(progress=="TRUE") progress = "text"
   type = attr(data, "type")
+  device = gpu_to_device(gpu)
+  progress = ifelse(progress, "text", "none")
+
+  if(inherits(models, "fill.mask")) {
+    if(!device %in% c(-1L, "cpu"))
+      stop("
+      To use GPU, please specify `models` as model names,
+      rather than the returned object from `FMAT_load()`.", call.=FALSE)
+  } else {
+    transformers = transformers_init()
+    cache.folder = str_replace_all(transformers$TRANSFORMERS_CACHE, "\\\\", "/")
+    cli::cli_text("Loading models from {.path {cache.folder}} ...")
+    cat("\n")
+  }
 
   onerun = function(model, data=data) {
-    fill_mask = model$fill.mask
-    model = model$model.name
-    cli::cli_h1("{model}")
+    if(is.character(model)) {
+      reticulate::py_capture_output({
+        fill_mask = transformers$pipeline("fill-mask", model=model, device=device)
+      })
+    } else {
+      fill_mask = model$fill.mask
+      model = model$model.name
+    }
+    if(device %in% c(-1L, "cpu"))
+      cli::cli_h1("{.val {model}}")
+    else
+      cli::cli_h1("{.val {model}} (GPU Accelerated)")
 
     uncased = str_detect(model, "uncased|albert")
     prefix.u2581 = str_detect(model, "xlm-roberta|albert")
@@ -678,11 +693,14 @@ FMAT_run = function(
       ))
     }
 
-    t2 = Sys.time()
+    t1 = Sys.time()
     suppressWarnings({
       data = plyr::adply(data, 1, unmask, .progress=progress)
     })
-    cat(paste0("  (", dtime(t2), ")\n"))
+    cat(paste0("  (", dtime(t1), ")\n"))
+
+    rm(fill_mask)
+    gc()
 
     return(cbind(data.table(model=as.factor(model)), data))
   }
@@ -723,35 +741,34 @@ warning_oov = function(data) {
 }
 
 
-#' [S3 method] Summarize the results for the FMAT.
+#' \[S3 method\] Summarize the results for the FMAT.
 #'
 #' @description
-#' Summarize the results of \emph{Log Probability Ratio} (LPR),
-#' which indicates the \emph{relative} (vs. \emph{absolute})
+#' Summarize the results of *Log Probability Ratio* (LPR),
+#' which indicates the *relative* (vs. *absolute*)
 #' association between concepts.
 #'
 #' The LPR of just one contrast (e.g., only between a pair of attributes)
-#' may \emph{not} be sufficient for a proper interpretation of the results,
+#' may *not* be sufficient for a proper interpretation of the results,
 #' and may further require a second contrast (e.g., between a pair of targets).
 #'
 #' Users are suggested to use linear mixed models
-#' (with the R packages \code{nlme} or \code{lme4}/\code{lmerTest})
+#' (with the R packages `nlme` or `lme4`/`lmerTest`)
 #' to perform the formal analyses and hypothesis tests based on the LPR.
 #'
 #' @inheritParams FMAT_run
-#' @param object A data.table (of new class \code{fmat})
-#' returned from \code{\link{FMAT_run}}.
-## @param digits Number of decimal places of output. Defaults to \code{3}.
+#' @param object A data.table (of new class `fmat`)
+#' returned from [`FMAT_run`].
 #' @param mask.pair,target.pair,attrib.pair Pairwise contrast of
-#' \code{[MASK]}, \code{TARGET}, \code{ATTRIB}?
-#' Defaults to \code{TRUE}.
+#' `[MASK]`, `TARGET`, `ATTRIB`?
+#' Defaults to `TRUE`.
 #' @param ... Other arguments (currently not used).
 #'
 #' @return
 #' A data.table of the summarized results with Log Probability Ratio (LPR).
 #'
 #' @seealso
-#' \code{\link{FMAT_run}}
+#' [`FMAT_run`]
 #'
 #' @examples
 #' # see examples in `FMAT_run`
@@ -838,11 +855,11 @@ summary.fmat = function(
 
 #' Reliability analysis (Cronbach's \eqn{\alpha}) of LPR.
 #'
-#' @param fmat A data.table returned from \code{\link{summary.fmat}}.
-#' @param item Reliability of multiple \code{"query"} (default),
-#' \code{"T_word"}, or \code{"A_word"}.
+#' @param fmat A data.table returned from [`summary.fmat`].
+#' @param item Reliability of multiple `"query"` (default),
+#' `"T_word"`, or `"A_word"`.
 #' @param by Variable(s) to split data by.
-#' Options can be \code{"model"}, \code{"TARGET"}, \code{"ATTRIB"},
+#' Options can be `"model"`, `"TARGET"`, `"ATTRIB"`,
 #' or any combination of them.
 #'
 #' @return A data.table of Cronbach's \eqn{\alpha}.

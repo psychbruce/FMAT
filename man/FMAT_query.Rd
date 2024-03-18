@@ -14,14 +14,14 @@ FMAT_query(
 }
 \arguments{
 \item{query}{Query text (should be a character string/vector
-with at least one \code{[MASK]} token).
+with at least one \verb{[MASK]} token).
 Multiple queries share the same set of
 \code{MASK}, \code{TARGET}, and \code{ATTRIB}.
 For multiple queries with different
 \code{MASK}, \code{TARGET}, and/or \code{ATTRIB},
 please use \code{\link{FMAT_query_bind}} to combine them.}
 
-\item{MASK}{A named list of \code{[MASK]} target words.
+\item{MASK}{A named list of \verb{[MASK]} target words.
 Must be single words in the vocabulary of a certain masked language model.
 For model vocabulary, see, e.g.,
 \url{https://huggingface.co/bert-base-uncased/raw/main/vocab.txt}
@@ -35,9 +35,9 @@ If specified, then \code{query} must contain
 \code{{TARGET}} and/or \code{{ATTRIB}} (in all uppercase and in braces)
 to be replaced by the words/phrases.}
 
-\item{unmask.id}{If there are multiple \code{[MASK]} in \code{query},
+\item{unmask.id}{If there are multiple \verb{[MASK]} in \code{query},
 this argument will be used to determine which one is to be unmasked.
-Defaults to the 1st \code{[MASK]}.}
+Defaults to the 1st \verb{[MASK]}.}
 }
 \value{
 A data.table of queries and variables.
