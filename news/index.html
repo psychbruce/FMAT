@@ -48,8 +48,10 @@
 <h2 class="pkg-version" data-toc-text="2024.3" id="fmat-20243">FMAT 2024.3<a class="anchor" aria-label="anchor" href="#fmat-20243"></a></h2>
 <ul><li>The FMAT methodology paper has been accepted (March 14, 2024) for publication in the <em>Journal of Personality and Social Psychology</em> (<a href="https://doi.org/10.1037/pspa0000396" class="external-link uri">https://doi.org/10.1037/pspa0000396</a>)!</li>
 <li>Added <code><a href="../reference/BERT_download.html">BERT_download()</a></code> (downloading models to local cache folder “%USERPROFILE%/.cache/huggingface”) to differentiate from <code><a href="../reference/FMAT_load.html">FMAT_load()</a></code> (loading saved models from local cache). But indeed <code><a href="../reference/FMAT_load.html">FMAT_load()</a></code> can also download models <em>silently</em> if they have not been downloaded.</li>
-<li>Added <code>gpu</code> parameter for <code><a href="../reference/FMAT_load.html">FMAT_load()</a></code> to allow for specifying an NVIDIA GPU device on which the fill-mask pipeline will be allocated. GPU may perform 3x faster than CPU for the fill-mask pipeline.</li>
-<li>Added a summary of device information when using <code><a href="../reference/BERT_download.html">BERT_download()</a></code> and <code><a href="../reference/FMAT_load.html">FMAT_load()</a></code>.</li>
+<li>Added <code>gpu</code> parameter (see <a href="https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration">Guidance for GPU Acceleration</a>) in <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code> to allow for specifying an NVIDIA GPU device on which the fill-mask pipeline will be allocated. GPU roughly performs 3x faster than CPU for the fill-mask pipeline.</li>
+<li>Added a summary of device information when using <code><a href="../reference/BERT_download.html">BERT_download()</a></code>, <code><a href="../reference/FMAT_load.html">FMAT_load()</a></code>, and <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code>.</li>
+<li>Deprecated <code>parallel</code> in <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code>: <code>FMAT_run(model.names, data, gpu=TRUE)</code> is the fastest.</li>
+<li>A progress bar is displayed by default for <code>progress</code> in <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code>.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2023.8" id="fmat-20238">FMAT 2023.8<a class="anchor" aria-label="anchor" href="#fmat-20238"></a></h2><p class="text-muted">CRAN release: 2023-08-11</p>
