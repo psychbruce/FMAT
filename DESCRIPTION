@@ -1,7 +1,7 @@
 Package: FMAT
 Title: The Fill-Mask Association Test
 Version: 2024.3
-Date: 2024-03-16
+Date: 2024-03-18
 Authors@R:
     c(person(given = "Han-Wu-Shuang",
              family = "Bao",

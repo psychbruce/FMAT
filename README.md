@@ -90,7 +90,7 @@ Use `FMAT_query()` and/or `FMAT_query_bind()` to prepare a `data.table` of queri
 
 ### FMAT Step 2: Model Loading
 
-Use `BERT_download()` and `FMAT_load()` to (down)load BERT models. Model files are saved to your local folder "%USERPROFILE%/.cache/huggingface". A full list of BERT-family models are available at [Hugging Face](https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers).
+Use `BERT_download()` and `FMAT_load()` to (down)load [BERT models]. Model files are saved to your local folder "%USERPROFILE%/.cache/huggingface". A full list of BERT-family models are available at [Hugging Face](https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers).
 
 ### FMAT Step 3: Model Processing
 
@@ -100,34 +100,6 @@ Several steps of pre-processing have been included in the function for easier us
 
 -   For BERT variants using `<mask>` rather than `[MASK]` as the mask token, the input query will be *automatically* modified so that users can always use `[MASK]` in query design.
 -   For some BERT variants, special prefix characters such as `\u0120` and `\u2581` will be *automatically* added to match the whole words (rather than subwords) for `[MASK]`.
-
-### BERT Models
-
-The reliability and validity of the following 12 representative BERT models have been established in my research articles, but future work is needed to examine the performance of other models.
-
-(model name on Hugging Face - downloaded file size)
-
-1.  [bert-base-uncased](https://huggingface.co/bert-base-uncased) (420MB)
-2.  [bert-base-cased](https://huggingface.co/bert-base-cased) (416MB)
-3.  [bert-large-uncased](https://huggingface.co/bert-large-uncased) (1.25GB)
-4.  [bert-large-cased](https://huggingface.co/bert-large-cased) (1.25GB)
-5.  [distilbert-base-uncased](https://huggingface.co/distilbert-base-uncased) (256MB)
-6.  [distilbert-base-cased](https://huggingface.co/distilbert-base-cased) (251MB)
-7.  [albert-base-v1](https://huggingface.co/albert-base-v1) (45.2MB)
-8.  [albert-base-v2](https://huggingface.co/albert-base-v2) (45.2MB)
-9.  [roberta-base](https://huggingface.co/roberta-base) (478MB)
-10. [distilroberta-base](https://huggingface.co/distilroberta-base) (316MB)
-11. [vinai/bertweet-base](https://huggingface.co/vinai/bertweet-base) (517MB)
-12. [vinai/bertweet-large](https://huggingface.co/vinai/bertweet-large) (1.32GB)
-
-If you are new to [BERT](https://arxiv.org/abs/1810.04805), please read:
-
--   [BERT Explained](https://towardsdatascience.com/bert-explained-state-of-the-art-language-model-for-nlp-f8b21a9b6270)
--   [Breaking BERT Down](https://towardsdatascience.com/breaking-bert-down-430461f60efb)
--   [Illustrated BERT](https://jalammar.github.io/illustrated-bert/)
--   [Visual Guide to BERT](https://jalammar.github.io/a-visual-guide-to-using-bert-for-the-first-time/)
--   [BERT Model Documentation](https://huggingface.co/docs/transformers/main/en/model_doc/bert)
--   [What is Fill-Mask?](https://huggingface.co/tasks/fill-mask)
 
 ### Notes
 
@@ -180,13 +152,234 @@ torch         2.2.1+cu121
 NVIDIA GPU CUDA Support:
 CUDA Enabled: TRUE
 CUDA Version: 12.1
-GPU Devices: NVIDIA GeForce RTX 2050
+GPU (Device): NVIDIA GeForce RTX 2050
 
-Loading models...
-✔ bert-base-uncased (1.1s)
+Loading models from C:/Users/Bruce/.cache/huggingface/hub...
+✔ bert-base-uncased (1.1s) - GPU (device id = 0)
 ```
 
-(Checked 2024/03 on the developer's computer: HP Probook 450 G10 Notebook PC)
+(Tested 2024/03 on the developer's computer: HP Probook 450 G10 Notebook PC)
+
+## BERT Models
+
+The reliability and validity of the following 12 representative BERT models have been established in my research articles, but future work is needed to examine the performance of other models.
+
+(model name on Hugging Face - downloaded model file size)
+
+1.  [bert-base-uncased](https://huggingface.co/bert-base-uncased) (420 MB)
+2.  [bert-base-cased](https://huggingface.co/bert-base-cased) (416 MB)
+3.  [bert-large-uncased](https://huggingface.co/bert-large-uncased) (1283 MB)
+4.  [bert-large-cased](https://huggingface.co/bert-large-cased) (1277 MB)
+5.  [distilbert-base-uncased](https://huggingface.co/distilbert-base-uncased) (256 MB)
+6.  [distilbert-base-cased](https://huggingface.co/distilbert-base-cased) (251 MB)
+7.  [albert-base-v1](https://huggingface.co/albert-base-v1) (45 MB)
+8.  [albert-base-v2](https://huggingface.co/albert-base-v2) (45 MB)
+9.  [roberta-base](https://huggingface.co/roberta-base) (476 MB)
+10. [distilroberta-base](https://huggingface.co/distilroberta-base) (316 MB)
+11. [vinai/bertweet-base](https://huggingface.co/vinai/bertweet-base) (517 MB)
+12. [vinai/bertweet-large](https://huggingface.co/vinai/bertweet-large) (1356 MB)
+
+If you are new to [BERT](https://arxiv.org/abs/1810.04805), please read:
+
+-   [BERT Explained](https://towardsdatascience.com/bert-explained-state-of-the-art-language-model-for-nlp-f8b21a9b6270)
+-   [Breaking BERT Down](https://towardsdatascience.com/breaking-bert-down-430461f60efb)
+-   [Illustrated BERT](https://jalammar.github.io/illustrated-bert/)
+-   [Visual Guide to BERT](https://jalammar.github.io/a-visual-guide-to-using-bert-for-the-first-time/)
+-   [BERT Model Documentation](https://huggingface.co/docs/transformers/main/en/model_doc/bert)
+-   [What is Fill-Mask?](https://huggingface.co/tasks/fill-mask)
+
+``` r
+library(FMAT)
+model.names = c(
+  "bert-base-uncased",
+  "bert-base-cased",
+  "bert-large-uncased",
+  "bert-large-cased",
+  "distilbert-base-uncased",
+  "distilbert-base-cased",
+  "albert-base-v1",
+  "albert-base-v2",
+  "roberta-base",
+  "distilroberta-base",
+  "vinai/bertweet-base",
+  "vinai/bertweet-large"
+)
+BERT_download(model.names)
+```
+
+```         
+ℹ Device Info:
+
+Python Environment:
+Package       Version
+transformers  4.38.2
+torch         2.2.1+cu121
+
+NVIDIA GPU CUDA Support:
+CUDA Enabled: TRUE
+CUDA Version: 12.1
+GPU (Device): NVIDIA GeForce RTX 2050
+
+
+── Downloading model "bert-base-uncased" ───────────────────────────────────────────
+Downloading configuration...
+config.json: 100%|██████████| 570/570 [00:00<00:00, 113kB/s]
+Downloading tokenizer...
+tokenizer_config.json: 100%|██████████| 48.0/48.0 [00:00<?, ?B/s]
+vocab.txt: 100%|██████████| 232k/232k [00:00<00:00, 1.37MB/s]
+tokenizer.json: 100%|██████████| 466k/466k [00:00<00:00, 3.94MB/s]
+Downloading model...
+model.safetensors: 100%|██████████| 440M/440M [01:21<00:00, 5.40MB/s] 
+✔ Successfully downloaded model "bert-base-uncased"
+
+── Downloading model "bert-base-cased" ─────────────────────────────────────────────
+Downloading configuration...
+config.json: 100%|██████████| 570/570 [00:00<?, ?B/s] 
+Downloading tokenizer...
+tokenizer_config.json: 100%|██████████| 49.0/49.0 [00:00<00:00, 8.18kB/s]
+vocab.txt: 100%|██████████| 213k/213k [00:00<00:00, 1.30MB/s]
+tokenizer.json: 100%|██████████| 436k/436k [00:00<00:00, 3.67MB/s]
+Downloading model...
+model.safetensors: 100%|██████████| 436M/436M [01:20<00:00, 5.41MB/s] 
+✔ Successfully downloaded model "bert-base-cased"
+
+── Downloading model "bert-large-uncased" ──────────────────────────────────────────
+Downloading configuration...
+config.json: 100%|██████████| 571/571 [00:00<00:00, 143kB/s]
+Downloading tokenizer...
+tokenizer_config.json: 100%|██████████| 48.0/48.0 [00:00<00:00, 12.0kB/s]
+vocab.txt: 100%|██████████| 232k/232k [00:00<00:00, 6.04MB/s]
+tokenizer.json: 100%|██████████| 466k/466k [00:00<00:00, 1.57MB/s]
+Downloading model...
+model.safetensors: 100%|██████████| 1.34G/1.34G [04:09<00:00, 5.39MB/s]
+✔ Successfully downloaded model "bert-large-uncased"
+
+── Downloading model "bert-large-cased" ────────────────────────────────────────────
+Downloading configuration...
+config.json: 100%|██████████| 762/762 [00:00<?, ?B/s] 
+Downloading tokenizer...
+tokenizer_config.json: 100%|██████████| 49.0/49.0 [00:00<?, ?B/s]
+vocab.txt: 100%|██████████| 213k/213k [00:00<00:00, 2.14MB/s]
+tokenizer.json: 100%|██████████| 436k/436k [00:00<00:00, 1.75MB/s]
+Downloading model...
+model.safetensors: 100%|██████████| 1.34G/1.34G [04:08<00:00, 5.38MB/s]
+✔ Successfully downloaded model "bert-large-cased"
+
+── Downloading model "distilbert-base-uncased" ─────────────────────────────────────
+Downloading configuration...
+config.json: 100%|██████████| 483/483 [00:00<?, ?B/s] 
+Downloading tokenizer...
+tokenizer_config.json: 100%|██████████| 28.0/28.0 [00:00<?, ?B/s]
+vocab.txt: 100%|██████████| 232k/232k [00:00<00:00, 1.36MB/s]
+tokenizer.json: 100%|██████████| 466k/466k [00:00<00:00, 1.82MB/s]
+Downloading model...
+model.safetensors: 100%|██████████| 268M/268M [00:51<00:00, 5.24MB/s] 
+✔ Successfully downloaded model "distilbert-base-uncased"
+
+── Downloading model "distilbert-base-cased" ───────────────────────────────────────
+Downloading configuration...
+config.json: 100%|██████████| 465/465 [00:00<?, ?B/s] 
+Downloading tokenizer...
+tokenizer_config.json: 100%|██████████| 29.0/29.0 [00:00<?, ?B/s]
+vocab.txt: 100%|██████████| 213k/213k [00:00<00:00, 1.34MB/s]
+tokenizer.json: 100%|██████████| 436k/436k [00:00<00:00, 4.20MB/s]
+Downloading model...
+model.safetensors: 100%|██████████| 263M/263M [00:49<00:00, 5.36MB/s] 
+✔ Successfully downloaded model "distilbert-base-cased"
+
+── Downloading model "albert-base-v1" ──────────────────────────────────────────────
+Downloading configuration...
+config.json: 100%|██████████| 684/684 [00:00<?, ?B/s] 
+Downloading tokenizer...
+tokenizer_config.json: 100%|██████████| 25.0/25.0 [00:00<00:00, 1.65kB/s]
+spiece.model: 100%|██████████| 760k/760k [00:00<00:00, 4.58MB/s]
+tokenizer.json: 100%|██████████| 1.31M/1.31M [00:00<00:00, 3.09MB/s]
+Downloading model...
+model.safetensors: 100%|██████████| 47.4M/47.4M [00:09<00:00, 5.07MB/s]
+✔ Successfully downloaded model "albert-base-v1"
+
+── Downloading model "albert-base-v2" ──────────────────────────────────────────────
+Downloading configuration...
+config.json: 100%|██████████| 684/684 [00:00<00:00, 45.5kB/s]
+Downloading tokenizer...
+tokenizer_config.json: 100%|██████████| 25.0/25.0 [00:00<?, ?B/s]
+spiece.model: 100%|██████████| 760k/760k [00:00<00:00, 2.13MB/s]
+tokenizer.json: 100%|██████████| 1.31M/1.31M [00:00<00:00, 5.66MB/s]
+Downloading model...
+model.safetensors: 100%|██████████| 47.4M/47.4M [00:08<00:00, 5.51MB/s]
+✔ Successfully downloaded model "albert-base-v2"
+
+── Downloading model "roberta-base" ────────────────────────────────────────────────
+Downloading configuration...
+config.json: 100%|██████████| 481/481 [00:00<?, ?B/s] 
+Downloading tokenizer...
+tokenizer_config.json: 100%|██████████| 25.0/25.0 [00:00<?, ?B/s]
+vocab.json: 100%|██████████| 899k/899k [00:00<00:00, 5.73MB/s]
+merges.txt: 100%|██████████| 456k/456k [00:00<00:00, 6.16MB/s]
+tokenizer.json: 100%|██████████| 1.36M/1.36M [00:00<00:00, 5.50MB/s]
+Downloading model...
+model.safetensors: 100%|██████████| 499M/499M [01:32<00:00, 5.38MB/s] 
+Some weights of RobertaModel were not initialized from the model checkpoint at roberta-base and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+✔ Successfully downloaded model "roberta-base"
+
+── Downloading model "distilroberta-base" ──────────────────────────────────────────
+Downloading configuration...
+config.json: 100%|██████████| 480/480 [00:00<00:00, 30.7kB/s]
+Downloading tokenizer...
+tokenizer_config.json: 100%|██████████| 25.0/25.0 [00:00<00:00, 7.98kB/s]
+vocab.json: 100%|██████████| 899k/899k [00:00<00:00, 5.18MB/s]
+merges.txt: 100%|██████████| 456k/456k [00:00<00:00, 5.71MB/s]
+tokenizer.json: 100%|██████████| 1.36M/1.36M [00:00<00:00, 3.83MB/s]
+Downloading model...
+model.safetensors: 100%|██████████| 331M/331M [01:01<00:00, 5.39MB/s] 
+✔ Successfully downloaded model "distilroberta-base"
+
+── Downloading model "vinai/bertweet-base" ─────────────────────────────────────────
+Downloading configuration...
+config.json: 100%|██████████| 558/558 [00:00<?, ?B/s] 
+Downloading tokenizer...
+vocab.txt: 100%|██████████| 843k/843k [00:00<00:00, 5.56MB/s]
+bpe.codes: 100%|██████████| 1.08M/1.08M [00:00<00:00, 5.55MB/s]
+tokenizer.json: 100%|██████████| 2.91M/2.91M [00:00<00:00, 5.50MB/s]
+emoji is not installed, thus not converting emoticons or emojis into text. Install emoji: pip3 install emoji==0.6.0
+Downloading model...
+pytorch_model.bin: 100%|██████████| 543M/543M [01:40<00:00, 5.39MB/s] 
+✔ Successfully downloaded model "vinai/bertweet-base"
+
+── Downloading model "vinai/bertweet-large" ────────────────────────────────────────
+Downloading configuration...
+config.json: 100%|██████████| 614/614 [00:00<?, ?B/s] 
+Downloading tokenizer...
+vocab.json: 100%|██████████| 899k/899k [00:00<00:00, 5.59MB/s]
+merges.txt: 100%|██████████| 456k/456k [00:00<00:00, 5.04MB/s]
+tokenizer.json: 100%|██████████| 1.36M/1.36M [00:00<00:00, 5.42MB/s]
+Downloading model...
+pytorch_model.bin: 100%|██████████| 1.42G/1.42G [04:23<00:00, 5.40MB/s]
+Some weights of RobertaModel were not initialized from the model checkpoint at vinai/bertweet-large and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+✔ Successfully downloaded model "vinai/bertweet-large"
+
+── Downloaded models: ──
+
+                           Size
+albert-base-v1            45 MB
+albert-base-v2            45 MB
+bert-base-cased          416 MB
+bert-base-uncased        420 MB
+bert-large-cased        1277 MB
+bert-large-uncased      1283 MB
+distilbert-base-cased    251 MB
+distilbert-base-uncased  256 MB
+distilroberta-base       316 MB
+roberta-base             476 MB
+vinai/bertweet-base      517 MB
+vinai/bertweet-large    1356 MB
+
+✔ Downloaded models saved at C:/Users/Bruce/.cache/huggingface/hub (6.52 GB)
+```
+
+(Tested 2024/03 on the developer's computer: HP Probook 450 G10 Notebook PC)
 
 ## Related Packages
 

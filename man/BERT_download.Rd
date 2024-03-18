@@ -2,9 +2,9 @@
 % Please edit documentation in R/FMAT.R
 \name{BERT_download}
 \alias{BERT_download}
-\title{DownLoad BERT models.}
+\title{Download BERT models.}
 \usage{
-BERT_download(models)
+BERT_download(models = NULL)
 }
 \arguments{
 \item{models}{Model names at \href{https://huggingface.co/models}{HuggingFace}.
@@ -14,15 +14,16 @@ For a full list of available BERT models, see
 }
 \value{
 No return value.
-Model files will be saved in "\%USERPROFILE\%/.cache/huggingface".
 }
 \description{
-DownLoad BERT models to local cache folder "\%USERPROFILE\%/.cache/huggingface".
+Download and save BERT models to local cache folder "\%USERPROFILE\%/.cache/huggingface".
 }
 \examples{
 \dontrun{
 model.names = c("bert-base-uncased", "bert-base-cased")
 BERT_download(model.names)
+
+BERT_download()  # check downloaded models
 }
 
 }
