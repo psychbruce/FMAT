@@ -54,14 +54,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">FMAT_run</span><span class="op">(</span></span>
-<span>  <span class="va">models</span>,</span>
-<span>  <span class="va">data</span>,</span>
-<span>  gpu <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  file <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  warning <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">FMAT_run</span><span class="op">(</span><span class="va">models</span>, <span class="va">data</span>, <span class="va">gpu</span>, file <span class="op">=</span> <span class="cn">NULL</span>, progress <span class="op">=</span> <span class="cn">TRUE</span>, warning <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -71,8 +64,8 @@
 <a href="https://huggingface.co/models?pipeline_tag=fill-mask&amp;library=transformers" class="external-link">HuggingFace</a>.</p><ul><li><p>Can be used for both CPU and GPU.</p></li>
 </ul></li>
 <li><p>A returned object from <code><a href="FMAT_load.html">FMAT_load</a></code>.</p><ul><li><p>Can ONLY be used for CPU.</p></li>
-<li><p>If you <strong><em>restart</em></strong> the R session,
-you will need to <strong><em>rerun</em></strong> <code><a href="FMAT_load.html">FMAT_load</a></code>.</p></li>
+<li><p>If you <em>restart</em> the R session,
+you will need to <em>rerun</em> <code><a href="FMAT_load.html">FMAT_load</a></code>.</p></li>
 </ul></li>
 </ul></dd>
 
@@ -83,9 +76,10 @@ you will need to <strong><em>rerun</em></strong> <code><a href="FMAT_load.html">
 
 <dt>gpu</dt>
 <dd><p>Use GPU (3x faster than CPU) to run the fill-mask pipeline?
-Defaults to <code>FALSE</code> (using CPU).
-An NVIDIA GPU device (e.g., GeForce RTX Series) is required to use GPU.</p>
-<p>See <a href="https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration">Guidance for GPU Acceleration</a>.</p>
+Defaults to missing value that will <em>automatically</em> use available GPU
+(if not available, then use CPU).
+An NVIDIA GPU device (e.g., GeForce RTX Series) is required to use GPU.
+See <a href="https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration">Guidance for GPU Acceleration</a>.</p>
 <p>Options passing to the <code>device</code> parameter in Python:</p><ul><li><p><code>FALSE</code>: CPU (<code>device = -1</code>).</p></li>
 <li><p><code>TRUE</code>: GPU (<code>device = 0</code>).</p></li>
 <li><p>Any other value: passing to
@@ -125,7 +119,7 @@ is more interpretable. See <code><a href="summary.fmat.html">summary.fmat</a></c
 </ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The function will also automatically adjust for
+    <p>The function automatically adjusts for
 the compatibility of tokens used in certain models:
 (1) for uncased models (e.g., ALBERT), it turns tokens to lowercase;
 (2) for models that use <code>&lt;mask&gt;</code> rather than <code>[MASK]</code>,
@@ -134,9 +128,13 @@ it automatically uses the corrected mask token;
 (e.g., ALBERT, RoBERTa), it adds a certain prefix (usually a white space;
 \u2581 for ALBERT and XLM-RoBERTa, \u0120 for RoBERTa and DistilRoBERTa).</p>
 <p>Note that these changes only affect the <code>token</code> variable
-in the returned data, but will not affect the <code>M_word</code> variable.z
-Thus, users may analyze their data based on the unchanged <code>M_word</code>
+in the returned data, but will not affect the <code>M_word</code> variable.
+Thus, users may analyze data based on the unchanged <code>M_word</code>
 rather than the <code>token</code>.</p>
+<p>Note also that there may be extremely trivial differences
+(after 5~6 significant digits) in the
+raw probability estimates between using CPU and GPU,
+but these differences would have little impact on main results.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

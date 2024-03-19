@@ -98,9 +98,7 @@
 </div>
 <p>😷 The Fill-Mask Association Test (掩码填空联系测验).</p>
 <p>The <em>Fill-Mask Association Test</em> (FMAT) is an integrative and probability-based method using <a href="#bert-models">BERT Models</a> to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as <em>propositions</em> in natural language (<a href="https://doi.org/10.1037/pspa0000396" class="external-link">Bao, 2024, <em>JPSP</em></a>).</p>
-<div class="float">
-<img src="https://psychbruce.github.io/img/FMAT-Workflow.png" alt="FMAT Workflow"><div class="figcaption">FMAT Workflow</div>
-</div>
+<p><img src="https://psychbruce.github.io/img/FMAT-Workflow.png"></p>
 <!-- badges: start -->
 
 <!-- badges: end -->
@@ -119,7 +117,7 @@
 <li>Bao, H.-W.-S. (2023). <em>FMAT: The Fill-Mask Association Test</em>. <a href="https://CRAN.R-project.org/package=FMAT" class="external-link uri">https://CRAN.R-project.org/package=FMAT</a>
 <ul>
 <li>
-<em>Note</em>: This is the original citation format. Please refer to the information when you <code><a href="https://psychbruce.github.io/FMAT/">library(FMAT)</a></code> for the APA-7 format of your installed version.</li>
+<em>Note</em>: This is the original citation. Please refer to the information when you <code><a href="https://psychbruce.github.io/FMAT/">library(FMAT)</a></code> for the APA-7 format of the version you installed.</li>
 </ul>
 </li>
 <li>Bao, H.-W.-S. (in press). The Fill-Mask Association Test (FMAT): Measuring propositions in natural language. <em>Journal of Personality and Social Psychology</em>. <a href="https://doi.org/10.1037/pspa0000396" class="external-link uri">https://doi.org/10.1037/pspa0000396</a>
@@ -218,6 +216,12 @@
 <h2 id="guidance-for-gpu-acceleration">Guidance for GPU Acceleration<a class="anchor" aria-label="anchor" href="#guidance-for-gpu-acceleration"></a>
 </h2>
 <p>By default, the <code>FMAT</code> package uses CPU to enable the functionality for all users. But for advanced users who want to accelerate the pipeline with GPU, the <code><a href="reference/FMAT_run.html">FMAT_run()</a></code> function now supports using a GPU device, about <strong>3x faster</strong> than CPU.</p>
+<p>Test results (on the developer’s computer, depending on BERT model size):</p>
+<ul>
+<li>CPU (Intel 13th-Gen i7-1355U): 500~1000 queries/min</li>
+<li>GPU (NVIDIA GeForce RTX 2050): 1500~3000 queries/min</li>
+</ul>
+<p>Checklist:</p>
 <ol style="list-style-type: decimal">
 <li>Ensure that you have an NVIDIA GPU device (e.g., GeForce RTX Series) and an NVIDIA GPU driver installed on your system.</li>
 <li>Install PyTorch (Python <code>torch</code> package) with CUDA support.
