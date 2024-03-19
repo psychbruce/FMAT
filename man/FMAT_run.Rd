@@ -4,14 +4,7 @@
 \alias{FMAT_run}
 \title{Run the fill-mask pipeline on multiple models (CPU / GPU).}
 \usage{
-FMAT_run(
-  models,
-  data,
-  gpu = FALSE,
-  file = NULL,
-  progress = TRUE,
-  warning = TRUE
-)
+FMAT_run(models, data, gpu, file = NULL, progress = TRUE, warning = TRUE)
 }
 \arguments{
 \item{models}{Options:
@@ -24,17 +17,17 @@ FMAT_run(
 \item A returned object from \code{\link{FMAT_load}}.
 \itemize{
 \item Can ONLY be used for CPU.
-\item If you \strong{\emph{restart}} the R session,
-you will need to \strong{\emph{rerun}} \code{\link{FMAT_load}}.
+\item If you \emph{restart} the R session,
+you will need to \emph{rerun} \code{\link{FMAT_load}}.
 }
 }}
 
 \item{data}{A data.table returned from \code{\link{FMAT_query}} or \code{\link{FMAT_query_bind}}.}
 
 \item{gpu}{Use GPU (3x faster than CPU) to run the fill-mask pipeline?
-Defaults to \code{FALSE} (using CPU).
+Defaults to missing value that will \emph{automatically} use available GPU
+(if not available, then use CPU).
 An NVIDIA GPU device (e.g., GeForce RTX Series) is required to use GPU.
-
 See \href{https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration}{Guidance for GPU Acceleration}.
 
 Options passing to the \code{device} parameter in Python:
@@ -76,7 +69,7 @@ Run the fill-mask pipeline on multiple models with CPU or GPU
 (faster but requiring an NVIDIA GPU device).
 }
 \details{
-The function will also automatically adjust for
+The function automatically adjusts for
 the compatibility of tokens used in certain models:
 (1) for uncased models (e.g., ALBERT), it turns tokens to lowercase;
 (2) for models that use \verb{<mask>} rather than \verb{[MASK]},
@@ -86,9 +79,14 @@ it automatically uses the corrected mask token;
 \\u2581 for ALBERT and XLM-RoBERTa, \\u0120 for RoBERTa and DistilRoBERTa).
 
 Note that these changes only affect the \code{token} variable
-in the returned data, but will not affect the \code{M_word} variable.z
-Thus, users may analyze their data based on the unchanged \code{M_word}
+in the returned data, but will not affect the \code{M_word} variable.
+Thus, users may analyze data based on the unchanged \code{M_word}
 rather than the \code{token}.
+
+Note also that there may be extremely trivial differences
+(after 5~6 significant digits) in the
+raw probability estimates between using CPU and GPU,
+but these differences would have little impact on main results.
 }
 \examples{
 ## Running the examples requires the models downloaded

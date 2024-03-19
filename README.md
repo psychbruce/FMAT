@@ -4,7 +4,7 @@
 
 The *Fill-Mask Association Test* (FMAT) is an integrative and probability-based method using [BERT Models] to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as *propositions* in natural language ([Bao, 2024, *JPSP*](https://doi.org/10.1037/pspa0000396)).
 
-![FMAT Workflow](https://psychbruce.github.io/img/FMAT-Workflow.png)
+![](https://psychbruce.github.io/img/FMAT-Workflow.png)
 
 <!-- badges: start -->
 
@@ -25,7 +25,7 @@ Han-Wu-Shuang (Bruce) Bao 包寒吴霜
 ## Citation
 
 -   Bao, H.-W.-S. (2023). *FMAT: The Fill-Mask Association Test*. <https://CRAN.R-project.org/package=FMAT>
-    -   *Note*: This is the original citation format. Please refer to the information when you `library(FMAT)` for the APA-7 format of your installed version.
+    -   *Note*: This is the original citation. Please refer to the information when you `library(FMAT)` for the APA-7 format of the version you installed.
 -   Bao, H.-W.-S. (in press). The Fill-Mask Association Test (FMAT): Measuring propositions in natural language. *Journal of Personality and Social Psychology*. <https://doi.org/10.1037/pspa0000396>
 
 ## Installation
@@ -111,6 +111,13 @@ Several steps of pre-processing have been included in the function for easier us
 ## Guidance for GPU Acceleration
 
 By default, the `FMAT` package uses CPU to enable the functionality for all users. But for advanced users who want to accelerate the pipeline with GPU, the `FMAT_run()` function now supports using a GPU device, about **3x faster** than CPU.
+
+Test results (on the developer's computer, depending on BERT model size):
+
+-   CPU (Intel 13th-Gen i7-1355U): 500\~1000 queries/min
+-   GPU (NVIDIA GeForce RTX 2050): 1500\~3000 queries/min
+
+Checklist:
 
 1.  Ensure that you have an NVIDIA GPU device (e.g., GeForce RTX Series) and an NVIDIA GPU driver installed on your system.
 2.  Install PyTorch (Python `torch` package) with CUDA support.

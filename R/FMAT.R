@@ -73,32 +73,21 @@ dtime = function(t0) {
 
 
 gpu_to_device = function(gpu) {
+  cuda = reticulate::import("torch")$cuda$is_available()
+  if(missing(gpu))
+    gpu = cuda
   if(is.logical(gpu))
     device = ifelse(gpu, 0L, -1L)
   if(is.numeric(gpu))
     device = as.integer(device)
   if(is.character(gpu))
     device = gpu
-  check_gpu_enabled(device)
-  return(device)
-}
-
-
-check_gpu_enabled = function(device) {
-  use.gpu = FALSE
-  if(is.integer(device)) if(device > -1) use.gpu = TRUE
-  if(is.character(device)) if(device != "cpu") use.gpu = TRUE
-  if(use.gpu) {
-    reticulate::py_capture_output({
-      torch = reticulate::import("torch")
-      if(!torch$cuda$is_available())
-        stop("
+  if(!device %in% c(-1L, "cpu") & !cuda)
+    stop("
       NVIDIA GPU CUDA is not enabled!
-      Try not setting the `gpu` parameter.
       For guidance, see https://psychbruce.github.io/FMAT/",
       call.=FALSE)
-    })
-  }
+  return(device)
 }
 
 
@@ -513,7 +502,7 @@ FMAT_query_bind = function(...) {
 #' (faster but requiring an NVIDIA GPU device).
 #'
 #' @details
-#' The function will also automatically adjust for
+#' The function automatically adjusts for
 #' the compatibility of tokens used in certain models:
 #' (1) for uncased models (e.g., ALBERT), it turns tokens to lowercase;
 #' (2) for models that use `<mask>` rather than `[MASK]`,
@@ -523,9 +512,14 @@ FMAT_query_bind = function(...) {
 #' \\u2581 for ALBERT and XLM-RoBERTa, \\u0120 for RoBERTa and DistilRoBERTa).
 #'
 #' Note that these changes only affect the `token` variable
-#' in the returned data, but will not affect the `M_word` variable.z
-#' Thus, users may analyze their data based on the unchanged `M_word`
+#' in the returned data, but will not affect the `M_word` variable.
+#' Thus, users may analyze data based on the unchanged `M_word`
 #' rather than the `token`.
+#'
+#' Note also that there may be extremely trivial differences
+#' (after 5~6 significant digits) in the
+#' raw probability estimates between using CPU and GPU,
+#' but these differences would have little impact on main results.
 #'
 #' @param models Options:
 #' - A character vector of model names at
@@ -533,13 +527,13 @@ FMAT_query_bind = function(...) {
 #'   - Can be used for both CPU and GPU.
 #' - A returned object from [`FMAT_load`].
 #'   - Can ONLY be used for CPU.
-#'   - If you __*restart*__ the R session,
-#'     you will need to __*rerun*__ [`FMAT_load`].
+#'   - If you *restart* the R session,
+#'     you will need to *rerun* [`FMAT_load`].
 #' @param data A data.table returned from [`FMAT_query`] or [`FMAT_query_bind`].
 #' @param gpu Use GPU (3x faster than CPU) to run the fill-mask pipeline?
-#' Defaults to `FALSE` (using CPU).
+#' Defaults to missing value that will *automatically* use available GPU
+#' (if not available, then use CPU).
 #' An NVIDIA GPU device (e.g., GeForce RTX Series) is required to use GPU.
-#'
 #' See [Guidance for GPU Acceleration](https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration).
 #'
 #' Options passing to the `device` parameter in Python:
@@ -621,7 +615,7 @@ FMAT_query_bind = function(...) {
 FMAT_run = function(
     models,
     data,
-    gpu = FALSE,
+    gpu,
     file = NULL,
     progress = TRUE,
     warning = TRUE
@@ -644,6 +638,7 @@ FMAT_run = function(
   }
 
   onerun = function(model, data=data) {
+    ## ---- One Run Begin ---- ##
     if(is.character(model)) {
       reticulate::py_capture_output({
         fill_mask = transformers$pipeline("fill-mask", model=model, device=device)
@@ -653,7 +648,7 @@ FMAT_run = function(
       model = model$model.name
     }
     if(device %in% c(-1L, "cpu"))
-      cli::cli_h1("{.val {model}}")
+      cli::cli_h1("{.val {model}} (CPU)")
     else
       cli::cli_h1("{.val {model}} (GPU Accelerated)")
 
@@ -663,6 +658,7 @@ FMAT_run = function(
     mask.lower = str_detect(model, "roberta|bertweet")
 
     unmask = function(d) {
+      ## unmask function begin ##
       if("TARGET" %in% names(d))
         TARGET = as.character(d$T_word)
       if("ATTRIB" %in% names(d))
@@ -691,27 +687,32 @@ FMAT_run = function(
                        "(out-of-vocabulary)", out))),
         prob = res$score
       ))
+      ## unmask function end ##
     }
 
     t1 = Sys.time()
     suppressWarnings({
       data = plyr::adply(data, 1, unmask, .progress=progress)
     })
-    cat(paste0("  (", dtime(t1), ")\n"))
+    speed = sprintf("%.0f", nrow(data) / as.numeric(difftime(Sys.time(), t1, units="mins")))
+    cat(paste0("  (", dtime(t1), ") [", speed, " queries/min]\n"))
 
     rm(fill_mask)
     gc()
 
     return(cbind(data.table(model=as.factor(model)), data))
+    ## ---- One Run End ---- ##
   }
 
   cli::cli_alert_info("Task: {length(models)} models * {nrow(data)} queries")
+  t0.task = Sys.time()
   data = rbindlist(lapply(models, onerun, data=data))
+  speed = sprintf("%.0f", nrow(data) / as.numeric(difftime(Sys.time(), t0.task, units="mins")))
   cat("\n")
   attr(data, "type") = type
   class(data) = c("fmat", class(data))
   gc()
-  cli::cli_alert_success("Task completed (total time cost = {dtime(t0)})")
+  cli::cli_alert_success("Task completed ({dtime(t0)}) [{speed} queries/min]")
 
   if(warning) warning_oov(data)
 
