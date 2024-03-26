@@ -7,7 +7,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="
     The Fill-Mask Association Test (FMAT)
-    &lt;doi:10.1037/pspa0000396&gt;
     is an integrative and probability-based method using
     Masked Language Models to measure conceptual associations
     (e.g., attitudes, biases, stereotypes, social norms, cultural values)
@@ -33,7 +32,6 @@
 <!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="The Fill-Mask Association Test">
 <meta property="og:description" content="
     The Fill-Mask Association Test (FMAT)
-    &lt;doi:10.1037/pspa0000396&gt;
     is an integrative and probability-based method using
     Masked Language Models to measure conceptual associations
     (e.g., attitudes, biases, stereotypes, social norms, cultural values)
@@ -97,7 +95,7 @@
 </h1>
 </div>
 <p>😷 The Fill-Mask Association Test (掩码填空联系测验).</p>
-<p>The <em>Fill-Mask Association Test</em> (FMAT) is an integrative and probability-based method using <a href="#bert-models">BERT Models</a> to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as <em>propositions</em> in natural language (<a href="https://doi.org/10.1037/pspa0000396" class="external-link">Bao, 2024, <em>JPSP</em></a>).</p>
+<p>The <em>Fill-Mask Association Test</em> (FMAT) is an integrative and probability-based method using <a href="#bert-models">BERT Models</a> to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as <em>propositions</em> in natural language (<a href="https://psychbruce.github.io/FMAT/#citation">Bao, 2024, <em>JPSP</em></a>).</p>
 <p><img src="https://psychbruce.github.io/img/FMAT-Workflow.png"></p>
 <!-- badges: start -->
 
@@ -120,8 +118,7 @@
 <em>Note</em>: This is the original citation. Please refer to the information when you <code><a href="https://psychbruce.github.io/FMAT/">library(FMAT)</a></code> for the APA-7 format of the version you installed.</li>
 </ul>
 </li>
-<li>Bao, H.-W.-S. (in press). The Fill-Mask Association Test (FMAT): Measuring propositions in natural language. <em>Journal of Personality and Social Psychology</em>. <a href="https://doi.org/10.1037/pspa0000396" class="external-link uri">https://doi.org/10.1037/pspa0000396</a>
-</li>
+<li>Bao, H.-W.-S. (in press). The Fill-Mask Association Test (FMAT): Measuring propositions in natural language. <em>Journal of Personality and Social Psychology</em>. DOI: 10.1037/pspa0000396</li>
 </ul>
 </div>
 <div class="section level2">
@@ -184,7 +181,7 @@
 <div class="section level3">
 <h3 id="fmat-step-1-query-design">FMAT Step 1: Query Design<a class="anchor" aria-label="anchor" href="#fmat-step-1-query-design"></a>
 </h3>
-<p>Design queries that conceptually represent the constructs you would measure (see <a href="https://doi.org/10.1037/pspa0000396" class="external-link">Bao, 2024, <em>JPSP</em></a> for how to design queries).</p>
+<p>Design queries that conceptually represent the constructs you would measure (see <a href="https://psychbruce.github.io/FMAT/#citation">Bao, 2024, <em>JPSP</em></a> for how to design queries).</p>
 <p>Use <code><a href="reference/FMAT_query.html">FMAT_query()</a></code> and/or <code><a href="reference/FMAT_query_bind.html">FMAT_query_bind()</a></code> to prepare a <code>data.table</code> of queries.</p>
 </div>
 <div class="section level3">
@@ -268,14 +265,15 @@
 <li>
 <a href="https://huggingface.co/vinai/bertweet-large" class="external-link">vinai/bertweet-large</a> (1356 MB)</li>
 </ol>
-<p>If you are new to <a href="https://arxiv.org/abs/1810.04805" class="external-link">BERT</a>, please read:</p>
+<p>If you are new to <a href="https://arxiv.org/abs/1810.04805" class="external-link">BERT</a>, these references can be helpful:</p>
 <ul>
+<li><a href="https://huggingface.co/tasks/fill-mask" class="external-link">What is Fill-Mask? [HuggingFace]</a></li>
+<li><a href="https://huggingface.co/spaces/exbert-project/exbert" class="external-link">An Explorable BERT [HuggingFace]</a></li>
+<li><a href="https://huggingface.co/docs/transformers/main/en/model_doc/bert" class="external-link">BERT Model Documentation [HuggingFace]</a></li>
 <li><a href="https://towardsdatascience.com/bert-explained-state-of-the-art-language-model-for-nlp-f8b21a9b6270" class="external-link">BERT Explained</a></li>
 <li><a href="https://towardsdatascience.com/breaking-bert-down-430461f60efb" class="external-link">Breaking BERT Down</a></li>
 <li><a href="https://jalammar.github.io/illustrated-bert/" class="external-link">Illustrated BERT</a></li>
 <li><a href="https://jalammar.github.io/a-visual-guide-to-using-bert-for-the-first-time/" class="external-link">Visual Guide to BERT</a></li>
-<li><a href="https://huggingface.co/docs/transformers/main/en/model_doc/bert" class="external-link">BERT Model Documentation</a></li>
-<li><a href="https://huggingface.co/tasks/fill-mask" class="external-link">What is Fill-Mask?</a></li>
 </ul>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://psychbruce.github.io/FMAT/">FMAT</a></span><span class="op">)</span></span>

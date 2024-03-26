@@ -74,10 +74,10 @@ please use <code><a href="FMAT_query_bind.html">FMAT_query_bind</a></code> to co
 
 <dt>MASK</dt>
 <dd><p>A named list of <code>[MASK]</code> target words.
-Must be single words in the vocabulary of a certain masked language model.
-For model vocabulary, see, e.g.,
+Must be single words in the vocabulary of a certain masked language model.</p>
+<p>For model vocabulary, see, e.g.,
 <a href="https://huggingface.co/bert-base-uncased/raw/main/vocab.txt" class="external-link">https://huggingface.co/bert-base-uncased/raw/main/vocab.txt</a></p>
-<p>Note that infrequent words may be not included in a model's vocabulary,
+<p>Infrequent words may be not included in a model's vocabulary,
 and in this case you may insert the words into the context by
 specifying either <code>TARGET</code> or <code>ATTRIB</code>.</p></dd>
 
@@ -90,8 +90,8 @@ to be replaced by the words/phrases.</p></dd>
 
 
 <dt>unmask.id</dt>
-<dd><p>If there are multiple <code>[MASK]</code> in <code>query</code>,
-this argument will be used to determine which one is to be unmasked.
+<dd><p>If multiple <code>[MASK]</code> are in <code>query</code>,
+it determines which one should be unmasked.
 Defaults to the 1st <code>[MASK]</code>.</p></dd>
 
 </dl></div>
