@@ -23,10 +23,11 @@ please use \code{\link{FMAT_query_bind}} to combine them.}
 
 \item{MASK}{A named list of \verb{[MASK]} target words.
 Must be single words in the vocabulary of a certain masked language model.
+
 For model vocabulary, see, e.g.,
 \url{https://huggingface.co/bert-base-uncased/raw/main/vocab.txt}
 
-Note that infrequent words may be not included in a model's vocabulary,
+Infrequent words may be not included in a model's vocabulary,
 and in this case you may insert the words into the context by
 specifying either \code{TARGET} or \code{ATTRIB}.}
 
@@ -35,8 +36,8 @@ If specified, then \code{query} must contain
 \code{{TARGET}} and/or \code{{ATTRIB}} (in all uppercase and in braces)
 to be replaced by the words/phrases.}
 
-\item{unmask.id}{If there are multiple \verb{[MASK]} in \code{query},
-this argument will be used to determine which one is to be unmasked.
+\item{unmask.id}{If multiple \verb{[MASK]} are in \code{query},
+it determines which one should be unmasked.
 Defaults to the 1st \verb{[MASK]}.}
 }
 \value{

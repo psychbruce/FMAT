@@ -2,7 +2,7 @@
 
 😷 The Fill-Mask Association Test (掩码填空联系测验).
 
-The *Fill-Mask Association Test* (FMAT) is an integrative and probability-based method using [BERT Models] to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as *propositions* in natural language ([Bao, 2024, *JPSP*](https://doi.org/10.1037/pspa0000396)).
+The *Fill-Mask Association Test* (FMAT) is an integrative and probability-based method using [BERT Models] to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as *propositions* in natural language ([Bao, 2024, *JPSP*](https://psychbruce.github.io/FMAT/#citation)).
 
 ![](https://psychbruce.github.io/img/FMAT-Workflow.png)
 
@@ -26,7 +26,7 @@ Han-Wu-Shuang (Bruce) Bao 包寒吴霜
 
 -   Bao, H.-W.-S. (2023). *FMAT: The Fill-Mask Association Test*. <https://CRAN.R-project.org/package=FMAT>
     -   *Note*: This is the original citation. Please refer to the information when you `library(FMAT)` for the APA-7 format of the version you installed.
--   Bao, H.-W.-S. (in press). The Fill-Mask Association Test (FMAT): Measuring propositions in natural language. *Journal of Personality and Social Psychology*. <https://doi.org/10.1037/pspa0000396>
+-   Bao, H.-W.-S. (in press). The Fill-Mask Association Test (FMAT): Measuring propositions in natural language. *Journal of Personality and Social Psychology*. DOI: 10.1037/pspa0000396
 
 ## Installation
 
@@ -84,7 +84,7 @@ virtualenv_install(packages=c("transformers", "torch"))
 
 ### FMAT Step 1: Query Design
 
-Design queries that conceptually represent the constructs you would measure (see [Bao, 2024, *JPSP*](https://doi.org/10.1037/pspa0000396) for how to design queries).
+Design queries that conceptually represent the constructs you would measure (see [Bao, 2024, *JPSP*](https://psychbruce.github.io/FMAT/#citation) for how to design queries).
 
 Use `FMAT_query()` and/or `FMAT_query_bind()` to prepare a `data.table` of queries.
 
@@ -152,14 +152,15 @@ The reliability and validity of the following 12 representative BERT models have
 11. [vinai/bertweet-base](https://huggingface.co/vinai/bertweet-base) (517 MB)
 12. [vinai/bertweet-large](https://huggingface.co/vinai/bertweet-large) (1356 MB)
 
-If you are new to [BERT](https://arxiv.org/abs/1810.04805), please read:
+If you are new to [BERT](https://arxiv.org/abs/1810.04805), these references can be helpful:
 
+-   [What is Fill-Mask? [HuggingFace]](https://huggingface.co/tasks/fill-mask)
+-   [An Explorable BERT [HuggingFace]](https://huggingface.co/spaces/exbert-project/exbert)
+-   [BERT Model Documentation [HuggingFace]](https://huggingface.co/docs/transformers/main/en/model_doc/bert)
 -   [BERT Explained](https://towardsdatascience.com/bert-explained-state-of-the-art-language-model-for-nlp-f8b21a9b6270)
 -   [Breaking BERT Down](https://towardsdatascience.com/breaking-bert-down-430461f60efb)
 -   [Illustrated BERT](https://jalammar.github.io/illustrated-bert/)
 -   [Visual Guide to BERT](https://jalammar.github.io/a-visual-guide-to-using-bert-for-the-first-time/)
--   [BERT Model Documentation](https://huggingface.co/docs/transformers/main/en/model_doc/bert)
--   [What is Fill-Mask?](https://huggingface.co/tasks/fill-mask)
 
 ``` r
 library(FMAT)

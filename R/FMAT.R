@@ -31,6 +31,11 @@
     glue::glue_col("{italic FMAT: The Fill-Mask Association Test}"),
     glue::glue_col(" (Version {inst.ver}) [Computer software]. "),
     glue::glue_col("{underline https://CRAN.R-project.org/package=FMAT}"),
+    "\n\n",
+    glue::glue_col("Bao, H.-W.-S. (2024). The Fill-Mask Association Test (FMAT): "),
+    glue::glue_col("Measuring propositions in natural language. "),
+    glue::glue_col("{italic Journal of Personality and Social Psychology. }"),
+    glue::glue_col("Advance online publication. {underline https://doi.org/10.1037/pspa0000396}"),
     "\n")
   }
 }
@@ -333,18 +338,19 @@ append_X = function(dq, X, var="TARGET") {
 #' please use [`FMAT_query_bind`] to combine them.
 #' @param MASK A named list of `[MASK]` target words.
 #' Must be single words in the vocabulary of a certain masked language model.
+#'
 #' For model vocabulary, see, e.g.,
 #' <https://huggingface.co/bert-base-uncased/raw/main/vocab.txt>
 #'
-#' Note that infrequent words may be not included in a model's vocabulary,
+#' Infrequent words may be not included in a model's vocabulary,
 #' and in this case you may insert the words into the context by
 #' specifying either `TARGET` or `ATTRIB`.
 #' @param TARGET,ATTRIB A named list of Target/Attribute words or phrases.
 #' If specified, then `query` must contain
 #' `{TARGET}` and/or `{ATTRIB}` (in all uppercase and in braces)
 #' to be replaced by the words/phrases.
-#' @param unmask.id If there are multiple `[MASK]` in `query`,
-#' this argument will be used to determine which one is to be unmasked.
+#' @param unmask.id If multiple `[MASK]` are in `query`,
+#' it determines which one should be unmasked.
 #' Defaults to the 1st `[MASK]`.
 #'
 #' @return
