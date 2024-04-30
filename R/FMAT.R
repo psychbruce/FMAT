@@ -3,6 +3,7 @@
 
 #' @import stringr
 #' @import data.table
+#' @importFrom dplyr left_join mutate
 #' @importFrom forcats as_factor
 #' @importFrom stats na.omit
 .onAttach = function(libname, pkgname) {
@@ -97,6 +98,8 @@ gpu_to_device = function(gpu) {
 
 
 transformers_init = function() {
+  FMAT.ver = as.character(utils::packageVersion("FMAT"))
+  reticulate.ver = as.character(utils::packageVersion("reticulate"))
   reticulate::py_capture_output({
     os = reticulate::import("os")
     os$environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
@@ -119,8 +122,11 @@ transformers_init = function() {
   })
   cli::cli_alert_info(cli::col_blue("Device Info:
 
-  Python Environment:
-  Package       Version
+  R Packages:
+  FMAT          {FMAT.ver}
+  reticulate    {reticulate.ver}
+
+  Python Packages:
   transformers  {tf.ver}
   torch         {torch.ver}
 
@@ -163,12 +169,14 @@ find_cached_models = function(cache.folder) {
 #' No return value.
 #'
 #' @seealso
+#' [`BERT_vocab`]
+#'
 #' [`FMAT_load`]
 #'
 #' @examples
 #' \dontrun{
-#' model.names = c("bert-base-uncased", "bert-base-cased")
-#' BERT_download(model.names)
+#' models = c("bert-base-uncased", "bert-base-cased")
+#' BERT_download(models)
 #'
 #' BERT_download()  # check downloaded models
 #' }
@@ -196,6 +204,54 @@ BERT_download = function(models=NULL) {
   print(local.models)
   cat("\n")
   cli::cli_alert_success("Downloaded models saved at {.path {cache.folder}} ({sprintf('%.2f', cache.sizegb)} GB)")
+}
+
+
+#' Check if mask words are in the model vocabulary.
+#'
+#' @inheritParams BERT_download
+#' @param mask.words Option words filling in the mask.
+#'
+#' @return
+#' A data.table of model names, mask words, and real tokens (replaced if out of vocabulary).
+#'
+#' @seealso
+#' [`BERT_download`]
+#'
+#' @examples
+#' \dontrun{
+#' models = c("bert-base-uncased", "bert-base-cased")
+#' BERT_vocab(models, c("bruce", "Bruce"))
+#' BERT_vocab(models, 1800:2024)
+#' }
+#'
+#' @export
+BERT_vocab = function(models, mask.words) {
+  transformers = transformers_init()
+  cache.folder = str_replace_all(transformers$TRANSFORMERS_CACHE, "\\\\", "/")
+  cli::cli_text("Loading models from {.path {cache.folder}} ...")
+  cat("\n")
+
+  mask.words = as.character(mask.words)
+
+  maps = rbindlist(lapply(models, function(model) {
+    reticulate::py_capture_output({
+      fill_mask = transformers$pipeline("fill-mask", model=model)
+      vocab = fill_mask$tokenizer$get_vocab()
+      ids = vocab[mask.words]
+      map = rbindlist(lapply(mask.words, function(mask) {
+        id = as.integer(fill_mask$get_target_ids(mask))
+        token = names(vocab[vocab==id])
+        if(is.null(ids[[mask]])) token = paste(token, "(out-of-vocabulary)")
+        data.table(model=as_factor(model), M_word=as_factor(mask), token=token)
+      }))
+    })
+    return(map)
+  }))
+
+  warning_oov(maps)
+
+  return(maps)
 }
 
 
@@ -228,8 +284,8 @@ BERT_download = function(models=NULL) {
 #'
 #' @examples
 #' \dontrun{
-#' model.names = c("bert-base-uncased", "bert-base-cased")
-#' models = FMAT_load(model.names)  # load models from cache
+#' models = c("bert-base-uncased", "bert-base-cased")
+#' models = FMAT_load(models)  # load models from cache
 #' }
 #'
 #' @export
@@ -349,9 +405,6 @@ append_X = function(dq, X, var="TARGET") {
 #' If specified, then `query` must contain
 #' `{TARGET}` and/or `{ATTRIB}` (in all uppercase and in braces)
 #' to be replaced by the words/phrases.
-#' @param unmask.id If multiple `[MASK]` are in `query`,
-#' it determines which one should be unmasked.
-#' Defaults to the 1st `[MASK]`.
 #'
 #' @return
 #' A data.table of queries and variables.
@@ -394,11 +447,12 @@ FMAT_query = function(
     query = "Text with [MASK], optionally with {TARGET} and/or {ATTRIB}.",
     MASK = .(),
     TARGET = .(),
-    ATTRIB = .(),
-    unmask.id = 1
+    ATTRIB = .()
 ) {
-  if(any(str_detect(query, "\\[MASK\\]", negate=TRUE)))
+  if(any(str_count(query, "\\[MASK\\]") == 0L))
     stop("`query` should contain a [MASK] token!", call.=FALSE)
+  if(any(str_count(query, "\\[MASK\\]") >= 2L))
+    stop("`query` should contain only *one* [MASK] token!", call.=FALSE)
   if(length(MASK) == 0) {
     stop("Please specify `MASK` (the targets of [MASK])!", call.=FALSE)
   } else {
@@ -424,18 +478,25 @@ FMAT_query = function(
     type = "MTA"
     dm = map_query(query, expand_pair, MASK)
     dx = map_query(query, function(q, target, attrib) {
-      rbind(
-        expand_full(q, c(target[1], attrib[1])),
-        expand_full(q, c(target[1], attrib[2])),
-        expand_full(q, c(target[2], attrib[1])),
-        expand_full(q, c(target[2], attrib[2]))
+      # rbind(
+      #   expand_full(q, c(target[1], attrib[1])),
+      #   expand_full(q, c(target[1], attrib[2])),
+      #   expand_full(q, c(target[2], attrib[1])),
+      #   expand_full(q, c(target[2], attrib[2]))
+      # )
+      rbindlist(
+        lapply(seq_along(target), function(i) {
+          rbindlist(
+            lapply(seq_along(attrib), function(j) {
+              expand_full(q, c(target[i], attrib[j]))
+            })
+          )
+        })
       )
     }, TARGET, ATTRIB)
-    dq = plyr::adply(dx, 1, function(x) cbind(dm, x))
+    dq = unique(plyr::adply(dx, 1, function(x) cbind(dm, x)))
   }
 
-  if(any(str_count(query, "\\[MASK\\]") > 1))
-    dq$unmask.id = as.integer(unmask.id)
   if(length(query) > 1)
     dq = cbind(data.table(qid = as.factor(as.numeric(dq$query))), dq)
   attr(dq, "type") = type
@@ -553,6 +614,7 @@ FMAT_query_bind = function(...) {
 #' @param file File name of `.RData` to save the returned data.
 #' @param progress Show a progress bar? Defaults to `TRUE`.
 #' @param warning Alert warning of out-of-vocabulary word(s)? Defaults to `TRUE`.
+#' @param na.out Replace probabilities of out-of-vocabulary word(s) with `NA`? Defaults to `TRUE`.
 #'
 #' @return
 #' A data.table (of new class `fmat`) appending `data` with these new variables:
@@ -582,8 +644,7 @@ FMAT_query_bind = function(...) {
 #' ## Running the examples requires the models downloaded
 #'
 #' \dontrun{
-#' models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
-#' # for GPU acceleration, please use `FMAT_run()` directly
+#' models = c("bert-base-uncased", "bert-base-cased")
 #'
 #' query1 = FMAT_query(
 #'   c("[MASK] is {TARGET}.", "[MASK] works as {TARGET}."),
@@ -604,17 +665,6 @@ FMAT_query_bind = function(...) {
 #' summary(data2, mask.pair=FALSE)
 #' summary(data2)
 #'
-#' query3 = FMAT_query(
-#'   "The association between {TARGET} and {ATTRIB} is [MASK].",
-#'   MASK = .(H="strong", L="weak"),
-#'   TARGET = .(Flower=cc("rose, iris, lily"),
-#'              Insect=cc("ant, cockroach, spider")),
-#'   ATTRIB = .(Pos=cc("health, happiness, love, peace"),
-#'              Neg=cc("death, sickness, hatred, disaster"))
-#' )
-#' data3 = FMAT_run(models, query3)
-#' summary(data3, attrib.pair=FALSE)
-#' summary(data3)
 #' }
 #'
 #' @export
@@ -624,7 +674,8 @@ FMAT_run = function(
     gpu,
     file = NULL,
     progress = TRUE,
-    warning = TRUE
+    warning = TRUE,
+    na.out = TRUE
 ) {
   t0 = Sys.time()
   type = attr(data, "type")
@@ -643,7 +694,20 @@ FMAT_run = function(
     cat("\n")
   }
 
-  onerun = function(model, data=data) {
+  query = .query = mask = .mask = M_word = T_word = A_word = token = NULL
+
+  # .query (final query sentences)
+  cli::cli_text("Producing queries from query templates ...")
+  cat("\n")
+  data = mutate(data, .query = str_replace(query, "\\[mask\\]", "[MASK]"))
+  if("TARGET" %in% names(data))
+    data = mutate(data, .query = str_replace(.query, "\\{TARGET\\}", as.character(T_word)))
+  if("ATTRIB" %in% names(data))
+    data = mutate(data, .query = str_replace(.query, "\\{ATTRIB\\}", as.character(A_word)))
+  n.unique.query = length(unique(data$.query))
+
+  # One BERT Model
+  onerun = function(model, data) {
     ## ---- One Run Begin ---- ##
     if(is.character(model)) {
       reticulate::py_capture_output({
@@ -658,69 +722,113 @@ FMAT_run = function(
     else
       cli::cli_h1("{.val {model}} (GPU Accelerated)")
 
+    # BERT model special cases
     uncased = str_detect(model, "uncased|albert")
     prefix.u2581 = str_detect(model, "xlm-roberta|albert")
     prefix.u0120 = str_detect(model, "roberta|bertweet-large") & !str_detect(model, "xlm")
     mask.lower = str_detect(model, "roberta|bertweet")
 
-    unmask = function(d) {
-      ## unmask function begin ##
-      if("TARGET" %in% names(d))
-        TARGET = as.character(d$T_word)
-      if("ATTRIB" %in% names(d))
-        ATTRIB = as.character(d$A_word)
-      uid = if("unmask.id" %in% names(d)) d$unmask.id else 1
-      query = str_replace_all(d$query, "\\[mask\\]", "[MASK]")
-      query = glue::glue(as.character(query))
-      mask = as.character(d$M_word)
-      mask.begin = str_sub(query, 1, 6) == "[MASK]" & uid == 1
-      if(uncased) mask = tolower(mask)
-      if(prefix.u2581) mask = paste0("\u2581", mask)
-      if(prefix.u0120 & !mask.begin) mask = paste0("\u0120", mask)
-      if(mask.lower) query = str_replace_all(query, "\\[MASK\\]", "<mask>")
+    # .mask (final mask target words)
+    data = mutate(data, .mask = as.character(M_word))
+    if(uncased)
+      data = mutate(data, .mask = tolower(.mask))
+    if(prefix.u2581)
+      data = mutate(data, .mask = paste0("\u2581", .mask))
+    if(prefix.u0120)
+      data = mutate(data, .mask = ifelse(!str_detect(.query, "^\\[MASK\\]"),
+                                         paste0("\u0120", .mask), .mask))
+    if(mask.lower)
+      data = mutate(data, .query = str_replace(.query, "\\[MASK\\]", "<mask>"))
+
+    # unmask (single version) [DEPRECATED]
+    # unmask_each = function(d) {
+    #   out = reticulate::py_capture_output({
+    #     res = fill_mask(d$.query, targets=d$.mask, top_k=1L)[[1]]
+    #   })
+    #   # UserWarning: You seem to be using the pipelines sequentially on GPU.
+    #   # In order to maximize efficiency please use a dataset.
+    #   d = data.table(
+    #     output = res$sequence,
+    #     token = ifelse(
+    #       out=="" | str_detect(out, "UserWarning|GPU"),  # no extra output from python
+    #       res$token_str,
+    #       paste(res$token_str,
+    #             ifelse(str_detect(out, "vocabulary"),
+    #                    "(out-of-vocabulary)", out))),
+    #     prob = res$score
+    #   )
+    #   return(d)
+    # }
+
+    # unmask (list version)
+    unmask = function(d, mask.list) {
       out = reticulate::py_capture_output({
-        res = fill_mask(query, targets=mask, top_k=1L)[[uid]]
+        res = fill_mask(d$.query, targets=mask.list,
+                        top_k=as.integer(length(mask.list)))
       })
-      # UserWarning: You seem to be using the pipelines sequentially on GPU.
-      # In order to maximize efficiency please use a dataset.
-      return(data.table(
-        output = res$sequence,
-        token = ifelse(
-          out=="" | str_detect(out, "UserWarning|GPU"),  # no extra output from python
-          res$token_str,
-          paste(res$token_str,
-                ifelse(str_detect(out, "vocabulary"),
-                       "(out-of-vocabulary)", out))),
-        prob = res$score
-      ))
-      ## unmask function end ##
+      d = rbindlist(res)[, c("token", "sequence", "score")]
+      names(d) = c("token.id", "output", "prob")
+      return(d)
     }
 
-    t1 = Sys.time()
-    suppressWarnings({
-      data = plyr::adply(data, 1, unmask, .progress=progress)
-    })
-    speed = sprintf("%.0f", nrow(data) / as.numeric(difftime(Sys.time(), t1, units="mins")))
-    cat(paste0("  (", dtime(t1), ") [", speed, " queries/min]\n"))
+    # mask token id mapping
+    mask_id_map = function(mask.options) {
+      vocab = fill_mask$tokenizer$get_vocab()
+      ids = vocab[mask.options]
+      # map = data.table(
+      #   .mask = mask.options,
+      #   token.id = sapply(ids, function(id) {ifelse(is.null(id), NA, id)}),
+      #   token = names(ids)
+      # )
+      map = rbindlist(lapply(mask.options, function(mask) {
+        reticulate::py_capture_output({
+          id = as.integer(fill_mask$get_target_ids(mask))
+          token = names(vocab[vocab==id])
+        })
+        if(is.null(ids[[mask]])) token = paste(token, "(out-of-vocabulary)")
+        data.table(.mask=mask, token.id=id, token=token)
+      }))
+      return(map)
+    }
 
+    # progress running
+    # if(parallel==FALSE)
+    # data = plyr::adply(data, 1, unmask_each, .progress=progress)
+    map = mask_id_map(unique(data$.mask))
+    t1 = Sys.time()
+    dq = plyr::adply(unique(data[, ".query"]), 1, unmask,
+                     mask.list=map$.mask, .progress=progress)
+    dq = left_join(dq, map, by="token.id")
+    data = left_join(data, dq[, c(".query", ".mask", "output", "token", "prob")],
+                     by=c(".query", ".mask"))
+    rm(dq)
+    data$.query = data$.mask = NULL
+    data = cbind(data.table(model=as_factor(model)), data)
+
+    mins = as.numeric(difftime(Sys.time(), t1, units="mins"))
+    speed1 = sprintf("%.0f", n.unique.query / mins)
+    speed2 = sprintf("%.0f", nrow(data) / mins)
+    cat(paste0("  (", dtime(t1), ") [",
+               speed1, " unique queries/min, ",
+               speed2, " prob estimates/min]",
+               "\n"))
     rm(fill_mask)
     gc()
 
-    return(cbind(data.table(model=as.factor(model)), data))
+    return(data)
     ## ---- One Run End ---- ##
   }
 
   cli::cli_alert_info("Task: {length(models)} models * {nrow(data)} queries")
-  t0.task = Sys.time()
   data = rbindlist(lapply(models, onerun, data=data))
-  speed = sprintf("%.0f", nrow(data) / as.numeric(difftime(Sys.time(), t0.task, units="mins")))
   cat("\n")
   attr(data, "type") = type
   class(data) = c("fmat", class(data))
   gc()
-  cli::cli_alert_success("Task completed ({dtime(t0)}) [{speed} queries/min]")
+  cli::cli_alert_success("Task completed ({dtime(t0)})")
 
   if(warning) warning_oov(data)
+  if(na.out) data[str_detect(token, "out-of-vocabulary")]$prob = NA
 
   if(!is.null(file)) {
     if(!str_detect(file, "\\.[Rr][Dd]a(ta)?$"))
@@ -790,7 +898,9 @@ summary.fmat = function(
     ...) {
   if(warning) warning_oov(object)
   type = attr(object, "type")
+
   M_word = T_word = A_word = MASK = TARGET = ATTRIB = prob = LPR = NULL
+  T_pair = T_pair_i = T_pair_j = A_pair = A_pair_i = A_pair_j = NULL
 
   if(mask.pair) {
     gvars = c("model", "query", "M_pair",
@@ -798,10 +908,10 @@ summary.fmat = function(
               "ATTRIB", "A_pair", "A_word")
     grouping.vars = intersect(names(object), gvars)
     dt = object[, .(
-      MASK = paste(MASK[1], "-", MASK[2]),
-      M_word = paste(M_word[1], "-", M_word[2]),
+      MASK = paste(MASK, collapse=" - "),
+      M_word = paste(M_word, collapse=" - "),
       LPR = log(prob[1]) - log(prob[2])
-    ), keyby = grouping.vars]
+    ), by = grouping.vars]
     dt$MASK = as_factor(dt$MASK)
     dt$M_word = as_factor(dt$M_word)
     dt$M_pair = NULL
@@ -819,10 +929,10 @@ summary.fmat = function(
   if(type=="MT") {
     if(target.pair) {
       dt = dt[, .(
-        TARGET = paste(TARGET[1], "-", TARGET[2]),
-        T_word = paste(T_word[1], "-", T_word[2]),
+        TARGET = paste(TARGET, collapse=" - "),
+        T_word = paste(T_word, collapse=" - "),
         LPR = LPR[1] - LPR[2]
-      ), keyby = c("model", "query", "MASK", "M_word", "T_pair")]
+      ), by = c("model", "query", "MASK", "M_word", "T_pair")]
       dt$TARGET = as_factor(dt$TARGET)
       dt$T_word = as_factor(dt$T_word)
       dt$T_pair = NULL
@@ -832,10 +942,10 @@ summary.fmat = function(
   if(type=="MA") {
     if(attrib.pair) {
       dt = dt[, .(
-        ATTRIB = paste(ATTRIB[1], "-", ATTRIB[2]),
-        A_word = paste(A_word[1], "-", A_word[2]),
+        ATTRIB = paste(ATTRIB, collapse=" - "),
+        A_word = paste(A_word, collapse=" - "),
         LPR = LPR[1] - LPR[2]
-      ), keyby = c("model", "query", "MASK", "M_word", "A_pair")]
+      ), by = c("model", "query", "MASK", "M_word", "A_pair")]
       dt$ATTRIB = as_factor(dt$ATTRIB)
       dt$A_word = as_factor(dt$A_word)
       dt$A_pair = NULL
@@ -843,20 +953,73 @@ summary.fmat = function(
   }
 
   if(type=="MTA") {
-    if(attrib.pair) {
+    if(target.pair) {
+      dt[, T_pair_i := (as.numeric(TARGET)+1) %/% 2]
+      dt[, T_pair_j := 1:.N,
+         by=c("model", "query", "MASK", "M_word",
+              "ATTRIB", "A_word", "TARGET")]
+      dt[, T_pair := as_factor(paste(T_pair_i, T_pair_j))]
       dt = dt[, .(
-        LPR = mean(LPR)
-      ), keyby = c("model", "query", "MASK", "M_word",
-                   "TARGET", "T_word", "ATTRIB")]
-      dt = dt[, .(
-        ATTRIB = paste(ATTRIB[1], "-", ATTRIB[2]),
+        TARGET = paste(TARGET, collapse=" - "),
+        T_word = paste(T_word, collapse=" - "),
         LPR = LPR[1] - LPR[2]
-      ), keyby = c("model", "query", "MASK", "M_word",
-                   "TARGET", "T_word")]
+      ), by = c("model", "query", "MASK", "M_word",
+                "ATTRIB", "A_word", "T_pair")]
+      dt$TARGET = as_factor(dt$TARGET)
+      dt$T_word = as_factor(dt$T_word)
+      dt$T_pair = NULL
+    }
+    if(attrib.pair) {
+      dt[, A_pair_i := (as.numeric(ATTRIB)+1) %/% 2]
+      dt[, A_pair_j := 1:.N,
+         by=c("model", "query", "MASK", "M_word",
+              "TARGET", "T_word", "ATTRIB")]
+      dt[, A_pair := as_factor(paste(A_pair_i, A_pair_j))]
+      dt = dt[, .(
+        ATTRIB = paste(ATTRIB, collapse=" - "),
+        A_word = paste(A_word, collapse=" - "),
+        LPR = LPR[1] - LPR[2]
+      ), by = c("model", "query", "MASK", "M_word",
+                "TARGET", "T_word", "A_pair")]
+      dt$ATTRIB = as_factor(dt$ATTRIB)
+      dt$A_word = as_factor(dt$A_word)
+      dt$A_pair = NULL
     }
   }
 
   return(dt)
+}
+
+
+#' Intraclass correlation coefficient (ICC) of language models.
+#'
+#' Interrater agreement of log probabilities (treated as "ratings"/rows)
+#' among BERT language models (treated as "raters"/columns),
+#' with both row and column as ("two-way") random effects.
+#'
+#' @param data Raw data returned from [`FMAT_run`].
+#' @param type Interrater `"agreement"` (default) or `"consistency"`.
+#' @param unit Reliability of `"average"` scores (default) or `"single"` scores.
+#'
+#' @return A data.table of ICC.
+#'
+#' @export
+ICC_models = function(data, type="agreement", unit="average") {
+  data = as.data.frame(data)
+  data$ID = rowidv(data, cols="model")
+  data$model = as.numeric(data$model)
+  data$logp = log(data$prob)
+  d = tidyr::pivot_wider(
+    data[, c("ID", "model", "logp")],
+    names_from="model",
+    values_from="logp",
+    names_prefix="logp")[, -1]
+  ICC = irr::icc(d, model="twoway", unit=unit, type=type)
+  res = data.table(items = ICC$subjects,
+                   raters = ICC$raters,
+                   ICC = ICC$value)
+  names(res)[3] = paste0("ICC.", unit)
+  return(res)
 }
 
 

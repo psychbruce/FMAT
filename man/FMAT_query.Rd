@@ -8,8 +8,7 @@ FMAT_query(
   query = "Text with [MASK], optionally with {TARGET} and/or {ATTRIB}.",
   MASK = .(),
   TARGET = .(),
-  ATTRIB = .(),
-  unmask.id = 1
+  ATTRIB = .()
 )
 }
 \arguments{
@@ -35,10 +34,6 @@ specifying either \code{TARGET} or \code{ATTRIB}.}
 If specified, then \code{query} must contain
 \code{{TARGET}} and/or \code{{ATTRIB}} (in all uppercase and in braces)
 to be replaced by the words/phrases.}
-
-\item{unmask.id}{If multiple \verb{[MASK]} are in \code{query},
-it determines which one should be unmasked.
-Defaults to the 1st \verb{[MASK]}.}
 }
 \value{
 A data.table of queries and variables.

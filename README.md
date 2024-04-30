@@ -4,6 +4,8 @@
 
 The *Fill-Mask Association Test* (FMAT) is an integrative and probability-based method using [BERT Models] to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as *propositions* in natural language ([Bao, 2024, *JPSP*](https://psychbruce.github.io/FMAT/#citation)).
 
+⚠️ *Please update this package to version ≥ 2024.4 for faster and more robust functionality.*
+
 ![](https://psychbruce.github.io/img/FMAT-Workflow.png)
 
 <!-- badges: start -->
@@ -26,7 +28,8 @@ Han-Wu-Shuang (Bruce) Bao 包寒吴霜
 
 -   Bao, H.-W.-S. (2023). *FMAT: The Fill-Mask Association Test*. <https://CRAN.R-project.org/package=FMAT>
     -   *Note*: This is the original citation. Please refer to the information when you `library(FMAT)` for the APA-7 format of the version you installed.
--   Bao, H.-W.-S. (in press). The Fill-Mask Association Test (FMAT): Measuring propositions in natural language. *Journal of Personality and Social Psychology*. DOI: 10.1037/pspa0000396
+-   Bao, H.-W.-S. (2024). The Fill-Mask Association Test (FMAT): Measuring propositions in natural language. *Journal of Personality and Social Psychology*. Advance online publication. DOI: 10.1037/pspa0000396
+-   Bao, H.-W.-S., & Gries, P. (2024). Intersectional race–gender stereotypes in natural language. *British Journal of Social Psychology*. Advance online publication. <https://doi.org/10.1111/bjso.12748>
 
 ## Installation
 

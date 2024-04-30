@@ -4,8 +4,8 @@ Added new functionality.
 
 ## Test environments
 
--   Windows 11 (local installation), R 4.3.2
--   Mac OS 13.3 (check_mac_release), R 4.3.2
+-   Windows 11 (local installation), R 4.4.0
+-   Mac OS 13.3 (check_mac_release), R 4.4.0
 
 ## Package check results
 

@@ -4,7 +4,15 @@
 \alias{FMAT_run}
 \title{Run the fill-mask pipeline on multiple models (CPU / GPU).}
 \usage{
-FMAT_run(models, data, gpu, file = NULL, progress = TRUE, warning = TRUE)
+FMAT_run(
+  models,
+  data,
+  gpu,
+  file = NULL,
+  progress = TRUE,
+  warning = TRUE,
+  na.out = TRUE
+)
 }
 \arguments{
 \item{models}{Options:
@@ -46,6 +54,8 @@ on which the pipeline will be allocated.
 \item{progress}{Show a progress bar? Defaults to \code{TRUE}.}
 
 \item{warning}{Alert warning of out-of-vocabulary word(s)? Defaults to \code{TRUE}.}
+
+\item{na.out}{Replace probabilities of out-of-vocabulary word(s) with \code{NA}? Defaults to \code{TRUE}.}
 }
 \value{
 A data.table (of new class \code{fmat}) appending \code{data} with these new variables:
@@ -92,8 +102,7 @@ but these differences would have little impact on main results.
 ## Running the examples requires the models downloaded
 
 \dontrun{
-models = FMAT_load(c("bert-base-uncased", "bert-base-cased"))
-# for GPU acceleration, please use `FMAT_run()` directly
+models = c("bert-base-uncased", "bert-base-cased")
 
 query1 = FMAT_query(
   c("[MASK] is {TARGET}.", "[MASK] works as {TARGET}."),
@@ -114,17 +123,6 @@ data2 = FMAT_run(models, query2)
 summary(data2, mask.pair=FALSE)
 summary(data2)
 
-query3 = FMAT_query(
-  "The association between {TARGET} and {ATTRIB} is [MASK].",
-  MASK = .(H="strong", L="weak"),
-  TARGET = .(Flower=cc("rose, iris, lily"),
-             Insect=cc("ant, cockroach, spider")),
-  ATTRIB = .(Pos=cc("health, happiness, love, peace"),
-             Neg=cc("death, sickness, hatred, disaster"))
-)
-data3 = FMAT_run(models, query3)
-summary(data3, attrib.pair=FALSE)
-summary(data3)
 }
 
 }

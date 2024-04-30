@@ -1,5 +1,11 @@
 **Please check the [latest news (change log)](https://psychbruce.github.io/FMAT/news/index.html) and keep this package updated.**
 
+# FMAT 2024.4
+
+-   Added `BERT_vocab()` and `ICC_models()`.
+-   Improved `summary.fmat()`, `FMAT_query()`, and `FMAT_run()` (significantly faster because now it can *simultaneously* estimate all [MASK] options for each unique query sentence, with running time only depending on the number of unique queries but not on the number of [MASK] options).
+-   If you use the `reticulate` package version ≥ 1.36.1, then `FMAT` should be updated to ≥ 2024.4. Otherwise, out-of-vocabulary [MASK] words may not be identified and marked. Now `FMAT_run()` directly uses model vocabulary and token ID to match [MASK] words. To check if a [MASK] word is in the model vocabulary, please use `BERT_vocab()`.
+
 # FMAT 2024.3
 
 -   The FMAT methodology paper has been accepted (March 14, 2024) for publication in the *Journal of Personality and Social Psychology: Attitudes and Social Cognition* (DOI: 10.1037/pspa0000396)!

@@ -24,8 +24,8 @@ please directly use \code{\link{FMAT_run}} instead.
 }
 \examples{
 \dontrun{
-model.names = c("bert-base-uncased", "bert-base-cased")
-models = FMAT_load(model.names)  # load models from cache
+models = c("bert-base-uncased", "bert-base-cased")
+models = FMAT_load(models)  # load models from cache
 }
 
 }

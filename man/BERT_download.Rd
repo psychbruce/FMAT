@@ -18,13 +18,15 @@ Download and save BERT models to local cache folder "\%USERPROFILE\%/.cache/hugg
 }
 \examples{
 \dontrun{
-model.names = c("bert-base-uncased", "bert-base-cased")
-BERT_download(model.names)
+models = c("bert-base-uncased", "bert-base-cased")
+BERT_download(models)
 
 BERT_download()  # check downloaded models
 }
 
 }
 \seealso{
+\code{\link{BERT_vocab}}
+
 \code{\link{FMAT_load}}
 }
