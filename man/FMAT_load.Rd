@@ -2,7 +2,7 @@
 % Please edit documentation in R/FMAT.R
 \name{FMAT_load}
 \alias{FMAT_load}
-\title{(Down)Load BERT models (useless for GPU).}
+\title{[Deprecated] Load BERT models (useless for GPU).}
 \usage{
 FMAT_load(models)
 }
@@ -17,10 +17,9 @@ You will need to \emph{rerun} this function if you \emph{restart} the R session.
 }
 \description{
 Load BERT models from local cache folder "\%USERPROFILE\%/.cache/huggingface".
-Models that have not been downloaded can also
-be automatically downloaded (but \emph{silently}).
 For \href{https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration}{GPU Acceleration},
-please directly use \code{\link{FMAT_run}} instead.
+please directly use \code{\link{FMAT_run}}.
+In general, \code{\link{FMAT_run}} is always preferred than \code{\link{FMAT_load}}.
 }
 \examples{
 \dontrun{

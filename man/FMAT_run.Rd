@@ -8,6 +8,8 @@ FMAT_run(
   models,
   data,
   gpu,
+  add.tokens = FALSE,
+  add.method = c("sum", "mean"),
   file = NULL,
   progress = TRUE,
   warning = TRUE,
@@ -48,6 +50,12 @@ which defines the device (e.g.,
 \code{"cpu"}, \code{"cuda:0"}, or a GPU device id like \code{1})
 on which the pipeline will be allocated.
 }}
+
+\item{add.tokens}{Add new tokens (for out-of-vocabulary words or even phrases) to model vocabulary?
+Defaults to \code{FALSE}. It only temporarily adds tokens for tasks but does not change the raw model file.}
+
+\item{add.method}{Method used to produce the token embeddings of new added tokens.
+Can be \code{"sum"} (default) or \code{"mean"} of subword token embeddings.}
 
 \item{file}{File name of \code{.RData} to save the returned data.}
 
@@ -129,7 +137,9 @@ summary(data2)
 \seealso{
 \code{\link{BERT_download}}
 
-\code{\link{FMAT_load}}
+\code{\link{BERT_vocab}}
+
+\code{\link{FMAT_load}} (deprecated)
 
 \code{\link{FMAT_query}}
 

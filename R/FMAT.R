@@ -42,7 +42,7 @@
 }
 
 
-#### Basic ####
+#### Utils ####
 
 
 #' @importFrom PsychWordVec cc
@@ -97,7 +97,7 @@ gpu_to_device = function(gpu) {
 }
 
 
-transformers_init = function() {
+transformers_init = function(print.info=TRUE) {
   FMAT.ver = as.character(utils::packageVersion("FMAT"))
   reticulate.ver = as.character(utils::packageVersion("reticulate"))
   reticulate::py_capture_output({
@@ -120,22 +120,90 @@ transformers_init = function() {
     transformers = reticulate::import("transformers")
     tf.ver = transformers$`__version__`
   })
-  cli::cli_alert_info(cli::col_blue("Device Info:
+  if(print.info) {
+    cli::cli_alert_info(cli::col_blue("Device Info:
 
-  R Packages:
-  FMAT          {FMAT.ver}
-  reticulate    {reticulate.ver}
+    R Packages:
+    FMAT          {FMAT.ver}
+    reticulate    {reticulate.ver}
 
-  Python Packages:
-  transformers  {tf.ver}
-  torch         {torch.ver}
+    Python Packages:
+    transformers  {tf.ver}
+    torch         {torch.ver}
 
-  NVIDIA GPU CUDA Support:
-  CUDA Enabled: {torch.cuda}
-  CUDA Version: {cuda.ver}
-  {gpu.info}
-  "))
+    NVIDIA GPU CUDA Support:
+    CUDA Enabled: {torch.cuda}
+    CUDA Version: {cuda.ver}
+    {gpu.info}
+    "))
+  }
   return(transformers)
+}
+
+
+fill_mask_init = function(transformers, model, device=-1L) {
+  config = transformers$AutoConfig$from_pretrained(model, local_files_only=TRUE)
+  fill_mask = transformers$pipeline("fill-mask", model=model, config=config,
+                                    model_kwargs=list(local_files_only=TRUE),
+                                    device=device)
+  return(fill_mask)
+}
+
+
+add_tokens = function(
+    fill_mask, tokens,
+    method = c("sum", "mean"),
+    verbose.in = TRUE,
+    verbose.out = TRUE
+) {
+  # encode new tokens from subwords
+  method = match.arg(method)
+  vocab = fill_mask$tokenizer$get_vocab()
+  embed = fill_mask$model$get_input_embeddings()$weight$data
+  tlist = lapply(tokens, function(token) {
+    encode = fill_mask$tokenizer$encode(token)
+    encode = encode[c(-1, -length(encode))]
+    decode = fill_mask$tokenizer$decode(encode)
+    if(length(encode)==1) {
+      token.embed = embed[encode]
+    } else {
+      if(method=="sum")
+        token.embed = embed[encode]$sum(0L)
+      if(method=="mean")
+        token.embed = embed[encode]$mean(0L)
+    }
+    return(list(
+      token = token,
+      encode = encode,
+      decode = decode,
+      token.raw = sapply(encode, function(id) vocab[vocab==id]),
+      token.embed = token.embed
+    ))
+  })
+  names(tlist) = tokens
+
+  # add new tokens to the tokenizer vocabulary
+  fill_mask$tokenizer$add_tokens(tokens)
+
+  # initialize random embeddings for the new tokens
+  fill_mask$model$resize_token_embeddings(length(fill_mask$tokenizer))
+
+  # reset new embeddings to (sum or mean) subword token embeddings
+  vocab.new = fill_mask$tokenizer$get_vocab()
+  embed.new = fill_mask$model$get_input_embeddings()$weight$data
+  for(t in tlist) {
+    if(is.null(vocab[[t$token]])) {
+      embed.new[vocab.new[[t$token]]] = t$token.embed
+      subwords = paste(names(t$token.raw), collapse=", ")
+      if(verbose.out)
+        cli::cli_alert_success("Added token {.val {t$token}}: {t$decode} = {method}_embed({subwords})")
+    } else {
+      if(verbose.in)
+        cli::cli_alert_success("{t$token}: already in vocab (token id = {t$encode})")
+    }
+  }
+
+  return(fill_mask)
 }
 
 
@@ -147,7 +215,7 @@ find_cached_models = function(cache.folder) {
       paste(paste0(sprintf("%.0f", file.size(models.file) / 1024^2), " MB"), collapse=" / ")
     })
     models.name = str_replace_all(str_remove(models.name, "^models--"), "--", "/")
-    models.info = data.frame(Size=models.size, row.names=models.name)
+    models.info = data.frame(size=models.size, row.names=models.name)
   } else {
     models.info = NULL
   }
@@ -169,6 +237,8 @@ find_cached_models = function(cache.folder) {
 #' No return value.
 #'
 #' @seealso
+#' [`BERT_info`]
+#'
 #' [`BERT_vocab`]
 #'
 #' [`FMAT_load`]
@@ -179,6 +249,8 @@ find_cached_models = function(cache.folder) {
 #' BERT_download(models)
 #'
 #' BERT_download()  # check downloaded models
+#'
+#' BERT_info()  # information of all downloaded models
 #' }
 #'
 #' @export
@@ -207,43 +279,111 @@ BERT_download = function(models=NULL) {
 }
 
 
-#' Check if mask words are in the model vocabulary.
+#' Get basic information of BERT models.
 #'
 #' @inheritParams BERT_download
-#' @param mask.words Option words filling in the mask.
 #'
 #' @return
-#' A data.table of model names, mask words, and real tokens (replaced if out of vocabulary).
+#' A data.table of model name, model file size,
+#' vocabulary size (of word/token embeddings),
+#' embedding dimensions (of word/token embeddings),
+#' and \[MASK\] token.
 #'
 #' @seealso
 #' [`BERT_download`]
 #'
+#' [`BERT_vocab`]
+#'
 #' @examples
 #' \dontrun{
 #' models = c("bert-base-uncased", "bert-base-cased")
-#' BERT_vocab(models, c("bruce", "Bruce"))
-#' BERT_vocab(models, 1800:2024)
+#' BERT_info(models)
+#'
+#' BERT_info()  # information of all downloaded models
 #' }
 #'
 #' @export
-BERT_vocab = function(models, mask.words) {
-  transformers = transformers_init()
+BERT_info = function(models=NULL) {
+  transformers = transformers_init(print.info=FALSE)
   cache.folder = str_replace_all(transformers$TRANSFORMERS_CACHE, "\\\\", "/")
-  cli::cli_text("Loading models from {.path {cache.folder}} ...")
-  cat("\n")
+  local.models = find_cached_models(cache.folder)
+  dm = data.table(model=row.names(local.models), size=local.models$size)
+  model = NULL
+  if(!is.null(models)) {
+    dm = dm[model %in% models]
+    dm$model = factor(dm$model, levels=models)
+    dm = dm[order(model)]
+  } else {
+    dm$model = as.factor(dm$model)
+  }
+  dm$size = str_remove(dm$size, " ")
+  dm = cbind(dm, rbindlist(lapply(dm$model, function(model) {
+    tokenizer = transformers$AutoTokenizer$from_pretrained(model, local_files_only=TRUE)
+    model.obj = transformers$AutoModel$from_pretrained(model, local_files_only=TRUE)
+    word.embeddings = model.obj$embeddings$word_embeddings$weight$data$shape
+    data.table(vocab = word.embeddings[0],
+               dims = word.embeddings[1],
+               mask = tokenizer$mask_token)
+  })))
+  return(dm)
+}
 
+
+#' Check if mask words are in the model vocabulary.
+#'
+#' @inheritParams BERT_download
+#' @param mask.words Option words filling in the mask.
+#' @param add.tokens Add new tokens (for out-of-vocabulary words or even phrases) to model vocabulary?
+#' Defaults to `FALSE`. It only temporarily adds tokens for tasks but does not change the raw model file.
+#' @param add.method Method used to produce the token embeddings of new added tokens.
+#' Can be `"sum"` (default) or `"mean"` of subword token embeddings.
+#'
+#' @return
+#' A data.table of model name, mask word, real token (replaced if out of vocabulary),
+#' and token id (0~N).
+#'
+#' @seealso
+#' [`BERT_download`]
+#'
+#' [`BERT_info`]
+#'
+#' [`FMAT_run`]
+#'
+#' @examples
+#' \dontrun{
+#' models = c("bert-base-uncased", "bert-base-cased")
+#' BERT_info(models)
+#'
+#' BERT_vocab(models, c("bruce", "Bruce"))
+#'
+#' BERT_vocab(models, 2020:2025)  # some are out-of-vocabulary
+#' BERT_vocab(models, 2020:2025, add.tokens=TRUE)  # add vocab
+#'
+#' BERT_vocab(models,
+#'            c("individualism", "artificial intelligence"),
+#'            add.tokens=TRUE)
+#' }
+#'
+#' @export
+BERT_vocab = function(
+    models, mask.words,
+    add.tokens = FALSE,
+    add.method = c("sum", "mean")
+) {
+  transformers = transformers_init(print.info=FALSE)
   mask.words = as.character(mask.words)
 
   maps = rbindlist(lapply(models, function(model) {
     reticulate::py_capture_output({
-      fill_mask = transformers$pipeline("fill-mask", model=model)
+      fill_mask = fill_mask_init(transformers, model)
+      if(add.tokens) fill_mask = add_tokens(fill_mask, mask.words, add.method, verbose.in=FALSE)
       vocab = fill_mask$tokenizer$get_vocab()
       ids = vocab[mask.words]
       map = rbindlist(lapply(mask.words, function(mask) {
         id = as.integer(fill_mask$get_target_ids(mask))
         token = names(vocab[vocab==id])
         if(is.null(ids[[mask]])) token = paste(token, "(out-of-vocabulary)")
-        data.table(model=as_factor(model), M_word=as_factor(mask), token=token)
+        data.table(model=as_factor(model), M_word=as_factor(mask), token=token, token.id=id)
       }))
     })
     return(map)
@@ -258,13 +398,12 @@ BERT_vocab = function(models, mask.words) {
 #### FMAT ####
 
 
-#' (Down)Load BERT models (useless for GPU).
+#' \[Deprecated\] Load BERT models (useless for GPU).
 #'
 #' Load BERT models from local cache folder "%USERPROFILE%/.cache/huggingface".
-#' Models that have not been downloaded can also
-#' be automatically downloaded (but *silently*).
 #' For [GPU Acceleration](https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration),
-#' please directly use [`FMAT_run`] instead.
+#' please directly use [`FMAT_run`].
+#' In general, [`FMAT_run`] is always preferred than [`FMAT_load`].
 #'
 #' @inheritParams BERT_download
 #'
@@ -296,7 +435,7 @@ FMAT_load = function(models) {
   fms = lapply(models, function(model) {
     t0 = Sys.time()
     reticulate::py_capture_output({
-      fill_mask = transformers$pipeline("fill-mask", model=model)
+      fill_mask = fill_mask_init(transformers, model)
     })
     cli::cli_alert_success("{model} ({dtime(t0)})")
     return(list(model.name=model, fill.mask=fill_mask))
@@ -588,6 +727,7 @@ FMAT_query_bind = function(...) {
 #' raw probability estimates between using CPU and GPU,
 #' but these differences would have little impact on main results.
 #'
+#' @inheritParams BERT_vocab
 #' @param models Options:
 #' - A character vector of model names at
 #'   [HuggingFace](https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers).
@@ -632,7 +772,9 @@ FMAT_query_bind = function(...) {
 #' @seealso
 #' [`BERT_download`]
 #'
-#' [`FMAT_load`]
+#' [`BERT_vocab`]
+#'
+#' [`FMAT_load`] (deprecated)
 #'
 #' [`FMAT_query`]
 #'
@@ -672,6 +814,8 @@ FMAT_run = function(
     models,
     data,
     gpu,
+    add.tokens = FALSE,
+    add.method = c("sum", "mean"),
     file = NULL,
     progress = TRUE,
     warning = TRUE,
@@ -711,7 +855,7 @@ FMAT_run = function(
     ## ---- One Run Begin ---- ##
     if(is.character(model)) {
       reticulate::py_capture_output({
-        fill_mask = transformers$pipeline("fill-mask", model=model, device=device)
+        fill_mask = fill_mask_init(transformers, model, device)
       })
     } else {
       fill_mask = model$fill.mask
@@ -726,7 +870,6 @@ FMAT_run = function(
     uncased = str_detect(model, "uncased|albert")
     prefix.u2581 = str_detect(model, "xlm-roberta|albert")
     prefix.u0120 = str_detect(model, "roberta|bertweet-large") & !str_detect(model, "xlm")
-    mask.lower = str_detect(model, "roberta|bertweet")
 
     # .mask (final mask target words)
     data = mutate(data, .mask = as.character(M_word))
@@ -737,8 +880,12 @@ FMAT_run = function(
     if(prefix.u0120)
       data = mutate(data, .mask = ifelse(!str_detect(.query, "^\\[MASK\\]"),
                                          paste0("\u0120", .mask), .mask))
-    if(mask.lower)
-      data = mutate(data, .query = str_replace(.query, "\\[MASK\\]", "<mask>"))
+    mask.token = fill_mask$tokenizer$mask_token
+    if(mask.token!="[MASK]")
+      data = mutate(data, .query = str_replace(.query, "\\[MASK\\]", mask.token))
+
+    # add tokens for out-of-vocabulary words
+    if(add.tokens) fill_mask = add_tokens(fill_mask, unique(data$.mask), add.method, verbose.in=FALSE)
 
     # unmask (single version) [DEPRECATED]
     # unmask_each = function(d) {
@@ -891,10 +1038,10 @@ warning_oov = function(data) {
 #' @export
 summary.fmat = function(
     object,
-    mask.pair=TRUE,
-    target.pair=TRUE,
-    attrib.pair=TRUE,
-    warning=TRUE,
+    mask.pair = TRUE,
+    target.pair = TRUE,
+    attrib.pair = TRUE,
+    warning = TRUE,
     ...) {
   if(warning) warning_oov(object)
   type = attr(object, "type")
@@ -991,7 +1138,7 @@ summary.fmat = function(
 }
 
 
-#' Intraclass correlation coefficient (ICC) of language models.
+#' Intraclass correlation coefficient (ICC) of BERT models.
 #'
 #' Interrater agreement of log probabilities (treated as "ratings"/rows)
 #' among BERT language models (treated as "raters"/columns),
@@ -1037,8 +1184,8 @@ ICC_models = function(data, type="agreement", unit="average") {
 #' @export
 LPR_reliability = function(
     fmat,
-    item=c("query", "T_word", "A_word"),
-    by=NULL) {
+    item = c("query", "T_word", "A_word"),
+    by = NULL) {
   item = match.arg(item)
   alphas = plyr::ddply(fmat, by, function(x) {
     x = as.data.frame(x)

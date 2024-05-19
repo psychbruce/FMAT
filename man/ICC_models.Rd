@@ -2,7 +2,7 @@
 % Please edit documentation in R/FMAT.R
 \name{ICC_models}
 \alias{ICC_models}
-\title{Intraclass correlation coefficient (ICC) of language models.}
+\title{Intraclass correlation coefficient (ICC) of BERT models.}
 \usage{
 ICC_models(data, type = "agreement", unit = "average")
 }

@@ -4,7 +4,7 @@
 
 The *Fill-Mask Association Test* (FMAT) is an integrative and probability-based method using [BERT Models] to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as *propositions* in natural language ([Bao, 2024, *JPSP*](https://psychbruce.github.io/FMAT/#citation)).
 
-⚠️ *Please update this package to version ≥ 2024.4 for faster and more robust functionality.*
+⚠️ *Please update this package to version ≥ 2024.5 for faster and more robust functionality.*
 
 ![](https://psychbruce.github.io/img/FMAT-Workflow.png)
 
@@ -48,19 +48,13 @@ devtools::install_github("psychbruce/FMAT", force=TRUE)
 
 ### (2) Python Environment and Packages
 
-#### Step 1
-
 Install [Anaconda](https://www.anaconda.com/download) (a recommended package manager which automatically installs Python, Python IDEs like Spyder, and a large list of necessary [Python package dependencies](https://docs.anaconda.com/free/anaconda/pkg-docs/)).
-
-#### Step 2
 
 Specify the Python interpreter in RStudio.
 
 > RStudio → Tools → Global/Project Options\
 > → Python → Select → **Conda Environments**\
 > → Choose **".../Anaconda3/python.exe"**
-
-#### Step 3
 
 Install the "[transformers](https://huggingface.co/docs/transformers/installation)" and "[torch](https://pytorch.org/get-started/locally/)" Python packages.\
 (Windows Command / Anaconda Prompt / RStudio Terminal)
@@ -71,9 +65,7 @@ pip install transformers torch
 
 See [Guidance for GPU Acceleration] for installation guidance if you have an NVIDIA GPU device on your PC and want to use GPU to accelerate the pipeline.
 
-#### Alternative Approach
-
-(Not suggested) Besides the pip/conda installation in the *Conda Environment*, you might instead create and use a *Virtual Environment* (see R code below with the `reticulate` package), but then you need to specify the Python interpreter as **"\~/.virtualenvs/r-reticulate/Scripts/python.exe"** in RStudio.
+Alternative approach (NOT suggested): Besides the pip/conda installation in the *Conda Environment*, you might instead create and use a *Virtual Environment* (see R code below with the `reticulate` package), but then you need to specify the Python interpreter as **"\~/.virtualenvs/r-reticulate/Scripts/python.exe"** in RStudio.
 
 ``` r
 ## DON'T RUN THIS UNLESS YOU PREFER VIRTUAL ENVIRONMENT
@@ -85,23 +77,21 @@ virtualenv_install(packages=c("transformers", "torch"))
 
 ## Guidance for FMAT
 
-### FMAT Step 1: Query Design
+### Step 1: Download BERT Models
+
+Use `BERT_download()` to load [BERT models]. Model files are permanently saved to your local folder "%USERPROFILE%/.cache/huggingface". A full list of BERT-family models are available at [Hugging Face](https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers).
+
+### Step 2: Design FMAT Queries
 
 Design queries that conceptually represent the constructs you would measure (see [Bao, 2024, *JPSP*](https://psychbruce.github.io/FMAT/#citation) for how to design queries).
 
 Use `FMAT_query()` and/or `FMAT_query_bind()` to prepare a `data.table` of queries.
 
-### FMAT Step 2: Model Loading
-
-Use `BERT_download()` and `FMAT_load()` to (down)load [BERT models]. Model files are permanently saved to your local folder "%USERPROFILE%/.cache/huggingface". A full list of BERT-family models are available at [Hugging Face](https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers).
-
-If you want to use GPU (see [Guidance for GPU Acceleration]), please skip to [FMAT Step 3: Model Processing] and directly use `FMAT_run()` without `FMAT_load()`.
-
-### FMAT Step 3: Model Processing
+### Step 3: Run FMAT
 
 Use `FMAT_run()` to get raw data (probability estimates) for further analysis.
 
-Several steps of pre-processing have been included in the function for easier use (see `FMAT_run()` for details).
+Several steps of preprocessing have been included in the function for easier use (see `FMAT_run()` for details).
 
 -   For BERT variants using `<mask>` rather than `[MASK]` as the mask token, the input query will be *automatically* modified so that users can always use `[MASK]` in query design.
 -   For some BERT variants, special prefix characters such as `\u0120` and `\u2581` will be *automatically* added to match the whole words (rather than subwords) for `[MASK]`.
@@ -167,7 +157,7 @@ If you are new to [BERT](https://arxiv.org/abs/1810.04805), these references can
 
 ``` r
 library(FMAT)
-model.names = c(
+models = c(
   "bert-base-uncased",
   "bert-base-cased",
   "bert-large-uncased",
@@ -181,15 +171,18 @@ model.names = c(
   "vinai/bertweet-base",
   "vinai/bertweet-large"
 )
-BERT_download(model.names)
+BERT_download(models)
 ```
 
-```         
+``` {style="height: 500px"}
 ℹ Device Info:
 
-Python Environment:
-Package       Version
-transformers  4.38.2
+R Packages:
+FMAT          2024.5
+reticulate    1.36.1
+
+Python Packages:
+transformers  4.40.2
 torch         2.2.1+cu121
 
 NVIDIA GPU CUDA Support:
@@ -198,148 +191,143 @@ CUDA Version: 12.1
 GPU (Device): NVIDIA GeForce RTX 2050
 
 
-── Downloading model "bert-base-uncased" ───────────────────────────────────────────
+── Downloading model "bert-base-uncased" ──────────────────────────────────────────
 → (1) Downloading configuration...
-config.json: 100%|██████████| 570/570 [00:00<00:00, 113kB/s]
+config.json: 100%|██████████| 570/570 [00:00<00:00, 114kB/s]
 → (2) Downloading tokenizer...
-tokenizer_config.json: 100%|██████████| 48.0/48.0 [00:00<?, ?B/s]
-vocab.txt: 100%|██████████| 232k/232k [00:00<00:00, 1.37MB/s]
-tokenizer.json: 100%|██████████| 466k/466k [00:00<00:00, 3.94MB/s]
+tokenizer_config.json: 100%|██████████| 48.0/48.0 [00:00<00:00, 23.9kB/s]
+vocab.txt: 100%|██████████| 232k/232k [00:00<00:00, 1.50MB/s]
+tokenizer.json: 100%|██████████| 466k/466k [00:00<00:00, 1.98MB/s]
 → (3) Downloading model...
-model.safetensors: 100%|██████████| 440M/440M [01:21<00:00, 5.40MB/s] 
+model.safetensors: 100%|██████████| 440M/440M [00:36<00:00, 12.1MB/s] 
 ✔ Successfully downloaded model "bert-base-uncased"
 
-── Downloading model "bert-base-cased" ─────────────────────────────────────────────
+── Downloading model "bert-base-cased" ────────────────────────────────────────────
 → (1) Downloading configuration...
-config.json: 100%|██████████| 570/570 [00:00<?, ?B/s] 
+config.json: 100%|██████████| 570/570 [00:00<00:00, 63.3kB/s]
 → (2) Downloading tokenizer...
-tokenizer_config.json: 100%|██████████| 49.0/49.0 [00:00<00:00, 8.18kB/s]
-vocab.txt: 100%|██████████| 213k/213k [00:00<00:00, 1.30MB/s]
-tokenizer.json: 100%|██████████| 436k/436k [00:00<00:00, 3.67MB/s]
+tokenizer_config.json: 100%|██████████| 49.0/49.0 [00:00<00:00, 8.66kB/s]
+vocab.txt: 100%|██████████| 213k/213k [00:00<00:00, 1.39MB/s]
+tokenizer.json: 100%|██████████| 436k/436k [00:00<00:00, 10.1MB/s]
 → (3) Downloading model...
-model.safetensors: 100%|██████████| 436M/436M [01:20<00:00, 5.41MB/s] 
+model.safetensors: 100%|██████████| 436M/436M [00:37<00:00, 11.6MB/s] 
 ✔ Successfully downloaded model "bert-base-cased"
 
-── Downloading model "bert-large-uncased" ──────────────────────────────────────────
+── Downloading model "bert-large-uncased" ─────────────────────────────────────────
 → (1) Downloading configuration...
-config.json: 100%|██████████| 571/571 [00:00<00:00, 143kB/s]
+config.json: 100%|██████████| 571/571 [00:00<00:00, 268kB/s]
 → (2) Downloading tokenizer...
 tokenizer_config.json: 100%|██████████| 48.0/48.0 [00:00<00:00, 12.0kB/s]
-vocab.txt: 100%|██████████| 232k/232k [00:00<00:00, 6.04MB/s]
-tokenizer.json: 100%|██████████| 466k/466k [00:00<00:00, 1.57MB/s]
+vocab.txt: 100%|██████████| 232k/232k [00:00<00:00, 1.50MB/s]
+tokenizer.json: 100%|██████████| 466k/466k [00:00<00:00, 1.99MB/s]
 → (3) Downloading model...
-model.safetensors: 100%|██████████| 1.34G/1.34G [04:09<00:00, 5.39MB/s]
+model.safetensors: 100%|██████████| 1.34G/1.34G [01:36<00:00, 14.0MB/s]
 ✔ Successfully downloaded model "bert-large-uncased"
 
-── Downloading model "bert-large-cased" ────────────────────────────────────────────
+── Downloading model "bert-large-cased" ───────────────────────────────────────────
 → (1) Downloading configuration...
-config.json: 100%|██████████| 762/762 [00:00<?, ?B/s] 
+config.json: 100%|██████████| 762/762 [00:00<00:00, 125kB/s]
 → (2) Downloading tokenizer...
-tokenizer_config.json: 100%|██████████| 49.0/49.0 [00:00<?, ?B/s]
-vocab.txt: 100%|██████████| 213k/213k [00:00<00:00, 2.14MB/s]
-tokenizer.json: 100%|██████████| 436k/436k [00:00<00:00, 1.75MB/s]
+tokenizer_config.json: 100%|██████████| 49.0/49.0 [00:00<00:00, 12.3kB/s]
+vocab.txt: 100%|██████████| 213k/213k [00:00<00:00, 1.41MB/s]
+tokenizer.json: 100%|██████████| 436k/436k [00:00<00:00, 5.39MB/s]
 → (3) Downloading model...
-model.safetensors: 100%|██████████| 1.34G/1.34G [04:08<00:00, 5.38MB/s]
+model.safetensors: 100%|██████████| 1.34G/1.34G [01:35<00:00, 14.0MB/s]
 ✔ Successfully downloaded model "bert-large-cased"
 
-── Downloading model "distilbert-base-uncased" ─────────────────────────────────────
+── Downloading model "distilbert-base-uncased" ────────────────────────────────────
 → (1) Downloading configuration...
-config.json: 100%|██████████| 483/483 [00:00<?, ?B/s] 
+config.json: 100%|██████████| 483/483 [00:00<00:00, 161kB/s]
 → (2) Downloading tokenizer...
-tokenizer_config.json: 100%|██████████| 28.0/28.0 [00:00<?, ?B/s]
-vocab.txt: 100%|██████████| 232k/232k [00:00<00:00, 1.36MB/s]
-tokenizer.json: 100%|██████████| 466k/466k [00:00<00:00, 1.82MB/s]
+tokenizer_config.json: 100%|██████████| 48.0/48.0 [00:00<00:00, 9.46kB/s]
+vocab.txt: 100%|██████████| 232k/232k [00:00<00:00, 16.5MB/s]
+tokenizer.json: 100%|██████████| 466k/466k [00:00<00:00, 14.8MB/s]
 → (3) Downloading model...
-model.safetensors: 100%|██████████| 268M/268M [00:51<00:00, 5.24MB/s] 
+model.safetensors: 100%|██████████| 268M/268M [00:19<00:00, 13.5MB/s] 
 ✔ Successfully downloaded model "distilbert-base-uncased"
 
-── Downloading model "distilbert-base-cased" ───────────────────────────────────────
+── Downloading model "distilbert-base-cased" ──────────────────────────────────────
 → (1) Downloading configuration...
-config.json: 100%|██████████| 465/465 [00:00<?, ?B/s] 
+config.json: 100%|██████████| 465/465 [00:00<00:00, 233kB/s]
 → (2) Downloading tokenizer...
-tokenizer_config.json: 100%|██████████| 29.0/29.0 [00:00<?, ?B/s]
-vocab.txt: 100%|██████████| 213k/213k [00:00<00:00, 1.34MB/s]
-tokenizer.json: 100%|██████████| 436k/436k [00:00<00:00, 4.20MB/s]
+tokenizer_config.json: 100%|██████████| 49.0/49.0 [00:00<00:00, 9.80kB/s]
+vocab.txt: 100%|██████████| 213k/213k [00:00<00:00, 1.39MB/s]
+tokenizer.json: 100%|██████████| 436k/436k [00:00<00:00, 8.70MB/s]
 → (3) Downloading model...
-model.safetensors: 100%|██████████| 263M/263M [00:49<00:00, 5.36MB/s] 
+model.safetensors: 100%|██████████| 263M/263M [00:24<00:00, 10.9MB/s] 
 ✔ Successfully downloaded model "distilbert-base-cased"
 
-── Downloading model "albert-base-v1" ──────────────────────────────────────────────
+── Downloading model "albert-base-v1" ─────────────────────────────────────────────
 → (1) Downloading configuration...
-config.json: 100%|██████████| 684/684 [00:00<?, ?B/s] 
+config.json: 100%|██████████| 684/684 [00:00<00:00, 137kB/s]
 → (2) Downloading tokenizer...
-tokenizer_config.json: 100%|██████████| 25.0/25.0 [00:00<00:00, 1.65kB/s]
-spiece.model: 100%|██████████| 760k/760k [00:00<00:00, 4.58MB/s]
-tokenizer.json: 100%|██████████| 1.31M/1.31M [00:00<00:00, 3.09MB/s]
+tokenizer_config.json: 100%|██████████| 25.0/25.0 [00:00<00:00, 3.57kB/s]
+spiece.model: 100%|██████████| 760k/760k [00:00<00:00, 4.93MB/s]
+tokenizer.json: 100%|██████████| 1.31M/1.31M [00:00<00:00, 13.4MB/s]
 → (3) Downloading model...
-model.safetensors: 100%|██████████| 47.4M/47.4M [00:09<00:00, 5.07MB/s]
+model.safetensors: 100%|██████████| 47.4M/47.4M [00:03<00:00, 13.4MB/s]
 ✔ Successfully downloaded model "albert-base-v1"
 
-── Downloading model "albert-base-v2" ──────────────────────────────────────────────
+── Downloading model "albert-base-v2" ─────────────────────────────────────────────
 → (1) Downloading configuration...
-config.json: 100%|██████████| 684/684 [00:00<00:00, 45.5kB/s]
+config.json: 100%|██████████| 684/684 [00:00<00:00, 137kB/s]
 → (2) Downloading tokenizer...
-tokenizer_config.json: 100%|██████████| 25.0/25.0 [00:00<?, ?B/s]
-spiece.model: 100%|██████████| 760k/760k [00:00<00:00, 2.13MB/s]
-tokenizer.json: 100%|██████████| 1.31M/1.31M [00:00<00:00, 5.66MB/s]
+tokenizer_config.json: 100%|██████████| 25.0/25.0 [00:00<00:00, 4.17kB/s]
+spiece.model: 100%|██████████| 760k/760k [00:00<00:00, 5.10MB/s]
+tokenizer.json: 100%|██████████| 1.31M/1.31M [00:00<00:00, 6.93MB/s]
 → (3) Downloading model...
-model.safetensors: 100%|██████████| 47.4M/47.4M [00:08<00:00, 5.51MB/s]
+model.safetensors: 100%|██████████| 47.4M/47.4M [00:03<00:00, 13.8MB/s]
 ✔ Successfully downloaded model "albert-base-v2"
 
-── Downloading model "roberta-base" ────────────────────────────────────────────────
+── Downloading model "roberta-base" ───────────────────────────────────────────────
 → (1) Downloading configuration...
-config.json: 100%|██████████| 481/481 [00:00<?, ?B/s] 
+config.json: 100%|██████████| 481/481 [00:00<00:00, 80.3kB/s]
 → (2) Downloading tokenizer...
-tokenizer_config.json: 100%|██████████| 25.0/25.0 [00:00<?, ?B/s]
-vocab.json: 100%|██████████| 899k/899k [00:00<00:00, 5.73MB/s]
-merges.txt: 100%|██████████| 456k/456k [00:00<00:00, 6.16MB/s]
-tokenizer.json: 100%|██████████| 1.36M/1.36M [00:00<00:00, 5.50MB/s]
+tokenizer_config.json: 100%|██████████| 25.0/25.0 [00:00<00:00, 6.25kB/s]
+vocab.json: 100%|██████████| 899k/899k [00:00<00:00, 2.72MB/s]
+merges.txt: 100%|██████████| 456k/456k [00:00<00:00, 8.22MB/s]
+tokenizer.json: 100%|██████████| 1.36M/1.36M [00:00<00:00, 8.56MB/s]
 → (3) Downloading model...
-model.safetensors: 100%|██████████| 499M/499M [01:32<00:00, 5.38MB/s] 
-Some weights of RobertaModel were not initialized from the model checkpoint at roberta-base and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
-You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+model.safetensors: 100%|██████████| 499M/499M [00:38<00:00, 12.9MB/s] 
 ✔ Successfully downloaded model "roberta-base"
 
-── Downloading model "distilroberta-base" ──────────────────────────────────────────
+── Downloading model "distilroberta-base" ─────────────────────────────────────────
 → (1) Downloading configuration...
-config.json: 100%|██████████| 480/480 [00:00<00:00, 30.7kB/s]
+config.json: 100%|██████████| 480/480 [00:00<00:00, 96.4kB/s]
 → (2) Downloading tokenizer...
-tokenizer_config.json: 100%|██████████| 25.0/25.0 [00:00<00:00, 7.98kB/s]
-vocab.json: 100%|██████████| 899k/899k [00:00<00:00, 5.18MB/s]
-merges.txt: 100%|██████████| 456k/456k [00:00<00:00, 5.71MB/s]
-tokenizer.json: 100%|██████████| 1.36M/1.36M [00:00<00:00, 3.83MB/s]
+tokenizer_config.json: 100%|██████████| 25.0/25.0 [00:00<00:00, 12.0kB/s]
+vocab.json: 100%|██████████| 899k/899k [00:00<00:00, 6.59MB/s]
+merges.txt: 100%|██████████| 456k/456k [00:00<00:00, 9.46MB/s]
+tokenizer.json: 100%|██████████| 1.36M/1.36M [00:00<00:00, 11.5MB/s]
 → (3) Downloading model...
-model.safetensors: 100%|██████████| 331M/331M [01:01<00:00, 5.39MB/s] 
+model.safetensors: 100%|██████████| 331M/331M [00:25<00:00, 13.0MB/s] 
 ✔ Successfully downloaded model "distilroberta-base"
 
-── Downloading model "vinai/bertweet-base" ─────────────────────────────────────────
+── Downloading model "vinai/bertweet-base" ────────────────────────────────────────
 → (1) Downloading configuration...
-config.json: 100%|██████████| 558/558 [00:00<?, ?B/s] 
+config.json: 100%|██████████| 558/558 [00:00<00:00, 187kB/s]
 → (2) Downloading tokenizer...
-vocab.txt: 100%|██████████| 843k/843k [00:00<00:00, 5.56MB/s]
-bpe.codes: 100%|██████████| 1.08M/1.08M [00:00<00:00, 5.55MB/s]
-tokenizer.json: 100%|██████████| 2.91M/2.91M [00:00<00:00, 5.50MB/s]
-emoji is not installed, thus not converting emoticons or emojis into text. Install emoji: pip3 install emoji==0.6.0
+vocab.txt: 100%|██████████| 843k/843k [00:00<00:00, 7.44MB/s]
+bpe.codes: 100%|██████████| 1.08M/1.08M [00:00<00:00, 7.01MB/s]
+tokenizer.json: 100%|██████████| 2.91M/2.91M [00:00<00:00, 9.10MB/s]
 → (3) Downloading model...
-pytorch_model.bin: 100%|██████████| 543M/543M [01:40<00:00, 5.39MB/s] 
+pytorch_model.bin: 100%|██████████| 543M/543M [00:48<00:00, 11.1MB/s] 
 ✔ Successfully downloaded model "vinai/bertweet-base"
 
-── Downloading model "vinai/bertweet-large" ────────────────────────────────────────
+── Downloading model "vinai/bertweet-large" ───────────────────────────────────────
 → (1) Downloading configuration...
-config.json: 100%|██████████| 614/614 [00:00<?, ?B/s] 
+config.json: 100%|██████████| 614/614 [00:00<00:00, 120kB/s]
 → (2) Downloading tokenizer...
-vocab.json: 100%|██████████| 899k/899k [00:00<00:00, 5.59MB/s]
-merges.txt: 100%|██████████| 456k/456k [00:00<00:00, 5.04MB/s]
-tokenizer.json: 100%|██████████| 1.36M/1.36M [00:00<00:00, 5.42MB/s]
+vocab.json: 100%|██████████| 899k/899k [00:00<00:00, 5.90MB/s]
+merges.txt: 100%|██████████| 456k/456k [00:00<00:00, 7.30MB/s]
+tokenizer.json: 100%|██████████| 1.36M/1.36M [00:00<00:00, 8.31MB/s]
 → (3) Downloading model...
-pytorch_model.bin: 100%|██████████| 1.42G/1.42G [04:23<00:00, 5.40MB/s]
-Some weights of RobertaModel were not initialized from the model checkpoint at vinai/bertweet-large and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
-You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+pytorch_model.bin: 100%|██████████| 1.42G/1.42G [02:29<00:00, 9.53MB/s]
 ✔ Successfully downloaded model "vinai/bertweet-large"
 
 ── Downloaded models: ──
 
-                           Size
+                           size
 albert-base-v1            45 MB
 albert-base-v2            45 MB
 bert-base-cased          416 MB
@@ -356,7 +344,28 @@ vinai/bertweet-large    1356 MB
 ✔ Downloaded models saved at C:/Users/Bruce/.cache/huggingface/hub (6.52 GB)
 ```
 
-(Tested 2024/03 on the developer's computer: HP Probook 450 G10 Notebook PC)
+``` r
+BERT_info(models)
+```
+
+```         
+                      model   size vocab  dims   mask
+                     <fctr> <char> <int> <int> <char>
+ 1:       bert-base-uncased  420MB 30522   768 [MASK]
+ 2:         bert-base-cased  416MB 28996   768 [MASK]
+ 3:      bert-large-uncased 1283MB 30522  1024 [MASK]
+ 4:        bert-large-cased 1277MB 28996  1024 [MASK]
+ 5: distilbert-base-uncased  256MB 30522   768 [MASK]
+ 6:   distilbert-base-cased  251MB 28996   768 [MASK]
+ 7:          albert-base-v1   45MB 30000   128 [MASK]
+ 8:          albert-base-v2   45MB 30000   128 [MASK]
+ 9:            roberta-base  476MB 50265   768 <mask>
+10:      distilroberta-base  316MB 50265   768 <mask>
+11:     vinai/bertweet-base  517MB 64001   768 <mask>
+12:    vinai/bertweet-large 1356MB 50265  1024 <mask>
+```
+
+(Tested 2024-05-16 on the developer's computer: HP Probook 450 G10 Notebook PC)
 
 ## Related Packages
 

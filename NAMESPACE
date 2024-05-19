@@ -3,6 +3,7 @@
 S3method(summary,fmat)
 export(.)
 export(BERT_download)
+export(BERT_info)
 export(BERT_vocab)
 export(FMAT_load)
 export(FMAT_query)

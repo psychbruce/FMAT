@@ -1,5 +1,12 @@
 **Please check the [latest news (change log)](https://psychbruce.github.io/FMAT/news/index.html) and keep this package updated.**
 
+# FMAT 2024.5
+
+-   Added `BERT_info()`.
+-   Added `add.tokens` and `add.method` parameters for `BERT_vocab()` and `FMAT_run()`: An *experimental* functionality to add new tokens (e.g., out-of-vocabulary words, compound words, or even phrases) as [MASK] options. Validation is still needed for this novel practice (one of my ongoing projects), so currently please only use at your own risk, waiting until the publication of my validation work.
+-   All functions except `BERT_download()` now import local model files only, without automatically downloading models. Users must first use `BERT_download()` to download models.
+-   Deprecating `FMAT_load()`: Better to use `FMAT_run()` directly.
+
 # FMAT 2024.4
 
 -   Added `BERT_vocab()` and `ICC_models()`.

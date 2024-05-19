@@ -4,16 +4,28 @@
 \alias{BERT_vocab}
 \title{Check if mask words are in the model vocabulary.}
 \usage{
-BERT_vocab(models, mask.words)
+BERT_vocab(
+  models,
+  mask.words,
+  add.tokens = FALSE,
+  add.method = c("sum", "mean")
+)
 }
 \arguments{
 \item{models}{Model names at
 \href{https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers}{HuggingFace}.}
 
 \item{mask.words}{Option words filling in the mask.}
+
+\item{add.tokens}{Add new tokens (for out-of-vocabulary words or even phrases) to model vocabulary?
+Defaults to \code{FALSE}. It only temporarily adds tokens for tasks but does not change the raw model file.}
+
+\item{add.method}{Method used to produce the token embeddings of new added tokens.
+Can be \code{"sum"} (default) or \code{"mean"} of subword token embeddings.}
 }
 \value{
-A data.table of model names, mask words, and real tokens (replaced if out of vocabulary).
+A data.table of model name, mask word, real token (replaced if out of vocabulary),
+and token id (0~N).
 }
 \description{
 Check if mask words are in the model vocabulary.
@@ -21,11 +33,23 @@ Check if mask words are in the model vocabulary.
 \examples{
 \dontrun{
 models = c("bert-base-uncased", "bert-base-cased")
+BERT_info(models)
+
 BERT_vocab(models, c("bruce", "Bruce"))
-BERT_vocab(models, 1800:2024)
+
+BERT_vocab(models, 2020:2025)  # some are out-of-vocabulary
+BERT_vocab(models, 2020:2025, add.tokens=TRUE)  # add vocab
+
+BERT_vocab(models,
+           c("individualism", "artificial intelligence"),
+           add.tokens=TRUE)
 }
 
 }
 \seealso{
 \code{\link{BERT_download}}
+
+\code{\link{BERT_info}}
+
+\code{\link{FMAT_run}}
 }
