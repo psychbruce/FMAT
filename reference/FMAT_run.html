@@ -12,7 +12,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">FMAT</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2024.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2024.5</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,6 +58,8 @@
 <span>  <span class="va">models</span>,</span>
 <span>  <span class="va">data</span>,</span>
 <span>  <span class="va">gpu</span>,</span>
+<span>  add.tokens <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  add.method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sum"</span>, <span class="st">"mean"</span><span class="op">)</span>,</span>
 <span>  file <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  warning <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -96,6 +98,16 @@ which defines the device (e.g.,
 <code>"cpu"</code>, <code>"cuda:0"</code>, or a GPU device id like <code>1</code>)
 on which the pipeline will be allocated.</p></li>
 </ul></dd>
+
+
+<dt>add.tokens</dt>
+<dd><p>Add new tokens (for out-of-vocabulary words or even phrases) to model vocabulary?
+Defaults to <code>FALSE</code>. It only temporarily adds tokens for tasks but does not change the raw model file.</p></dd>
+
+
+<dt>add.method</dt>
+<dd><p>Method used to produce the token embeddings of new added tokens.
+Can be <code>"sum"</code> (default) or <code>"mean"</code> of subword token embeddings.</p></dd>
 
 
 <dt>file</dt>
@@ -151,7 +163,8 @@ but these differences would have little impact on main results.</p>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="BERT_download.html">BERT_download</a></code></p>
-<p><code><a href="FMAT_load.html">FMAT_load</a></code></p>
+<p><code><a href="BERT_vocab.html">BERT_vocab</a></code></p>
+<p><code><a href="FMAT_load.html">FMAT_load</a></code> (deprecated)</p>
 <p><code><a href="FMAT_query.html">FMAT_query</a></code></p>
 <p><code><a href="FMAT_query_bind.html">FMAT_query_bind</a></code></p>
 <p><code><a href="summary.fmat.html">summary.fmat</a></code></p></div>
