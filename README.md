@@ -65,21 +65,13 @@ pip install transformers torch
 
 See [Guidance for GPU Acceleration] for installation guidance if you have an NVIDIA GPU device on your PC and want to use GPU to accelerate the pipeline.
 
-Alternative approach (NOT suggested): Besides the pip/conda installation in the *Conda Environment*, you might instead create and use a *Virtual Environment* (see R code below with the `reticulate` package), but then you need to specify the Python interpreter as **"\~/.virtualenvs/r-reticulate/Scripts/python.exe"** in RStudio.
-
-``` r
-## DON'T RUN THIS UNLESS YOU PREFER VIRTUAL ENVIRONMENT
-library(reticulate)
-# install_python()
-virtualenv_create()
-virtualenv_install(packages=c("transformers", "torch"))
-```
-
 ## Guidance for FMAT
 
 ### Step 1: Download BERT Models
 
-Use `BERT_download()` to load [BERT models]. Model files are permanently saved to your local folder "%USERPROFILE%/.cache/huggingface". A full list of BERT-family models are available at [Hugging Face](https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers).
+Use `BERT_download()` to download [BERT models]. Model files are saved to your local folder "%USERPROFILE%/.cache/huggingface". A full list of BERT models are available at [Hugging Face](https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers).
+
+Use `BERT_info()` and `BERT_vocab()` to find detailed information of BERT models.
 
 ### Step 2: Design FMAT Queries
 
