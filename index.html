@@ -133,13 +133,6 @@
 (Windows Command / Anaconda Prompt / RStudio Terminal)</p>
 <pre><code>pip install transformers torch</code></pre>
 <p>See <a href="#guidance-for-gpu-acceleration">Guidance for GPU Acceleration</a> for installation guidance if you have an NVIDIA GPU device on your PC and want to use GPU to accelerate the pipeline.</p>
-<p>Alternative approach (NOT suggested): Besides the pip/conda installation in the <em>Conda Environment</em>, you might instead create and use a <em>Virtual Environment</em> (see R code below with the <code>reticulate</code> package), but then you need to specify the Python interpreter as <strong>“~/.virtualenvs/r-reticulate/Scripts/python.exe”</strong> in RStudio.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">## DON'T RUN THIS UNLESS YOU PREFER VIRTUAL ENVIRONMENT</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rstudio.github.io/reticulate/" class="external-link">reticulate</a></span><span class="op">)</span></span>
-<span><span class="co"># install_python()</span></span>
-<span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/virtualenv-tools.html" class="external-link">virtualenv_create</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/virtualenv-tools.html" class="external-link">virtualenv_install</a></span><span class="op">(</span>packages<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"transformers"</span>, <span class="st">"torch"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -148,7 +141,8 @@
 <div class="section level3">
 <h3 id="step-1-download-bert-models">Step 1: Download BERT Models<a class="anchor" aria-label="anchor" href="#step-1-download-bert-models"></a>
 </h3>
-<p>Use <code><a href="reference/BERT_download.html">BERT_download()</a></code> to load <a href="#bert-models">BERT models</a>. Model files are permanently saved to your local folder “%USERPROFILE%/.cache/huggingface”. A full list of BERT-family models are available at <a href="https://huggingface.co/models?pipeline_tag=fill-mask&amp;library=transformers" class="external-link">Hugging Face</a>.</p>
+<p>Use <code><a href="reference/BERT_download.html">BERT_download()</a></code> to download <a href="#bert-models">BERT models</a>. Model files are saved to your local folder “%USERPROFILE%/.cache/huggingface”. A full list of BERT models are available at <a href="https://huggingface.co/models?pipeline_tag=fill-mask&amp;library=transformers" class="external-link">Hugging Face</a>.</p>
+<p>Use <code><a href="reference/BERT_info.html">BERT_info()</a></code> and <code><a href="reference/BERT_vocab.html">BERT_vocab()</a></code> to find detailed information of BERT models.</p>
 </div>
 <div class="section level3">
 <h3 id="step-2-design-fmat-queries">Step 2: Design FMAT Queries<a class="anchor" aria-label="anchor" href="#step-2-design-fmat-queries"></a>
@@ -241,7 +235,7 @@
 <li><a href="https://jalammar.github.io/illustrated-bert/" class="external-link">Illustrated BERT</a></li>
 <li><a href="https://jalammar.github.io/a-visual-guide-to-using-bert-for-the-first-time/" class="external-link">Visual Guide to BERT</a></li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://psychbruce.github.io/FMAT/">FMAT</a></span><span class="op">)</span></span>
 <span><span class="va">models</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="st">"bert-base-uncased"</span>,</span>
@@ -425,7 +419,7 @@ vinai/bertweet-base      517 MB
 vinai/bertweet-large    1356 MB
 
 ✔ Downloaded models saved at C:/Users/Bruce/.cache/huggingface/hub (6.52 GB)</code></pre>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/BERT_info.html">BERT_info</a></span><span class="op">(</span><span class="va">models</span><span class="op">)</span></span></code></pre></div>
 <pre><code>                      model   size vocab  dims   mask
                      &lt;fctr&gt; &lt;char&gt; &lt;int&gt; &lt;int&gt; &lt;char&gt;
