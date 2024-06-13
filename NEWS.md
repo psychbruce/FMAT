@@ -1,5 +1,10 @@
 **Please check the [latest news (change log)](https://psychbruce.github.io/FMAT/news/index.html) and keep this package updated.**
 
+# FMAT 2024.6
+
+-   Fixed bugs: Now only `BERT_download()` connects to the Internet, while all the other functions run in an offline way.
+-   Improved installation guidance for Python packages.
+
 # FMAT 2024.5
 
 -   Added `BERT_info()`.

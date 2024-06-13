@@ -6,6 +6,7 @@
 #' @importFrom dplyr left_join mutate
 #' @importFrom forcats as_factor
 #' @importFrom stats na.omit
+#' @importFrom crayon italic underline green blue magenta
 .onAttach = function(libname, pkgname) {
   inst.ver = as.character(utils::packageVersion("FMAT"))
   pkg.date = substr(utils::packageDate("FMAT"), 1, 4)
@@ -45,9 +46,9 @@
 #### Utils ####
 
 
-#' @importFrom PsychWordVec cc
-#' @export
-PsychWordVec::cc
+## #' @importFrom PsychWordVec cc
+## #' @export
+## PsychWordVec::cc
 
 
 #' A simple function equivalent to `list`.
@@ -57,8 +58,7 @@ PsychWordVec::cc
 #' @return A list of named objects.
 #'
 #' @examples
-#' .(Male=cc("he, his"), Female=cc("she, her"))
-#' list(Male=cc("he, his"), Female=cc("she, her"))  # the same
+#' .(Male=c("he", "his"), Female=c("she", "her"))
 #'
 #' @export
 . = function(...) list(...)
@@ -113,12 +113,14 @@ transformers_init = function(print.info=TRUE) {
       gpu.info = paste("GPU (Device):", paste(torch$cuda$get_device_name(), collapse=", "))
     } else {
       cuda.ver = "NULL"
-      gpu.info = paste("(To use GPU, install PyTorch with CUDA support,",
-                       "see https://pytorch.org/get-started)")
+      gpu.info = "To use GPU, see https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration"
     }
 
     transformers = reticulate::import("transformers")
     tf.ver = transformers$`__version__`
+
+    hfh.ver = reticulate::import("huggingface_hub")$`__version__`
+    url.ver = reticulate::import("urllib3")$`__version__`
   })
   if(print.info) {
     cli::cli_alert_info(cli::col_blue("Device Info:
@@ -130,6 +132,8 @@ transformers_init = function(print.info=TRUE) {
     Python Packages:
     transformers  {tf.ver}
     torch         {torch.ver}
+    urllib3       {url.ver}
+    huggingface-hub  {hfh.ver}
 
     NVIDIA GPU CUDA Support:
     CUDA Enabled: {torch.cuda}
@@ -142,8 +146,10 @@ transformers_init = function(print.info=TRUE) {
 
 
 fill_mask_init = function(transformers, model, device=-1L) {
-  config = transformers$AutoConfig$from_pretrained(model, local_files_only=TRUE)
-  fill_mask = transformers$pipeline("fill-mask", model=model, config=config,
+  cache.folder = get_cache_folder(transformers)
+  model.local = get_cached_model_path(cache.folder, model)
+  config = transformers$AutoConfig$from_pretrained(model.local, local_files_only=TRUE)
+  fill_mask = transformers$pipeline("fill-mask", model=model.local, config=config,
                                     model_kwargs=list(local_files_only=TRUE),
                                     device=device)
   return(fill_mask)
@@ -207,19 +213,33 @@ add_tokens = function(
 }
 
 
-find_cached_models = function(cache.folder) {
+get_cache_folder = function(transformers) {
+  str_replace_all(transformers$TRANSFORMERS_CACHE, "\\\\", "/")
+}
+
+
+get_cached_models = function(cache.folder) {
   models.name = list.files(cache.folder, "^models--")
   if(length(models.name) > 0) {
-    models.size = sapply(paste0(cache.folder, "/", models.name), function(folder) {
+    models.info = do.call("rbind", lapply(paste0(cache.folder, "/", models.name), function(folder) {
       models.file = list.files(folder, pattern="(model.safetensors$|pytorch_model.bin$|tf_model.h5$)", recursive=TRUE, full.names=TRUE)
-      paste(paste0(sprintf("%.0f", file.size(models.file) / 1024^2), " MB"), collapse=" / ")
-    })
+      size = paste(paste0(sprintf("%.0f", file.size(models.file) / 1024^2), " MB"), collapse=" / ")
+      download.date = paste(str_remove(file.mtime(models.file), " .*"), collapse=" / ")
+      return(data.frame(size, download.date))
+    }))
     models.name = str_replace_all(str_remove(models.name, "^models--"), "--", "/")
-    models.info = data.frame(size=models.size, row.names=models.name)
+    row.names(models.info) = models.name
   } else {
     models.info = NULL
   }
   return(models.info)
+}
+
+
+get_cached_model_path = function(cache.folder, model) {
+  model.folder = paste0(cache.folder, "/models--", str_replace_all(model, "/", "--"))
+  model.path = list.files(model.folder, pattern="(model.safetensors$|pytorch_model.bin$|tf_model.h5$)", recursive=TRUE, full.names=TRUE)[1]
+  return(dirname(model.path))
 }
 
 
@@ -269,9 +289,9 @@ BERT_download = function(models=NULL) {
       gc()
     })
   }
-  cache.folder = str_replace_all(transformers$TRANSFORMERS_CACHE, "\\\\", "/")
+  cache.folder = get_cache_folder(transformers)
   cache.sizegb = sum(file.size(list.files(cache.folder, recursive=TRUE, full.names=TRUE))) / 1024^3
-  local.models = find_cached_models(cache.folder)
+  local.models = get_cached_models(cache.folder)
   cli::cli_h2("Downloaded models:")
   print(local.models)
   cat("\n")
@@ -305,8 +325,8 @@ BERT_download = function(models=NULL) {
 #' @export
 BERT_info = function(models=NULL) {
   transformers = transformers_init(print.info=FALSE)
-  cache.folder = str_replace_all(transformers$TRANSFORMERS_CACHE, "\\\\", "/")
-  local.models = find_cached_models(cache.folder)
+  cache.folder = get_cache_folder(transformers)
+  local.models = get_cached_models(cache.folder)
   dm = data.table(model=row.names(local.models), size=local.models$size)
   model = NULL
   if(!is.null(models)) {
@@ -318,8 +338,9 @@ BERT_info = function(models=NULL) {
   }
   dm$size = str_remove(dm$size, " ")
   dm = cbind(dm, rbindlist(lapply(dm$model, function(model) {
-    tokenizer = transformers$AutoTokenizer$from_pretrained(model, local_files_only=TRUE)
-    model.obj = transformers$AutoModel$from_pretrained(model, local_files_only=TRUE)
+    model.local = get_cached_model_path(cache.folder, model)
+    tokenizer = transformers$AutoTokenizer$from_pretrained(model.local, local_files_only=TRUE)
+    model.obj = transformers$AutoModel$from_pretrained(model.local, local_files_only=TRUE)
     word.embeddings = model.obj$embeddings$word_embeddings$weight$data$shape
     data.table(vocab = word.embeddings[0],
                dims = word.embeddings[1],
@@ -430,7 +451,7 @@ BERT_vocab = function(
 #' @export
 FMAT_load = function(models) {
   transformers = transformers_init()
-  cache.folder = str_replace_all(transformers$TRANSFORMERS_CACHE, "\\\\", "/")
+  cache.folder = get_cache_folder(transformers)
   cli::cli_text("Loading models from {.path {cache.folder}} ...")
   fms = lapply(models, function(model) {
     t0 = Sys.time()
@@ -461,9 +482,9 @@ fix_pair = function(X, var="MASK") {
 
 
 # query = "[MASK] is ABC."
-# expand_pair(query, .(High=cc("high, strong"), Low=cc("low, weak")))
+# expand_pair(query, .(High=c("high", "strong"), Low=c("low", "weak")))
 # expand_pair(query, .(H="high", M="medium", L="low"))
-# X = .(Flower=cc("rose, iris, lily"), Pos=cc("health, happiness, love, peace"))
+# X = .(Flower=c("rose", "iris", "lily"), Pos=c("health", "happiness", "love", "peace"))
 # expand_full(query, X)
 
 
@@ -556,31 +577,22 @@ append_X = function(dq, X, var="TARGET") {
 #' [`FMAT_run`]
 #'
 #' @examples
-#' FMAT_query("[MASK] is a nurse.", MASK = .(Male="He", Female="She"))
+#' \donttest{FMAT_query("[MASK] is a nurse.", MASK = .(Male="He", Female="She"))
 #'
 #' FMAT_query(
 #'   c("[MASK] is {TARGET}.", "[MASK] works as {TARGET}."),
 #'   MASK = .(Male="He", Female="She"),
-#'   TARGET = .(Occupation=cc("a doctor, a nurse, an artist"))
+#'   TARGET = .(Occupation=c("a doctor", "a nurse", "an artist"))
 #' )
 #'
 #' FMAT_query(
 #'   "The [MASK] {ATTRIB}.",
-#'   MASK = .(Male=cc("man, boy"),
-#'            Female=cc("woman, girl")),
-#'   ATTRIB = .(Masc=cc("is masculine, has a masculine personality"),
-#'              Femi=cc("is feminine, has a feminine personality"))
+#'   MASK = .(Male=c("man", "boy"),
+#'            Female=c("woman", "girl")),
+#'   ATTRIB = .(Masc=c("is masculine", "has a masculine personality"),
+#'              Femi=c("is feminine", "has a feminine personality"))
 #' )
-#'
-#' FMAT_query(
-#'   "The association between {TARGET} and {ATTRIB} is [MASK].",
-#'   MASK = .(H="strong", L="weak"),
-#'   TARGET = .(Flower=cc("rose, iris, lily"),
-#'              Insect=cc("ant, cockroach, spider")),
-#'   ATTRIB = .(Pos=cc("health, happiness, love, peace"),
-#'              Neg=cc("death, sickness, hatred, disaster"))
-#' )
-#'
+#' }
 #' @export
 FMAT_query = function(
     query = "Text with [MASK], optionally with {TARGET} and/or {ATTRIB}.",
@@ -658,19 +670,19 @@ FMAT_query = function(
 #' [`FMAT_run`]
 #'
 #' @examples
-#' FMAT_query_bind(
+#' \donttest{FMAT_query_bind(
 #'   FMAT_query(
 #'     "[MASK] is {TARGET}.",
 #'     MASK = .(Male="He", Female="She"),
-#'     TARGET = .(Occupation=cc("a doctor, a nurse, an artist"))
+#'     TARGET = .(Occupation=c("a doctor", "a nurse", "an artist"))
 #'   ),
 #'   FMAT_query(
 #'     "[MASK] occupation is {TARGET}.",
 #'     MASK = .(Male="His", Female="Her"),
-#'     TARGET = .(Occupation=cc("doctor, nurse, artist"))
+#'     TARGET = .(Occupation=c("doctor", "nurse", "artist"))
 #'   )
 #' )
-#'
+#' }
 #' @export
 FMAT_query_bind = function(...) {
   types = sapply(list(...), attr, "type")
@@ -791,22 +803,21 @@ FMAT_query_bind = function(...) {
 #' query1 = FMAT_query(
 #'   c("[MASK] is {TARGET}.", "[MASK] works as {TARGET}."),
 #'   MASK = .(Male="He", Female="She"),
-#'   TARGET = .(Occupation=cc("a doctor, a nurse, an artist"))
+#'   TARGET = .(Occupation=c("a doctor", "a nurse", "an artist"))
 #' )
 #' data1 = FMAT_run(models, query1)
 #' summary(data1, target.pair=FALSE)
 #'
 #' query2 = FMAT_query(
 #'   "The [MASK] {ATTRIB}.",
-#'   MASK = .(Male=cc("man, boy"),
-#'            Female=cc("woman, girl")),
-#'   ATTRIB = .(Masc=cc("is masculine, has a masculine personality"),
-#'              Femi=cc("is feminine, has a feminine personality"))
+#'   MASK = .(Male=c("man", "boy"),
+#'            Female=c("woman", "girl")),
+#'   ATTRIB = .(Masc=c("is masculine", "has a masculine personality"),
+#'              Femi=c("is feminine", "has a feminine personality"))
 #' )
 #' data2 = FMAT_run(models, query2)
 #' summary(data2, mask.pair=FALSE)
 #' summary(data2)
-#'
 #' }
 #'
 #' @export
@@ -833,7 +844,7 @@ FMAT_run = function(
       rather than the returned object from `FMAT_load()`.", call.=FALSE)
   } else {
     transformers = transformers_init()
-    cache.folder = str_replace_all(transformers$TRANSFORMERS_CACHE, "\\\\", "/")
+    cache.folder = get_cache_folder(transformers)
     cli::cli_text("Loading models from {.path {cache.folder}} ...")
     cat("\n")
   }

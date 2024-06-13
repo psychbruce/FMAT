@@ -33,7 +33,7 @@ Han-Wu-Shuang (Bruce) Bao 包寒吴霜
 
 ## Installation
 
-To use the FMAT, the R package `FMAT` and two Python packages (`transformers` and `torch`) all need to be installed.
+To use the FMAT, the R package `FMAT` and three Python packages (`transformers`, `torch`, `huggingface-hub`) all need to be installed.
 
 ### (1) R Package
 
@@ -48,22 +48,36 @@ devtools::install_github("psychbruce/FMAT", force=TRUE)
 
 ### (2) Python Environment and Packages
 
-Install [Anaconda](https://www.anaconda.com/download) (a recommended package manager which automatically installs Python, Python IDEs like Spyder, and a large list of necessary [Python package dependencies](https://docs.anaconda.com/free/anaconda/pkg-docs/)).
+Install [Anaconda](https://www.anaconda.com/download/success) (a recommended package manager which automatically installs Python, Python IDEs like Spyder, and a large list of necessary [Python package dependencies](https://docs.anaconda.com/free/anaconda/allpkglists/)).
 
-Specify the Python interpreter in RStudio.
+Specify the Anaconda's Python interpreter in RStudio.
 
 > RStudio → Tools → Global/Project Options\
 > → Python → Select → **Conda Environments**\
 > → Choose **".../Anaconda3/python.exe"**
 
-Install the "[transformers](https://huggingface.co/docs/transformers/installation)" and "[torch](https://pytorch.org/get-started/locally/)" Python packages.\
-(Windows Command / Anaconda Prompt / RStudio Terminal)
+Install specific versions of Python packages "[transformers](https://pypi.org/project/transformers/#history)", "[torch](https://pypi.org/project/torch/#history)", and "[huggingface-hub](https://pypi.org/project/huggingface-hub/#history)".\
+(RStudio Terminal / Anaconda Prompt / Windows Command)
+
+For CPU users:
 
 ```         
-pip install transformers torch
+pip install transformers==4.40.2 torch==2.2.1 huggingface-hub==0.20.3
 ```
 
-See [Guidance for GPU Acceleration] for installation guidance if you have an NVIDIA GPU device on your PC and want to use GPU to accelerate the pipeline.
+For GPU (CUDA) users:
+
+```         
+pip install transformers==4.40.2 huggingface-hub==0.20.3
+pip install torch==2.2.1 --index-url https://download.pytorch.org/whl/cu121
+```
+
+-   See [Guidance for GPU Acceleration] for installation guidance if you have an NVIDIA GPU device on your PC and want to use GPU to accelerate the pipeline.
+-   According to the May 2024 releases, "transformers" ≥ 4.41 depends on "huggingface-hub" ≥ 0.23. The suggested versions of "transformers" (4.40.2) and "huggingface-hub" (0.20.3) ensure the console display of progress bars when downloading BERT models while keeping these packages as new as possible.
+-   Proxy users should use the "global mode" (全局模式) to download models.
+-   If you see the error `HTTPSConnectionPool(host='huggingface.co', port=443)`, please try to (1) reinstall [Anaconda](https://www.anaconda.com/download/success) so that some unknown issues may be fixed or (2) downgrade the "[urllib3](https://pypi.org/project/urllib3/)" package to version ≤ 1.25.11 (`pip install urllib3==1.25.11`) so that it will use HTTP proxies (rather than HTTPS proxies as in later versions) to connect to Hugging Face.
+    -   <https://www.cnblogs.com/devilmaycry812839668/p/17872452.html>
+    -   <https://zhuanlan.zhihu.com/p/350015032>
 
 ## Guidance for FMAT
 
@@ -112,10 +126,10 @@ Checklist:
     -   You may also install the corresponding version of CUDA Toolkit (e.g., for the `torch` version supporting CUDA 12.1, the same version of [CUDA Toolkit 12.1](https://developer.nvidia.com/cuda-12-1-0-download-archive) may also be installed).
 
 Example code for installing PyTorch with CUDA support:\
-(Windows Command / Anaconda Prompt / RStudio Terminal)
+(RStudio Terminal / Anaconda Prompt / Windows Command)
 
 ```         
-pip install torch --index-url https://download.pytorch.org/whl/cu121
+pip install torch==2.2.1 --index-url https://download.pytorch.org/whl/cu121
 ```
 
 ## BERT Models

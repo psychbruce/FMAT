@@ -16,19 +16,19 @@ A data.table of queries and variables.
 Combine multiple query data.tables and renumber query ids.
 }
 \examples{
-FMAT_query_bind(
+\donttest{FMAT_query_bind(
   FMAT_query(
     "[MASK] is {TARGET}.",
     MASK = .(Male="He", Female="She"),
-    TARGET = .(Occupation=cc("a doctor, a nurse, an artist"))
+    TARGET = .(Occupation=c("a doctor", "a nurse", "an artist"))
   ),
   FMAT_query(
     "[MASK] occupation is {TARGET}.",
     MASK = .(Male="His", Female="Her"),
-    TARGET = .(Occupation=cc("doctor, nurse, artist"))
+    TARGET = .(Occupation=c("doctor", "nurse", "artist"))
   )
 )
-
+}
 }
 \seealso{
 \code{\link{FMAT_load}}

@@ -115,22 +115,21 @@ models = c("bert-base-uncased", "bert-base-cased")
 query1 = FMAT_query(
   c("[MASK] is {TARGET}.", "[MASK] works as {TARGET}."),
   MASK = .(Male="He", Female="She"),
-  TARGET = .(Occupation=cc("a doctor, a nurse, an artist"))
+  TARGET = .(Occupation=c("a doctor", "a nurse", "an artist"))
 )
 data1 = FMAT_run(models, query1)
 summary(data1, target.pair=FALSE)
 
 query2 = FMAT_query(
   "The [MASK] {ATTRIB}.",
-  MASK = .(Male=cc("man, boy"),
-           Female=cc("woman, girl")),
-  ATTRIB = .(Masc=cc("is masculine, has a masculine personality"),
-             Femi=cc("is feminine, has a feminine personality"))
+  MASK = .(Male=c("man", "boy"),
+           Female=c("woman", "girl")),
+  ATTRIB = .(Masc=c("is masculine", "has a masculine personality"),
+             Femi=c("is feminine", "has a feminine personality"))
 )
 data2 = FMAT_run(models, query2)
 summary(data2, mask.pair=FALSE)
 summary(data2)
-
 }
 
 }

@@ -16,7 +16,6 @@ A list of named objects.
 A simple function equivalent to \code{list}.
 }
 \examples{
-.(Male=cc("he, his"), Female=cc("she, her"))
-list(Male=cc("he, his"), Female=cc("she, her"))  # the same
+.(Male=c("he", "his"), Female=c("she", "her"))
 
 }

@@ -42,31 +42,22 @@ A data.table of queries and variables.
 Prepare a data.table of queries and variables for the FMAT.
 }
 \examples{
-FMAT_query("[MASK] is a nurse.", MASK = .(Male="He", Female="She"))
+\donttest{FMAT_query("[MASK] is a nurse.", MASK = .(Male="He", Female="She"))
 
 FMAT_query(
   c("[MASK] is {TARGET}.", "[MASK] works as {TARGET}."),
   MASK = .(Male="He", Female="She"),
-  TARGET = .(Occupation=cc("a doctor, a nurse, an artist"))
+  TARGET = .(Occupation=c("a doctor", "a nurse", "an artist"))
 )
 
 FMAT_query(
   "The [MASK] {ATTRIB}.",
-  MASK = .(Male=cc("man, boy"),
-           Female=cc("woman, girl")),
-  ATTRIB = .(Masc=cc("is masculine, has a masculine personality"),
-             Femi=cc("is feminine, has a feminine personality"))
+  MASK = .(Male=c("man", "boy"),
+           Female=c("woman", "girl")),
+  ATTRIB = .(Masc=c("is masculine", "has a masculine personality"),
+             Femi=c("is feminine", "has a feminine personality"))
 )
-
-FMAT_query(
-  "The association between {TARGET} and {ATTRIB} is [MASK].",
-  MASK = .(H="strong", L="weak"),
-  TARGET = .(Flower=cc("rose, iris, lily"),
-             Insect=cc("ant, cockroach, spider")),
-  ATTRIB = .(Pos=cc("health, happiness, love, peace"),
-             Neg=cc("death, sickness, hatred, disaster"))
-)
-
+}
 }
 \seealso{
 \code{\link{FMAT_load}}
