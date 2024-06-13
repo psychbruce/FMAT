@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">FMAT</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2024.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2024.6</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -112,7 +112,7 @@ to be replaced by the words/phrases.</p></dd>
 <span class="r-in"><span><span class="fu">FMAT_query</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"[MASK] is {TARGET}."</span>, <span class="st">"[MASK] works as {TARGET}."</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  MASK <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>Male<span class="op">=</span><span class="st">"He"</span>, Female<span class="op">=</span><span class="st">"She"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  TARGET <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>Occupation<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"a doctor, a nurse, an artist"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  TARGET <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>Occupation<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"a doctor"</span>, <span class="st">"a nurse"</span>, <span class="st">"an artist"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        qid                     query   MASK M_pair M_word     TARGET</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     &lt;fctr&gt;                    &lt;fctr&gt; &lt;fctr&gt; &lt;fctr&gt; &lt;fctr&gt;     &lt;fctr&gt;</span>
@@ -145,10 +145,10 @@ to be replaced by the words/phrases.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FMAT_query</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="st">"The [MASK] {ATTRIB}."</span>,</span></span>
-<span class="r-in"><span>  MASK <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>Male<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"man, boy"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>           Female<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"woman, girl"</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  ATTRIB <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>Masc<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"is masculine, has a masculine personality"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>             Femi<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"is feminine, has a feminine personality"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  MASK <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>Male<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"man"</span>, <span class="st">"boy"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>           Female<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"woman"</span>, <span class="st">"girl"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  ATTRIB <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>Masc<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"is masculine"</span>, <span class="st">"has a masculine personality"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>             Femi<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"is feminine"</span>, <span class="st">"has a feminine personality"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                    query   MASK M_pair M_word ATTRIB      A_pair</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                   &lt;fctr&gt; &lt;fctr&gt; &lt;fctr&gt; &lt;fctr&gt; &lt;fctr&gt;      &lt;fctr&gt;</span>
@@ -186,213 +186,6 @@ to be replaced by the words/phrases.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 14:  has a feminine personality</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 15:  has a feminine personality</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 16:  has a feminine personality</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">FMAT_query</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="st">"The association between {TARGET} and {ATTRIB} is [MASK]."</span>,</span></span>
-<span class="r-in"><span>  MASK <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>H<span class="op">=</span><span class="st">"strong"</span>, L<span class="op">=</span><span class="st">"weak"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  TARGET <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>Flower<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"rose, iris, lily"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>             Insect<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"ant, cockroach, spider"</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  ATTRIB <span class="op">=</span> <span class="fu"><a href="dot-.html">.</a></span><span class="op">(</span>Pos<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"health, happiness, love, peace"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>             Neg<span class="op">=</span><span class="fu"><a href="https://psychbruce.github.io/bruceR/reference/cc.html" class="external-link">cc</a></span><span class="op">(</span><span class="st">"death, sickness, hatred, disaster"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                        query   MASK M_pair</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                       &lt;fctr&gt; &lt;fctr&gt; &lt;fctr&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 37: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 42: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 43: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 45: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 46: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 47: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 48: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 49: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 50: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 51: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 52: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 53: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 54: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 55: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 56: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 57: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 58: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 59: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 60: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 61: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 62: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 63: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 64: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 65: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 66: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 67: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 68: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 69: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 70: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 71: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 72: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 73: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 74: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 75: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 76: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 77: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 78: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 79: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 80: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 81: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 82: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 83: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 84: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 85: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 86: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 87: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 88: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 89: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 90: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 91: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 92: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 93: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 94: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 95: The association between {TARGET} and {ATTRIB} is [MASK].      H      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 96: The association between {TARGET} and {ATTRIB} is [MASK].      L      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                        query   MASK M_pair</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     M_word TARGET    T_word ATTRIB    A_word</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     &lt;fctr&gt; &lt;fctr&gt;    &lt;fctr&gt; &lt;fctr&gt;    &lt;fctr&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1: strong Flower      rose    Pos    health</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:   weak Flower      rose    Pos    health</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3: strong Flower      iris    Pos    health</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:   weak Flower      iris    Pos    health</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5: strong Flower      lily    Pos    health</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:   weak Flower      lily    Pos    health</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7: strong Flower      rose    Pos happiness</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:   weak Flower      rose    Pos happiness</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9: strong Flower      iris    Pos happiness</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:   weak Flower      iris    Pos happiness</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11: strong Flower      lily    Pos happiness</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12:   weak Flower      lily    Pos happiness</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13: strong Flower      rose    Pos      love</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14:   weak Flower      rose    Pos      love</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15: strong Flower      iris    Pos      love</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16:   weak Flower      iris    Pos      love</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17: strong Flower      lily    Pos      love</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18:   weak Flower      lily    Pos      love</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19: strong Flower      rose    Pos     peace</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20:   weak Flower      rose    Pos     peace</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21: strong Flower      iris    Pos     peace</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22:   weak Flower      iris    Pos     peace</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23: strong Flower      lily    Pos     peace</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24:   weak Flower      lily    Pos     peace</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25: strong Flower      rose    Neg     death</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26:   weak Flower      rose    Neg     death</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27: strong Flower      iris    Neg     death</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28:   weak Flower      iris    Neg     death</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29: strong Flower      lily    Neg     death</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30:   weak Flower      lily    Neg     death</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31: strong Flower      rose    Neg  sickness</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32:   weak Flower      rose    Neg  sickness</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33: strong Flower      iris    Neg  sickness</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34:   weak Flower      iris    Neg  sickness</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35: strong Flower      lily    Neg  sickness</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36:   weak Flower      lily    Neg  sickness</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 37: strong Flower      rose    Neg    hatred</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38:   weak Flower      rose    Neg    hatred</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39: strong Flower      iris    Neg    hatred</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40:   weak Flower      iris    Neg    hatred</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41: strong Flower      lily    Neg    hatred</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 42:   weak Flower      lily    Neg    hatred</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 43: strong Flower      rose    Neg  disaster</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44:   weak Flower      rose    Neg  disaster</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 45: strong Flower      iris    Neg  disaster</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 46:   weak Flower      iris    Neg  disaster</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 47: strong Flower      lily    Neg  disaster</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 48:   weak Flower      lily    Neg  disaster</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 49: strong Insect       ant    Pos    health</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 50:   weak Insect       ant    Pos    health</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 51: strong Insect cockroach    Pos    health</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 52:   weak Insect cockroach    Pos    health</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 53: strong Insect    spider    Pos    health</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 54:   weak Insect    spider    Pos    health</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 55: strong Insect       ant    Pos happiness</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 56:   weak Insect       ant    Pos happiness</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 57: strong Insect cockroach    Pos happiness</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 58:   weak Insect cockroach    Pos happiness</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 59: strong Insect    spider    Pos happiness</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 60:   weak Insect    spider    Pos happiness</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 61: strong Insect       ant    Pos      love</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 62:   weak Insect       ant    Pos      love</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 63: strong Insect cockroach    Pos      love</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 64:   weak Insect cockroach    Pos      love</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 65: strong Insect    spider    Pos      love</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 66:   weak Insect    spider    Pos      love</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 67: strong Insect       ant    Pos     peace</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 68:   weak Insect       ant    Pos     peace</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 69: strong Insect cockroach    Pos     peace</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 70:   weak Insect cockroach    Pos     peace</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 71: strong Insect    spider    Pos     peace</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 72:   weak Insect    spider    Pos     peace</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 73: strong Insect       ant    Neg     death</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 74:   weak Insect       ant    Neg     death</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 75: strong Insect cockroach    Neg     death</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 76:   weak Insect cockroach    Neg     death</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 77: strong Insect    spider    Neg     death</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 78:   weak Insect    spider    Neg     death</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 79: strong Insect       ant    Neg  sickness</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 80:   weak Insect       ant    Neg  sickness</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 81: strong Insect cockroach    Neg  sickness</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 82:   weak Insect cockroach    Neg  sickness</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 83: strong Insect    spider    Neg  sickness</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 84:   weak Insect    spider    Neg  sickness</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 85: strong Insect       ant    Neg    hatred</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 86:   weak Insect       ant    Neg    hatred</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 87: strong Insect cockroach    Neg    hatred</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 88:   weak Insect cockroach    Neg    hatred</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 89: strong Insect    spider    Neg    hatred</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 90:   weak Insect    spider    Neg    hatred</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 91: strong Insect       ant    Neg  disaster</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 92:   weak Insect       ant    Neg  disaster</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 93: strong Insect cockroach    Neg  disaster</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 94:   weak Insect cockroach    Neg  disaster</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 95: strong Insect    spider    Neg  disaster</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 96:   weak Insect    spider    Neg  disaster</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     M_word TARGET    T_word ATTRIB    A_word</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

@@ -35,7 +35,7 @@
     
     <a class="navbar-brand me-2" href="index.html">FMAT</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2024.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2024.6</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -107,7 +107,7 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>To use the FMAT, the R package <code>FMAT</code> and two Python packages (<code>transformers</code> and <code>torch</code>) all need to be installed.</p>
+<p>To use the FMAT, the R package <code>FMAT</code> and three Python packages (<code>transformers</code>, <code>torch</code>, <code>huggingface-hub</code>) all need to be installed.</p>
 <div class="section level3">
 <h3 id="id_1-r-package">(1) R Package<a class="anchor" aria-label="anchor" href="#id_1-r-package"></a>
 </h3>
@@ -122,17 +122,31 @@
 <div class="section level3">
 <h3 id="id_2-python-environment-and-packages">(2) Python Environment and Packages<a class="anchor" aria-label="anchor" href="#id_2-python-environment-and-packages"></a>
 </h3>
-<p>Install <a href="https://www.anaconda.com/download" class="external-link">Anaconda</a> (a recommended package manager which automatically installs Python, Python IDEs like Spyder, and a large list of necessary <a href="https://docs.anaconda.com/free/anaconda/pkg-docs/" class="external-link">Python package dependencies</a>).</p>
-<p>Specify the Python interpreter in RStudio.</p>
+<p>Install <a href="https://www.anaconda.com/download/success" class="external-link">Anaconda</a> (a recommended package manager which automatically installs Python, Python IDEs like Spyder, and a large list of necessary <a href="https://docs.anaconda.com/free/anaconda/allpkglists/" class="external-link">Python package dependencies</a>).</p>
+<p>Specify the Anaconda’s Python interpreter in RStudio.</p>
 <blockquote>
 <p>RStudio → Tools → Global/Project Options<br>
 → Python → Select → <strong>Conda Environments</strong><br>
 → Choose <strong>“…/Anaconda3/python.exe”</strong></p>
 </blockquote>
-<p>Install the “<a href="https://huggingface.co/docs/transformers/installation" class="external-link">transformers</a>” and “<a href="https://pytorch.org/get-started/locally/" class="external-link">torch</a>” Python packages.<br>
-(Windows Command / Anaconda Prompt / RStudio Terminal)</p>
-<pre><code>pip install transformers torch</code></pre>
-<p>See <a href="#guidance-for-gpu-acceleration">Guidance for GPU Acceleration</a> for installation guidance if you have an NVIDIA GPU device on your PC and want to use GPU to accelerate the pipeline.</p>
+<p>Install specific versions of Python packages “<a href="https://pypi.org/project/transformers/#history" class="external-link">transformers</a>”, “<a href="https://pypi.org/project/torch/#history" class="external-link">torch</a>”, and “<a href="https://pypi.org/project/huggingface-hub/#history" class="external-link">huggingface-hub</a>”.<br>
+(RStudio Terminal / Anaconda Prompt / Windows Command)</p>
+<p>For CPU users:</p>
+<pre><code>pip install transformers==4.40.2 torch==2.2.1 huggingface-hub==0.20.3</code></pre>
+<p>For GPU (CUDA) users:</p>
+<pre><code>pip install transformers==4.40.2 huggingface-hub==0.20.3
+pip install torch==2.2.1 --index-url https://download.pytorch.org/whl/cu121</code></pre>
+<ul>
+<li>See <a href="#guidance-for-gpu-acceleration">Guidance for GPU Acceleration</a> for installation guidance if you have an NVIDIA GPU device on your PC and want to use GPU to accelerate the pipeline.</li>
+<li>According to the May 2024 releases, “transformers” ≥ 4.41 depends on “huggingface-hub” ≥ 0.23. The suggested versions of “transformers” (4.40.2) and “huggingface-hub” (0.20.3) ensure the console display of progress bars when downloading BERT models while keeping these packages as new as possible.</li>
+<li>Proxy users should use the “global mode” (全局模式) to download models.</li>
+<li>If you see the error <code>HTTPSConnectionPool(host='huggingface.co', port=443)</code>, please try to (1) reinstall <a href="https://www.anaconda.com/download/success" class="external-link">Anaconda</a> so that some unknown issues may be fixed or (2) downgrade the “<a href="https://pypi.org/project/urllib3/" class="external-link">urllib3</a>” package to version ≤ 1.25.11 (<code>pip install urllib3==1.25.11</code>) so that it will use HTTP proxies (rather than HTTPS proxies as in later versions) to connect to Hugging Face.
+<ul>
+<li><a href="https://www.cnblogs.com/devilmaycry812839668/p/17872452.html" class="external-link uri">https://www.cnblogs.com/devilmaycry812839668/p/17872452.html</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/350015032" class="external-link uri">https://zhuanlan.zhihu.com/p/350015032</a></li>
+</ul>
+</li>
+</ul>
 </div>
 </div>
 <div class="section level2">
@@ -191,8 +205,8 @@
 </li>
 </ol>
 <p>Example code for installing PyTorch with CUDA support:<br>
-(Windows Command / Anaconda Prompt / RStudio Terminal)</p>
-<pre><code>pip install torch --index-url https://download.pytorch.org/whl/cu121</code></pre>
+(RStudio Terminal / Anaconda Prompt / Windows Command)</p>
+<pre><code>pip install torch==2.2.1 --index-url https://download.pytorch.org/whl/cu121</code></pre>
 </div>
 <div class="section level2">
 <h2 id="bert-models">BERT Models<a class="anchor" aria-label="anchor" href="#bert-models"></a>
@@ -235,7 +249,7 @@
 <li><a href="https://jalammar.github.io/illustrated-bert/" class="external-link">Illustrated BERT</a></li>
 <li><a href="https://jalammar.github.io/a-visual-guide-to-using-bert-for-the-first-time/" class="external-link">Visual Guide to BERT</a></li>
 </ul>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://psychbruce.github.io/FMAT/">FMAT</a></span><span class="op">)</span></span>
 <span><span class="va">models</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="st">"bert-base-uncased"</span>,</span>
@@ -419,7 +433,7 @@ vinai/bertweet-base      517 MB
 vinai/bertweet-large    1356 MB
 
 ✔ Downloaded models saved at C:/Users/Bruce/.cache/huggingface/hub (6.52 GB)</code></pre>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/BERT_info.html">BERT_info</a></span><span class="op">(</span><span class="va">models</span><span class="op">)</span></span></code></pre></div>
 <pre><code>                      model   size vocab  dims   mask
                      &lt;fctr&gt; &lt;char&gt; &lt;int&gt; &lt;int&gt; &lt;char&gt;
