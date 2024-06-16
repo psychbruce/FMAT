@@ -4,7 +4,7 @@
 
 The *Fill-Mask Association Test* (FMAT) is an integrative and probability-based method using [BERT Models] to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as *propositions* in natural language ([Bao, 2024, *JPSP*](https://psychbruce.github.io/FMAT/#citation)).
 
-⚠️ *Please update this package to version ≥ 2024.5 for faster and more robust functionality.*
+⚠️ *Please update this package to version ≥ 2024.6 for faster and more robust functionality.*
 
 ![](https://psychbruce.github.io/img/FMAT-Workflow.png)
 
