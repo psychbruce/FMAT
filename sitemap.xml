@@ -1,54 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://psychbruce.github.io/FMAT/404.html</loc>
-  </url>
-  <url>
-    <loc>https://psychbruce.github.io/FMAT/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://psychbruce.github.io/FMAT/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://psychbruce.github.io/FMAT/index.html</loc>
-  </url>
-  <url>
-    <loc>https://psychbruce.github.io/FMAT/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://psychbruce.github.io/FMAT/reference/BERT_download.html</loc>
-  </url>
-  <url>
-    <loc>https://psychbruce.github.io/FMAT/reference/BERT_info.html</loc>
-  </url>
-  <url>
-    <loc>https://psychbruce.github.io/FMAT/reference/BERT_vocab.html</loc>
-  </url>
-  <url>
-    <loc>https://psychbruce.github.io/FMAT/reference/FMAT_load.html</loc>
-  </url>
-  <url>
-    <loc>https://psychbruce.github.io/FMAT/reference/FMAT_query.html</loc>
-  </url>
-  <url>
-    <loc>https://psychbruce.github.io/FMAT/reference/FMAT_query_bind.html</loc>
-  </url>
-  <url>
-    <loc>https://psychbruce.github.io/FMAT/reference/FMAT_run.html</loc>
-  </url>
-  <url>
-    <loc>https://psychbruce.github.io/FMAT/reference/ICC_models.html</loc>
-  </url>
-  <url>
-    <loc>https://psychbruce.github.io/FMAT/reference/LPR_reliability.html</loc>
-  </url>
-  <url>
-    <loc>https://psychbruce.github.io/FMAT/reference/dot-.html</loc>
-  </url>
-  <url>
-    <loc>https://psychbruce.github.io/FMAT/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://psychbruce.github.io/FMAT/reference/summary.fmat.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://psychbruce.github.io/FMAT/404.html</loc></url>
+<url><loc>https://psychbruce.github.io/FMAT/LICENSE-text.html</loc></url>
+<url><loc>https://psychbruce.github.io/FMAT/authors.html</loc></url>
+<url><loc>https://psychbruce.github.io/FMAT/index.html</loc></url>
+<url><loc>https://psychbruce.github.io/FMAT/news/index.html</loc></url>
+<url><loc>https://psychbruce.github.io/FMAT/reference/BERT_download.html</loc></url>
+<url><loc>https://psychbruce.github.io/FMAT/reference/BERT_info.html</loc></url>
+<url><loc>https://psychbruce.github.io/FMAT/reference/BERT_vocab.html</loc></url>
+<url><loc>https://psychbruce.github.io/FMAT/reference/FMAT_load.html</loc></url>
+<url><loc>https://psychbruce.github.io/FMAT/reference/FMAT_query.html</loc></url>
+<url><loc>https://psychbruce.github.io/FMAT/reference/FMAT_query_bind.html</loc></url>
+<url><loc>https://psychbruce.github.io/FMAT/reference/FMAT_run.html</loc></url>
+<url><loc>https://psychbruce.github.io/FMAT/reference/ICC_models.html</loc></url>
+<url><loc>https://psychbruce.github.io/FMAT/reference/LPR_reliability.html</loc></url>
+<url><loc>https://psychbruce.github.io/FMAT/reference/dot-.html</loc></url>
+<url><loc>https://psychbruce.github.io/FMAT/reference/index.html</loc></url>
+<url><loc>https://psychbruce.github.io/FMAT/reference/summary.fmat.html</loc></url>
 </urlset>
+
