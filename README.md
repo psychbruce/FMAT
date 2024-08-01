@@ -2,7 +2,7 @@
 
 😷 The Fill-Mask Association Test (掩码填空联系测验).
 
-The *Fill-Mask Association Test* (FMAT) is an integrative and probability-based method using [BERT Models] to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as *propositions* in natural language ([Bao, 2024, *JPSP*](https://psychbruce.github.io/FMAT/#citation)).
+The *Fill-Mask Association Test* (FMAT) is an integrative and probability-based method using [BERT Models] to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as *propositions* in natural language ([Bao, 2024, *JPSP*](https://psycnet.apa.org/record/2025-01071-001)).
 
 ⚠️ *Please update this package to version ≥ 2024.6 for faster and more robust functionality.*
 
@@ -28,7 +28,7 @@ Han-Wu-Shuang (Bruce) Bao 包寒吴霜
 
 -   Bao, H.-W.-S. (2023). *FMAT: The Fill-Mask Association Test*. <https://CRAN.R-project.org/package=FMAT>
     -   *Note*: This is the original citation. Please refer to the information when you `library(FMAT)` for the APA-7 format of the version you installed.
--   Bao, H.-W.-S. (2024). The Fill-Mask Association Test (FMAT): Measuring propositions in natural language. *Journal of Personality and Social Psychology*. Advance online publication. DOI: 10.1037/pspa0000396
+-   Bao, H.-W.-S. (2024). The Fill-Mask Association Test (FMAT): Measuring propositions in natural language. *Journal of Personality and Social Psychology*. Advance online publication. <https://doi.org/10.1037/pspa0000396>
 -   Bao, H.-W.-S., & Gries, P. (2024). Intersectional race–gender stereotypes in natural language. *British Journal of Social Psychology*. Advance online publication. <https://doi.org/10.1111/bjso.12748>
 
 ## Installation
@@ -89,7 +89,7 @@ Use `BERT_info()` and `BERT_vocab()` to find detailed information of BERT models
 
 ### Step 2: Design FMAT Queries
 
-Design queries that conceptually represent the constructs you would measure (see [Bao, 2024, *JPSP*](https://psychbruce.github.io/FMAT/#citation) for how to design queries).
+Design queries that conceptually represent the constructs you would measure (see [Bao, 2024, *JPSP*](https://psycnet.apa.org/record/2025-01071-001) for how to design queries).
 
 Use `FMAT_query()` and/or `FMAT_query_bind()` to prepare a `data.table` of queries.
 

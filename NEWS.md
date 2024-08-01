@@ -1,5 +1,9 @@
 **Please check the [latest news (change log)](https://psychbruce.github.io/FMAT/news/index.html) and keep this package updated.**
 
+# FMAT 2024.7
+
+-   Added the DOI link for the online published *JPSP* article: <https://doi.org/10.1037/pspa0000396>.
+
 # FMAT 2024.6
 
 -   Fixed bugs: Now only `BERT_download()` connects to the Internet, while all the other functions run in an offline way.
