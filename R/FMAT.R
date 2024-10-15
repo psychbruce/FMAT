@@ -36,8 +36,8 @@
     "\n\n",
     glue::glue_col("Bao, H.-W.-S. (2024). The Fill-Mask Association Test (FMAT): "),
     glue::glue_col("Measuring propositions in natural language. "),
-    glue::glue_col("{italic Journal of Personality and Social Psychology. }"),
-    glue::glue_col("Advance online publication. {underline https://doi.org/10.1037/pspa0000396}"),
+    glue::glue_col("{italic Journal of Personality and Social Psychology, 127}"),
+    glue::glue_col("(3), 537-561. {underline https://doi.org/10.1037/pspa0000396}"),
     "\n")
   }
 }
