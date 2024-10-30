@@ -31,5 +31,5 @@ Imports:
     reticulate, data.table, stringr, forcats, psych, irr,
     glue, crayon, cli, purrr, plyr, dplyr, tidyr
 Suggests: bruceR, PsychWordVec, text, sweater, nlme
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
