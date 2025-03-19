@@ -29,6 +29,8 @@ models = FMAT_load(models)  # load models from cache
 
 }
 \seealso{
+\code{\link{set_cache_folder}}
+
 \code{\link{BERT_download}}
 
 \code{\link{FMAT_query}}

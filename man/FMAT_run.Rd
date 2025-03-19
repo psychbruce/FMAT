@@ -134,6 +134,8 @@ summary(data2)
 
 }
 \seealso{
+\code{\link{set_cache_folder}}
+
 \code{\link{BERT_download}}
 
 \code{\link{BERT_vocab}}

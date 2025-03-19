@@ -11,10 +11,16 @@ BERT_info(models = NULL)
 \href{https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers}{HuggingFace}.}
 }
 \value{
-A data.table of model name, model file size,
-vocabulary size (of word/token embeddings),
-embedding dimensions (of word/token embeddings),
-and [MASK] token.
+A data.table:
+\itemize{
+\item model name
+\item model type
+\item number of parameters
+\item vocabulary size (of word/token embeddings)
+\item embedding dimensions (of word/token embeddings)
+\item hidden layers
+\item [MASK] token
+}
 }
 \description{
 Get basic information of BERT models.

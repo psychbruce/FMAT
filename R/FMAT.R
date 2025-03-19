@@ -5,6 +5,7 @@
 #' @import data.table
 #' @importFrom dplyr left_join mutate
 #' @importFrom forcats as_factor
+#' @importFrom rvest read_html html_elements html_attr
 #' @importFrom stats na.omit
 #' @importFrom crayon italic underline green blue magenta
 .onAttach = function(libname, pkgname) {
@@ -213,6 +214,41 @@ add_tokens = function(
 }
 
 
+#' Set (change) HuggingFace cache folder temporarily.
+#'
+#' @description
+#' This function allows you to change the default cache directory (when it lacks disk capacity) to another path (e.g., your portable SSD) temporarily.
+#'
+#' **Keep in mind**:
+#' This function takes effect only for
+#' the current R session temporarily,
+#' so you should run this each time
+#' BEFORE you use other FMAT functions in an R session.
+#'
+#' @param path Folder path to store HuggingFace models.
+#'
+#' @examples
+#' \dontrun{
+#' library(FMAT)
+#' set_cache_folder("D:/huggingface_cache/")
+#' # -> models would be saved to "D:/huggingface_cache/hub/"
+#' # run this function each time before using FMAT functions
+#'
+#' BERT_download()
+#' BERT_info()
+#' }
+#'
+#' @export
+set_cache_folder = function(path) {
+  if(!dir.exists(path)) dir.create(path)
+  if(!dir.exists(path)) stop("No such directory.", call.=FALSE)
+  os = reticulate::import("os")
+  os$environ["HF_HOME"] = path
+  cli::cli_alert_success("Changed HuggingFace cache folder temporarily to {.path {path}}")
+  cli::cli_alert_success("Models would be downloaded or could be moved to {.path {paste0(path, 'hub/')}}")
+}
+
+
 get_cache_folder = function(transformers) {
   str_replace_all(transformers$TRANSFORMERS_CACHE, "\\\\", "/")
 }
@@ -223,9 +259,10 @@ get_cached_models = function(cache.folder) {
   if(length(models.name) > 0) {
     models.info = do.call("rbind", lapply(paste0(cache.folder, "/", models.name), function(folder) {
       models.file = list.files(folder, pattern="(model.safetensors$|pytorch_model.bin$|tf_model.h5$)", recursive=TRUE, full.names=TRUE)
-      size = paste(paste0(sprintf("%.0f", file.size(models.file) / 1024^2), " MB"), collapse=" / ")
+      # file.size = paste(paste0(sprintf("%.0f", file.size(models.file) / 1024^2), " MB"), collapse=" / ")
+      file.size.MB = round(file.size(models.file[1]) / 1024^2)
       download.date = paste(str_remove(file.mtime(models.file), " .*"), collapse=" / ")
-      return(data.frame(size, download.date))
+      return(data.frame(file.size.MB, download.date))
     }))
     models.name = str_replace_all(str_remove(models.name, "^models--"), "--", "/")
     row.names(models.info) = models.name
@@ -237,9 +274,14 @@ get_cached_models = function(cache.folder) {
 
 
 get_cached_model_path = function(cache.folder, model) {
-  model.folder = paste0(cache.folder, "/models--", str_replace_all(model, "/", "--"))
+  model.folder = model_folder(cache.folder, model)
   model.path = list.files(model.folder, pattern="(model.safetensors$|pytorch_model.bin$|tf_model.h5$)", recursive=TRUE, full.names=TRUE)[1]
   return(dirname(model.path))
+}
+
+
+model_folder = function(cache.folder, model) {
+  paste0(cache.folder, "/models--", str_replace_all(model, "/", "--"))
 }
 
 
@@ -254,9 +296,12 @@ get_cached_model_path = function(cache.folder, model) {
 #' [HuggingFace](https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers).
 #'
 #' @return
-#' No return value.
+#' Return a data.frame of
+#' basic file information of local models.
 #'
 #' @seealso
+#' [`set_cache_folder`]
+#'
 #' [`BERT_info`]
 #'
 #' [`BERT_vocab`]
@@ -275,27 +320,45 @@ get_cached_model_path = function(cache.folder, model) {
 #'
 #' @export
 BERT_download = function(models=NULL) {
-  transformers = transformers_init()
+  transformers = transformers_init(print.info=!is.null(models))
+  cache.folder = get_cache_folder(transformers)
+
   if(!is.null(models)) {
     lapply(models, function(model) {
-      cli::cli_h1("Downloading model {.val {model}}")
-      cli::cli_alert("(1) Downloading configuration...")
-      transformers$AutoConfig$from_pretrained(model)
-      cli::cli_alert("(2) Downloading tokenizer...")
-      transformers$AutoTokenizer$from_pretrained(model)
-      cli::cli_alert("(3) Downloading model...")
-      transformers$AutoModel$from_pretrained(model)
-      cli::cli_alert_success("Successfully downloaded model {.val {model}}")
-      gc()
+      model.path = get_cached_model_path(cache.folder, model)
+      if(is.na(model.path)) {
+        model.folder = model_folder(cache.folder, model)
+        unlink(model.folder, recursive=TRUE)
+        success = FALSE
+        try({
+          cli::cli_h1("Downloading model {.val {model}}")
+          cli::cli_alert("(1) Downloading configuration...")
+          transformers$AutoConfig$from_pretrained(model)
+          cli::cli_alert("(2) Downloading tokenizer...")
+          transformers$AutoTokenizer$from_pretrained(model)
+          cli::cli_alert("(3) Downloading model...")
+          transformers$AutoModel$from_pretrained(model)
+          cli::cli_alert_success("Successfully downloaded model {.val {model}}")
+          gc()
+          success = TRUE
+        })
+        if(!success) unlink(model.folder, recursive=TRUE)
+      } else {
+        cli::cli_alert_success("Model has been downloaded: {.val {model}}")
+      }
     })
   }
-  cache.folder = get_cache_folder(transformers)
+
   cache.sizegb = sum(file.size(list.files(cache.folder, recursive=TRUE, full.names=TRUE))) / 1024^3
   local.models = get_cached_models(cache.folder)
-  cli::cli_h2("Downloaded models:")
-  print(local.models)
-  cat("\n")
-  cli::cli_alert_success("Downloaded models saved at {.path {cache.folder}} ({sprintf('%.2f', cache.sizegb)} GB)")
+
+  if(is.null(local.models)) {
+    cli::cli_alert_warning("No models in {.path {cache.folder}}.")
+  } else {
+    cli::cli_alert_success("Downloaded models saved in {.path {cache.folder}} ({sprintf('%.2f', cache.sizegb)} GB)")
+  }
+
+  return(local.models)
 }
 
 
@@ -304,10 +367,14 @@ BERT_download = function(models=NULL) {
 #' @inheritParams BERT_download
 #'
 #' @return
-#' A data.table of model name, model file size,
-#' vocabulary size (of word/token embeddings),
-#' embedding dimensions (of word/token embeddings),
-#' and \[MASK\] token.
+#' A data.table:
+#' - model name
+#' - model type
+#' - number of parameters
+#' - vocabulary size (of word/token embeddings)
+#' - embedding dimensions (of word/token embeddings)
+#' - hidden layers
+#' - \[MASK\] token
 #'
 #' @seealso
 #' [`BERT_download`]
@@ -326,27 +393,123 @@ BERT_download = function(models=NULL) {
 BERT_info = function(models=NULL) {
   transformers = transformers_init(print.info=FALSE)
   cache.folder = get_cache_folder(transformers)
-  local.models = get_cached_models(cache.folder)
-  dm = data.table(model=row.names(local.models), size=local.models$size)
-  model = NULL
-  if(!is.null(models)) {
-    dm = dm[model %in% models]
-    dm$model = factor(dm$model, levels=models)
-    dm = dm[order(model)]
-  } else {
-    dm$model = as.factor(dm$model)
-  }
-  dm$size = str_remove(dm$size, " ")
-  dm = cbind(dm, rbindlist(lapply(dm$model, function(model) {
+  local.models = row.names(get_cached_models(cache.folder))
+  if(is.null(models)) models = local.models
+  dm = data.table()
+
+  op = options()
+  options(cli.progress_bar_style = "bar")
+  # cli::cli_progress_bar("Reading model info:", total=length(models), clear=TRUE)
+  cli::cli_progress_bar(
+    clear = FALSE,
+    total = length(models),
+    format = paste(
+      "{cli::pb_spin} Reading model info",
+      "{cli::pb_current}/{cli::pb_total}",
+      "{cli::pb_bar} {cli::pb_percent}",
+      "[{cli::pb_elapsed_clock}]"),
+    format_done = paste(
+      "{cli::col_green(cli::symbol$tick)}",
+      "{cli::pb_total} models info read in {cli::pb_elapsed}")
+  )
+
+  for(model in models) {
     model.local = get_cached_model_path(cache.folder, model)
     tokenizer = transformers$AutoTokenizer$from_pretrained(model.local, local_files_only=TRUE)
     model.obj = transformers$AutoModel$from_pretrained(model.local, local_files_only=TRUE)
-    word.embeddings = model.obj$embeddings$word_embeddings$weight$data$shape
-    data.table(vocab = word.embeddings[0],
-               dims = word.embeddings[1],
-               mask = tokenizer$mask_token)
-  })))
+    vocab = embed = NA
+    try({
+      word.embeddings = model.obj$embeddings$word_embeddings$weight$data$shape
+      vocab = word.embeddings[0]
+      embed = word.embeddings[1]
+    })
+    dm = rbind(
+      dm,
+      data.table(
+        model = as.factor(model),
+        type = as.factor(model.obj$config$model_type),
+        param = model.obj$num_parameters(),
+        vocab = vocab,
+        embed = embed,
+        layer = model.obj$config$num_hidden_layers,
+        mask = as.factor(tokenizer$mask_token)
+      )
+    )
+    gc()
+    cli::cli_progress_update()
+  }
+
+  cli::cli_progress_done()
+  options(op)
+
   return(dm)
+}
+
+
+#' Scrape the earliest release date of BERT models.
+#'
+#' @inheritParams BERT_info
+#'
+#' @return
+#' A data.table:
+#' - model name
+#' - earliest date (scraped from huggingface commit history)
+#'
+#' @examples
+#' \dontrun{
+#' model.date = BERT_info_date()
+#' # get all models from cache folder
+#'
+#' one.model.date = FMAT:::get_model_date("bert-base-uncased")
+#' # call the internal function to scrape a model
+#' # that may not have been saved in cache folder
+#' }
+#'
+#' @export
+BERT_info_date = function(models=NULL) {
+  transformers = transformers_init(print.info=FALSE)
+  cache.folder = get_cache_folder(transformers)
+  dates.folder = paste0(cache.folder, "/.dates/")
+  if(!dir.exists(dates.folder)) dir.create(dates.folder)
+  if(is.null(models)) {
+    models = str_replace_all(str_remove(list.files(cache.folder, "^models--"), "^models--"), "--", "/")
+  }
+  dd = data.table()
+
+  op = options()
+  options(cli.progress_bar_style = "bar")
+  cli::cli_progress_bar("Scraping model date:", total=length(models), clear=TRUE)
+
+  for(model in models) {
+    model.date.file = paste0(dates.folder, str_replace_all(model, "/", "--"), ".txt")
+    if(!file.exists(model.date.file)) {
+      try({
+        dates = get_model_date(model)  # sorted dates
+        writeLines(dates, model.date.file)
+      })
+    }
+    dd = rbind(
+      dd,
+      data.table(
+        model = as.factor(model),
+        date = readLines(model.date.file)[1]
+      )
+    )
+    cli::cli_progress_update()
+  }
+
+  cli::cli_progress_done()
+  options(op)
+
+  return(dd)
+}
+
+
+get_model_date = function(model) {
+  url = paste0("https://huggingface.co/", model, "/commits/main")
+  xml = read_html(url)
+  dates = html_attr(html_elements(xml, "time"), "datetime")
+  return(sort(str_sub(dates, 1, 10)))
 }
 
 
@@ -434,6 +597,8 @@ BERT_vocab = function(
 #' You will need to *rerun* this function if you *restart* the R session.
 #'
 #' @seealso
+#' [`set_cache_folder`]
+#'
 #' [`BERT_download`]
 #'
 #' [`FMAT_query`]
@@ -782,6 +947,8 @@ FMAT_query_bind = function(...) {
 #'   is more interpretable. See [`summary.fmat`].
 #'
 #' @seealso
+#' [`set_cache_folder`]
+#'
 #' [`BERT_download`]
 #'
 #' [`BERT_vocab`]

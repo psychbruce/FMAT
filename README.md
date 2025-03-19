@@ -2,9 +2,9 @@
 
 😷 The Fill-Mask Association Test (掩码填空联系测验).
 
-The *Fill-Mask Association Test* (FMAT) is an integrative and probability-based method using [BERT Models] to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as *propositions* in natural language ([Bao, 2024, *JPSP*](https://psycnet.apa.org/record/2025-01071-001)).
+The *Fill-Mask Association Test* (FMAT) is an integrative and probability-based method using [BERT Models] to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as *propositions* in natural language ([Bao, 2024, *JPSP*](https://doi.org/10.1037/pspa0000396)).
 
-⚠️ *Please update this package to version ≥ 2024.6 for faster and more robust functionality.*
+⚠️ *Please update this package to version ≥ 2025.3 for faster and more robust functionality.*
 
 ![](https://psychbruce.github.io/img/FMAT-Workflow.png)
 
@@ -33,7 +33,7 @@ Han-Wu-Shuang (Bruce) Bao 包寒吴霜
 
 ## Installation
 
-To use the FMAT, the R package `FMAT` and three Python packages (`transformers`, `torch`, `huggingface-hub`) all need to be installed.
+The R package `FMAT` and three Python packages (`transformers`, `torch`, `huggingface-hub`) all need to be installed.
 
 ### (1) R Package
 
@@ -48,7 +48,7 @@ devtools::install_github("psychbruce/FMAT", force=TRUE)
 
 ### (2) Python Environment and Packages
 
-Install [Anaconda](https://www.anaconda.com/download/success) (a recommended package manager which automatically installs Python, Python IDEs like Spyder, and a large list of necessary [Python package dependencies](https://docs.anaconda.com/free/anaconda/allpkglists/)).
+Install [Anaconda](https://www.anaconda.com/download/success) (a recommended package manager that automatically installs Python, its IDEs like Spyder, and a large list of common Python packages).
 
 Specify the Anaconda's Python interpreter in RStudio.
 
@@ -72,12 +72,17 @@ pip install transformers==4.40.2 huggingface-hub==0.20.3
 pip install torch==2.2.1 --index-url https://download.pytorch.org/whl/cu121
 ```
 
+To use some models (e.g., `microsoft/deberta-v3-base`), "You need to have sentencepiece installed to convert a slow tokenizer to a fast one":
+
+```         
+pip install sentencepiece
+```
+
 -   See [Guidance for GPU Acceleration] for installation guidance if you have an NVIDIA GPU device on your PC and want to use GPU to accelerate the pipeline.
 -   According to the May 2024 releases, "transformers" ≥ 4.41 depends on "huggingface-hub" ≥ 0.23. The suggested versions of "transformers" (4.40.2) and "huggingface-hub" (0.20.3) ensure the console display of progress bars when downloading BERT models while keeping these packages as new as possible.
--   Proxy users should use the "global mode" (全局模式) to download models.
--   If you see the error `HTTPSConnectionPool(host='huggingface.co', port=443)`, please try to (1) reinstall [Anaconda](https://www.anaconda.com/download/success) so that some unknown issues may be fixed or (2) downgrade the "[urllib3](https://pypi.org/project/urllib3/)" package to version ≤ 1.25.11 (`pip install urllib3==1.25.11`) so that it will use HTTP proxies (rather than HTTPS proxies as in later versions) to connect to Hugging Face.
-    -   <https://www.cnblogs.com/devilmaycry812839668/p/17872452.html>
-    -   <https://zhuanlan.zhihu.com/p/350015032>
+-   Proxy users may use the "global mode" (全局模式) to download models.
+-   If you find the error `HTTPSConnectionPool(host='huggingface.co', port=443)`, please try to (1) reinstall [Anaconda](https://www.anaconda.com/download/success) so that some unknown issues may be fixed, or (2) downgrade the "[urllib3](https://pypi.org/project/urllib3/)" package to version ≤ 1.25.11 (`pip install urllib3==1.25.11`) so that it will use HTTP proxies (rather than HTTPS proxies as in later versions) to connect to Hugging Face.
+    -   <https://www.cnblogs.com/xyz/p/17872452.html>
 
 ## Guidance for FMAT
 
@@ -89,7 +94,7 @@ Use `BERT_info()` and `BERT_vocab()` to find detailed information of BERT models
 
 ### Step 2: Design FMAT Queries
 
-Design queries that conceptually represent the constructs you would measure (see [Bao, 2024, *JPSP*](https://psycnet.apa.org/record/2025-01071-001) for how to design queries).
+Design queries that conceptually represent the constructs you would measure (see [Bao, 2024, *JPSP*](https://doi.org/10.1037/pspa0000396) for how to design queries).
 
 Use `FMAT_query()` and/or `FMAT_query_bind()` to prepare a `data.table` of queries.
 
@@ -134,7 +139,7 @@ pip install torch==2.2.1 --index-url https://download.pytorch.org/whl/cu121
 
 ## BERT Models
 
-The reliability and validity of the following 12 representative BERT models have been established in my research articles, but future work is needed to examine the performance of other models.
+The reliability and validity of the following 12 BERT models in the FMAT have been established in my research, but future work is needed to examine the performance of other models.
 
 (model name on Hugging Face - downloaded model file size)
 
@@ -151,13 +156,11 @@ The reliability and validity of the following 12 representative BERT models have
 11. [vinai/bertweet-base](https://huggingface.co/vinai/bertweet-base) (517 MB)
 12. [vinai/bertweet-large](https://huggingface.co/vinai/bertweet-large) (1356 MB)
 
-If you are new to [BERT](https://arxiv.org/abs/1810.04805), these references can be helpful:
+For details about [BERT](https://arxiv.org/abs/1810.04805), see:
 
 -   [What is Fill-Mask? [HuggingFace]](https://huggingface.co/tasks/fill-mask)
 -   [An Explorable BERT [HuggingFace]](https://huggingface.co/spaces/exbert-project/exbert)
 -   [BERT Model Documentation [HuggingFace]](https://huggingface.co/docs/transformers/main/en/model_doc/bert)
--   [BERT Explained](https://towardsdatascience.com/bert-explained-state-of-the-art-language-model-for-nlp-f8b21a9b6270)
--   [Breaking BERT Down](https://towardsdatascience.com/breaking-bert-down-430461f60efb)
 -   [Illustrated BERT](https://jalammar.github.io/illustrated-bert/)
 -   [Visual Guide to BERT](https://jalammar.github.io/a-visual-guide-to-using-bert-for-the-first-time/)
 

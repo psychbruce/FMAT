@@ -11,7 +11,8 @@ BERT_download(models = NULL)
 \href{https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers}{HuggingFace}.}
 }
 \value{
-No return value.
+Return a data.frame of
+basic file information of local models.
 }
 \description{
 Download and save BERT models to local cache folder "\%USERPROFILE\%/.cache/huggingface".
@@ -28,6 +29,8 @@ BERT_info()  # information of all downloaded models
 
 }
 \seealso{
+\code{\link{set_cache_folder}}
+
 \code{\link{BERT_info}}
 
 \code{\link{BERT_vocab}}

@@ -1,5 +1,13 @@
 **Please check the [latest news (change log)](https://psychbruce.github.io/FMAT/news/index.html) and keep this package updated.**
 
+# FMAT 2025.3
+
+-   Added `set_cache_folder()`: Set (change) HuggingFace cache folder temporarily.
+    -   **Keep in mind**: This function takes effect only for the current R session temporarily, so you should run this each time *before* you use other FMAT functions in an R session.
+-   Added `BERT_info_date()`: Scrape the earliest release date of BERT models.
+-   Improved `BERT_download()` and `BERT_info()`.
+-   Updated the formal citation format of the *JPSP* article.
+
 # FMAT 2024.7
 
 -   Added the DOI link for the online published *JPSP* article: <https://doi.org/10.1037/pspa0000396>.
