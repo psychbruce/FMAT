@@ -10,8 +10,8 @@
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/Roboto-0.4.9/font.css" rel="stylesheet">
 <link href="deps/Lexend-0.4.9/font.css" rel="stylesheet">
-<link href="deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="The Fill-Mask Association Test">
 <meta name="description" content="The Fill-Mask Association Test (FMAT) &lt;doi:10.1037/pspa0000396&gt; is an integrative and probability-based method using Masked Language Models to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as propositions in natural language. Supported language models include BERT &lt;doi:10.48550/arXiv.1810.04805&gt; and its variants available at Hugging Face &lt;https://huggingface.co/models?pipeline_tag=fill-mask&gt;. Methodological references and installation guidance are provided at &lt;https://psychbruce.github.io/FMAT/&gt;.">
 <meta property="og:description" content="The Fill-Mask Association Test (FMAT) &lt;doi:10.1037/pspa0000396&gt; is an integrative and probability-based method using Masked Language Models to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as propositions in natural language. Supported language models include BERT &lt;doi:10.48550/arXiv.1810.04805&gt; and its variants available at Hugging Face &lt;https://huggingface.co/models?pipeline_tag=fill-mask&gt;. Methodological references and installation guidance are provided at &lt;https://psychbruce.github.io/FMAT/&gt;.">
@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="index.html">FMAT</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2024.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2025.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,8 +55,8 @@
 </h1>
 </div>
 <p>😷 The Fill-Mask Association Test (掩码填空联系测验).</p>
-<p>The <em>Fill-Mask Association Test</em> (FMAT) is an integrative and probability-based method using <a href="#bert-models">BERT Models</a> to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as <em>propositions</em> in natural language (<a href="https://psycnet.apa.org/record/2025-01071-001" class="external-link">Bao, 2024, <em>JPSP</em></a>).</p>
-<p>⚠️ <em>Please update this package to version ≥ 2024.6 for faster and more robust functionality.</em></p>
+<p>The <em>Fill-Mask Association Test</em> (FMAT) is an integrative and probability-based method using <a href="#bert-models">BERT Models</a> to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as <em>propositions</em> in natural language (<a href="https://doi.org/10.1037/pspa0000396" class="external-link">Bao, 2024, <em>JPSP</em></a>).</p>
+<p>⚠️ <em>Please update this package to version ≥ 2025.3 for faster and more robust functionality.</em></p>
 <p><img src="https://psychbruce.github.io/img/FMAT-Workflow.png"></p>
 <!-- badges: start -->
 
@@ -88,7 +88,7 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>To use the FMAT, the R package <code>FMAT</code> and three Python packages (<code>transformers</code>, <code>torch</code>, <code>huggingface-hub</code>) all need to be installed.</p>
+<p>The R package <code>FMAT</code> and three Python packages (<code>transformers</code>, <code>torch</code>, <code>huggingface-hub</code>) all need to be installed.</p>
 <div class="section level3">
 <h3 id="id_1-r-package">(1) R Package<a class="anchor" aria-label="anchor" href="#id_1-r-package"></a>
 </h3>
@@ -103,7 +103,7 @@
 <div class="section level3">
 <h3 id="id_2-python-environment-and-packages">(2) Python Environment and Packages<a class="anchor" aria-label="anchor" href="#id_2-python-environment-and-packages"></a>
 </h3>
-<p>Install <a href="https://www.anaconda.com/download/success" class="external-link">Anaconda</a> (a recommended package manager which automatically installs Python, Python IDEs like Spyder, and a large list of necessary <a href="https://docs.anaconda.com/free/anaconda/allpkglists/" class="external-link">Python package dependencies</a>).</p>
+<p>Install <a href="https://www.anaconda.com/download/success" class="external-link">Anaconda</a> (a recommended package manager that automatically installs Python, its IDEs like Spyder, and a large list of common Python packages).</p>
 <p>Specify the Anaconda’s Python interpreter in RStudio.</p>
 <blockquote>
 <p>RStudio → Tools → Global/Project Options<br>
@@ -117,14 +117,15 @@
 <p>For GPU (CUDA) users:</p>
 <pre><code>pip install transformers==4.40.2 huggingface-hub==0.20.3
 pip install torch==2.2.1 --index-url https://download.pytorch.org/whl/cu121</code></pre>
+<p>To use some models (e.g., <code>microsoft/deberta-v3-base</code>), “You need to have sentencepiece installed to convert a slow tokenizer to a fast one”:</p>
+<pre><code>pip install sentencepiece</code></pre>
 <ul>
 <li>See <a href="#guidance-for-gpu-acceleration">Guidance for GPU Acceleration</a> for installation guidance if you have an NVIDIA GPU device on your PC and want to use GPU to accelerate the pipeline.</li>
 <li>According to the May 2024 releases, “transformers” ≥ 4.41 depends on “huggingface-hub” ≥ 0.23. The suggested versions of “transformers” (4.40.2) and “huggingface-hub” (0.20.3) ensure the console display of progress bars when downloading BERT models while keeping these packages as new as possible.</li>
-<li>Proxy users should use the “global mode” (全局模式) to download models.</li>
-<li>If you see the error <code>HTTPSConnectionPool(host='huggingface.co', port=443)</code>, please try to (1) reinstall <a href="https://www.anaconda.com/download/success" class="external-link">Anaconda</a> so that some unknown issues may be fixed or (2) downgrade the “<a href="https://pypi.org/project/urllib3/" class="external-link">urllib3</a>” package to version ≤ 1.25.11 (<code>pip install urllib3==1.25.11</code>) so that it will use HTTP proxies (rather than HTTPS proxies as in later versions) to connect to Hugging Face.
+<li>Proxy users may use the “global mode” (全局模式) to download models.</li>
+<li>If you find the error <code>HTTPSConnectionPool(host='huggingface.co', port=443)</code>, please try to (1) reinstall <a href="https://www.anaconda.com/download/success" class="external-link">Anaconda</a> so that some unknown issues may be fixed, or (2) downgrade the “<a href="https://pypi.org/project/urllib3/" class="external-link">urllib3</a>” package to version ≤ 1.25.11 (<code>pip install urllib3==1.25.11</code>) so that it will use HTTP proxies (rather than HTTPS proxies as in later versions) to connect to Hugging Face.
 <ul>
-<li><a href="https://www.cnblogs.com/devilmaycry812839668/p/17872452.html" class="external-link uri">https://www.cnblogs.com/devilmaycry812839668/p/17872452.html</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/350015032" class="external-link uri">https://zhuanlan.zhihu.com/p/350015032</a></li>
+<li><a href="https://www.cnblogs.com/xyz/p/17872452.html" class="external-link uri">https://www.cnblogs.com/xyz/p/17872452.html</a></li>
 </ul>
 </li>
 </ul>
@@ -142,7 +143,7 @@ pip install torch==2.2.1 --index-url https://download.pytorch.org/whl/cu121</cod
 <div class="section level3">
 <h3 id="step-2-design-fmat-queries">Step 2: Design FMAT Queries<a class="anchor" aria-label="anchor" href="#step-2-design-fmat-queries"></a>
 </h3>
-<p>Design queries that conceptually represent the constructs you would measure (see <a href="https://psycnet.apa.org/record/2025-01071-001" class="external-link">Bao, 2024, <em>JPSP</em></a> for how to design queries).</p>
+<p>Design queries that conceptually represent the constructs you would measure (see <a href="https://doi.org/10.1037/pspa0000396" class="external-link">Bao, 2024, <em>JPSP</em></a> for how to design queries).</p>
 <p>Use <code><a href="reference/FMAT_query.html">FMAT_query()</a></code> and/or <code><a href="reference/FMAT_query_bind.html">FMAT_query_bind()</a></code> to prepare a <code>data.table</code> of queries.</p>
 </div>
 <div class="section level3">
@@ -192,7 +193,7 @@ pip install torch==2.2.1 --index-url https://download.pytorch.org/whl/cu121</cod
 <div class="section level2">
 <h2 id="bert-models">BERT Models<a class="anchor" aria-label="anchor" href="#bert-models"></a>
 </h2>
-<p>The reliability and validity of the following 12 representative BERT models have been established in my research articles, but future work is needed to examine the performance of other models.</p>
+<p>The reliability and validity of the following 12 BERT models in the FMAT have been established in my research, but future work is needed to examine the performance of other models.</p>
 <p>(model name on Hugging Face - downloaded model file size)</p>
 <ol style="list-style-type: decimal">
 <li>
@@ -220,17 +221,15 @@ pip install torch==2.2.1 --index-url https://download.pytorch.org/whl/cu121</cod
 <li>
 <a href="https://huggingface.co/vinai/bertweet-large" class="external-link">vinai/bertweet-large</a> (1356 MB)</li>
 </ol>
-<p>If you are new to <a href="https://arxiv.org/abs/1810.04805" class="external-link">BERT</a>, these references can be helpful:</p>
+<p>For details about <a href="https://arxiv.org/abs/1810.04805" class="external-link">BERT</a>, see:</p>
 <ul>
 <li><a href="https://huggingface.co/tasks/fill-mask" class="external-link">What is Fill-Mask? [HuggingFace]</a></li>
 <li><a href="https://huggingface.co/spaces/exbert-project/exbert" class="external-link">An Explorable BERT [HuggingFace]</a></li>
 <li><a href="https://huggingface.co/docs/transformers/main/en/model_doc/bert" class="external-link">BERT Model Documentation [HuggingFace]</a></li>
-<li><a href="https://towardsdatascience.com/bert-explained-state-of-the-art-language-model-for-nlp-f8b21a9b6270" class="external-link">BERT Explained</a></li>
-<li><a href="https://towardsdatascience.com/breaking-bert-down-430461f60efb" class="external-link">Breaking BERT Down</a></li>
 <li><a href="https://jalammar.github.io/illustrated-bert/" class="external-link">Illustrated BERT</a></li>
 <li><a href="https://jalammar.github.io/a-visual-guide-to-using-bert-for-the-first-time/" class="external-link">Visual Guide to BERT</a></li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://psychbruce.github.io/FMAT/">FMAT</a></span><span class="op">)</span></span>
 <span><span class="va">models</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="st">"bert-base-uncased"</span>,</span>
@@ -414,7 +413,7 @@ vinai/bertweet-base      517 MB
 vinai/bertweet-large    1356 MB
 
 ✔ Downloaded models saved at C:/Users/Bruce/.cache/huggingface/hub (6.52 GB)</code></pre>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/BERT_info.html">BERT_info</a></span><span class="op">(</span><span class="va">models</span><span class="op">)</span></span></code></pre></div>
 <pre><code>                      model   size vocab  dims   mask
                      &lt;fctr&gt; &lt;char&gt; &lt;int&gt; &lt;int&gt; &lt;char&gt;
