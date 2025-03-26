@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FMAT</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2025.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2025.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,9 +55,10 @@
     <p>A data.table:</p><ul><li><p>model name</p></li>
 <li><p>model type</p></li>
 <li><p>number of parameters</p></li>
-<li><p>vocabulary size (of word/token embeddings)</p></li>
-<li><p>embedding dimensions (of word/token embeddings)</p></li>
+<li><p>vocabulary size (of input token embeddings)</p></li>
+<li><p>embedding dimensions (of input token embeddings)</p></li>
 <li><p>hidden layers</p></li>
+<li><p>attention heads</p></li>
 <li><p>[MASK] token</p></li>
 </ul></div>
     <div class="section level2">
@@ -73,6 +74,7 @@
 <span class="r-in"><span><span class="fu">BERT_info</span><span class="op">(</span><span class="va">models</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">BERT_info</span><span class="op">(</span><span class="op">)</span>  <span class="co"># information of all downloaded models</span></span></span>
+<span class="r-in"><span><span class="co"># speed: ~1.2s/model for first use; &lt;1s afterwards</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

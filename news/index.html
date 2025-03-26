@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FMAT</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2025.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2025.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,7 +32,23 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2025.3" id="fmat-20253">FMAT 2025.3<a class="anchor" aria-label="anchor" href="#fmat-20253"></a></h2>
+<h2 class="pkg-version" data-toc-text="2025.4" id="fmat-20254">FMAT 2025.4<a class="anchor" aria-label="anchor" href="#fmat-20254"></a></h2>
+<ul><li>Added <code><a href="../reference/fill_mask.html">fill_mask()</a></code> and <code><a href="../reference/fill_mask.html">fill_mask_check()</a></code>: These functions are only for technical check (i.e., checking the raw results of fill-mask pipeline). Normal users should usually use <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code>.</li>
+<li>Added <code>pattern.special</code> argument for <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code>: Regular expression patterns (matching model names) for special model cases that are uncased or require a special prefix character in certain situations.
+<ul><li>
+<strong>WARNING</strong>: As the developer is not able to check all models, users are responsible for checking the models they would use and for modifying this argument if necessary.
+<ul><li>
+<code>prefix.u2581</code>: adding prefix ⁠<code>\u2581⁠</code> for all mask words</li>
+<li>
+<code>prefix.u0120</code>: adding prefix ⁠<code>\u0120</code>⁠ for only non-starting mask words</li>
+</ul></li>
+</ul></li>
+<li>Improved <code><a href="../reference/set_cache_folder.html">set_cache_folder()</a></code>, <code><a href="../reference/BERT_download.html">BERT_download()</a></code>, <code><a href="../reference/BERT_info.html">BERT_info()</a></code>, and <code><a href="../reference/BERT_info_date.html">BERT_info_date()</a></code>.
+<ul><li>Now model information read from model objects <code><a href="../reference/BERT_info.html">BERT_info()</a></code> and model initial commit date scraped from HuggingFace <code><a href="../reference/BERT_info_date.html">BERT_info_date()</a></code> will be saved in subfolders of local cache: <code>/.info/</code> and <code>/.date/</code>, respectively.</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2025.3" id="fmat-20253">FMAT 2025.3<a class="anchor" aria-label="anchor" href="#fmat-20253"></a></h2><p class="text-muted">CRAN release: 2025-03-19</p>
 <ul><li>Added <code><a href="../reference/set_cache_folder.html">set_cache_folder()</a></code>: Set (change) HuggingFace cache folder temporarily.
 <ul><li>
 <strong>Keep in mind</strong>: This function takes effect only for the current R session temporarily, so you should run this each time <em>before</em> you use other FMAT functions in an R session.</li>
@@ -53,7 +69,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2024.5" id="fmat-20245">FMAT 2024.5<a class="anchor" aria-label="anchor" href="#fmat-20245"></a></h2><p class="text-muted">CRAN release: 2024-05-19</p>
 <ul><li>Added <code><a href="../reference/BERT_info.html">BERT_info()</a></code>.</li>
-<li>Added <code>add.tokens</code> and <code>add.method</code> parameters for <code><a href="../reference/BERT_vocab.html">BERT_vocab()</a></code> and <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code>: An <em>experimental</em> functionality to add new tokens (e.g., out-of-vocabulary words, compound words, or even phrases) as [MASK] options. Validation is still needed for this novel practice (one of my ongoing projects), so currently please only use at your own risk, waiting until the publication of my validation work.</li>
+<li>Added <code>add.tokens</code> and <code>add.method</code> arguments for <code><a href="../reference/BERT_vocab.html">BERT_vocab()</a></code> and <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code>: An <em>experimental</em> functionality to add new tokens (e.g., out-of-vocabulary words, compound words, or even phrases) as [MASK] options. Validation is still needed for this novel practice (one of my ongoing projects), so currently please only use at your own risk, waiting until the publication of my validation work.</li>
 <li>All functions except <code><a href="../reference/BERT_download.html">BERT_download()</a></code> now import local model files only, without automatically downloading models. Users must first use <code><a href="../reference/BERT_download.html">BERT_download()</a></code> to download models.</li>
 <li>Deprecating <code><a href="../reference/FMAT_load.html">FMAT_load()</a></code>: Better to use <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code> directly.</li>
 </ul></div>
@@ -67,7 +83,7 @@
 <h2 class="pkg-version" data-toc-text="2024.3" id="fmat-20243">FMAT 2024.3<a class="anchor" aria-label="anchor" href="#fmat-20243"></a></h2><p class="text-muted">CRAN release: 2024-03-22</p>
 <ul><li>The FMAT methodology paper has been accepted (March 14, 2024) for publication in the <em>Journal of Personality and Social Psychology: Attitudes and Social Cognition</em> (DOI: 10.1037/pspa0000396)!</li>
 <li>Added <code><a href="../reference/BERT_download.html">BERT_download()</a></code> (downloading models to local cache folder “%USERPROFILE%/.cache/huggingface”) to differentiate from <code><a href="../reference/FMAT_load.html">FMAT_load()</a></code> (loading saved models from local cache). But indeed <code><a href="../reference/FMAT_load.html">FMAT_load()</a></code> can also download models <em>silently</em> if they have not been downloaded.</li>
-<li>Added <code>gpu</code> parameter (see <a href="https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration">Guidance for GPU Acceleration</a>) in <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code> to allow for specifying an NVIDIA GPU device on which the fill-mask pipeline will be allocated. GPU roughly performs 3x faster than CPU for the fill-mask pipeline. By default, <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code> would automatically detect and use any available GPU with an installed CUDA-supported Python <code>torch</code> package (if not, it would use CPU).</li>
+<li>Added <code>gpu</code> argument (see <a href="https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration">Guidance for GPU Acceleration</a>) in <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code> to allow for specifying an NVIDIA GPU device on which the fill-mask pipeline will be allocated. GPU roughly performs 3x faster than CPU for the fill-mask pipeline. By default, <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code> would automatically detect and use any available GPU with an installed CUDA-supported Python <code>torch</code> package (if not, it would use CPU).</li>
 <li>Added running speed information (queries/min) for <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code>.</li>
 <li>Added device information for <code><a href="../reference/BERT_download.html">BERT_download()</a></code>, <code><a href="../reference/FMAT_load.html">FMAT_load()</a></code>, and <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code>.</li>
 <li>Deprecated <code>parallel</code> in <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code>: <code>FMAT_run(model.names, data, gpu=TRUE)</code> is the fastest.</li>
