@@ -102,9 +102,16 @@ transformers_init = function(print.info=TRUE) {
   FMAT.ver = as.character(utils::packageVersion("FMAT"))
   reticulate.ver = as.character(utils::packageVersion("reticulate"))
   reticulate::py_capture_output({
-    os = reticulate::import("os")
-    os$environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-    os$environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
+    # os = reticulate::import("os")
+    # os$environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
+    # os$environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+    Sys.setenv("HF_HUB_DISABLE_SYMLINKS_WARNING" = "1")
+    Sys.setenv("TF_ENABLE_ONEDNN_OPTS" = "0")
+
+    # "R Session Aborted" issue on MacOS
+    # https://github.com/psychbruce/FMAT/issues/1
+    Sys.setenv("KMP_DUPLICATE_LIB_OK" = "TRUE")
+    Sys.setenv("OMP_NUM_THREADS" = "1")
 
     torch = reticulate::import("torch")
     torch.ver = torch$`__version__`
@@ -248,8 +255,9 @@ set_cache_folder = function(path) {
   if(!dir.exists(path)) dir.create(path)
   if(!dir.exists(path)) stop("No such directory.", call.=FALSE)
 
-  os = reticulate::import("os")
-  os$environ["HF_HOME"] = path
+  # os = reticulate::import("os")
+  # os$environ["HF_HOME"] = path
+  Sys.setenv("HF_HOME" = path)
 
   transformers = transformers_init(print.info=FALSE)
   cache.folder = get_cache_folder(transformers)

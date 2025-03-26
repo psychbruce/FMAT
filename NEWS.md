@@ -9,6 +9,12 @@
         -   `prefix.u0120`: adding prefix ⁠`\u0120`⁠ for only non-starting mask words
 -   Improved `set_cache_folder()`, `BERT_download()`, `BERT_info()`, and `BERT_info_date()`.
     -   Now model information read from model objects `BERT_info()` and model initial commit date scraped from HuggingFace `BERT_info_date()` will be saved in subfolders of local cache: `/.info/` and `/.date/`, respectively.
+    -   Now use `Sys.setenv()` to set environment variables for initialization, which is faster than importing the Python `os` package.
+        -   `Sys.setenv("HF_HOME" = path)`
+        -   `Sys.setenv("HF_HUB_DISABLE_SYMLINKS_WARNING" = "1")`
+        -   `Sys.setenv("TF_ENABLE_ONEDNN_OPTS" = "0")`
+        -   `Sys.setenv("KMP_DUPLICATE_LIB_OK" = "TRUE")` (see #1)
+        -   `Sys.setenv("OMP_NUM_THREADS" = "1")` (see #1)
 
 # FMAT 2025.3
 
