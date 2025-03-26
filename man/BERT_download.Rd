@@ -4,14 +4,17 @@
 \alias{BERT_download}
 \title{Download and save BERT models to local cache folder.}
 \usage{
-BERT_download(models = NULL)
+BERT_download(models = NULL, verbose = FALSE)
 }
 \arguments{
 \item{models}{Model names at
 \href{https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers}{HuggingFace}.}
+
+\item{verbose}{Alert if a model has been downloaded.
+Defaults to \code{FALSE}.}
 }
 \value{
-Return a data.frame of
+Invisibly return a data.table of
 basic file information of local models.
 }
 \description{

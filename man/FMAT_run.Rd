@@ -10,6 +10,9 @@ FMAT_run(
   gpu,
   add.tokens = FALSE,
   add.method = c("sum", "mean"),
+  pattern.special = list(uncased = "uncased|albert|electra|muhtasham", prefix.u2581 =
+    "albert|xlm-roberta|xlnet", prefix.u2581.excl = "chinese", prefix.u0120 =
+    "roberta|bart|deberta|bertweet-large", prefix.u0120.excl = "chinese|xlm-|kornosk/"),
   file = NULL,
   progress = TRUE,
   warning = TRUE,
@@ -56,6 +59,14 @@ Defaults to \code{FALSE}. It only temporarily adds tokens for tasks but does not
 
 \item{add.method}{Method used to produce the token embeddings of new added tokens.
 Can be \code{"sum"} (default) or \code{"mean"} of subword token embeddings.}
+
+\item{pattern.special}{Regular expression patterns (matching model names) for special model cases that are uncased or require a special prefix character in certain situations.
+
+\strong{WARNING}: As the developer is not able to check all models, users are responsible for checking the models they would use and for modifying this argument if necessary.
+\itemize{
+\item \code{prefix.u2581}: adding prefix \verb{\\u2581} for all mask words
+\item \code{prefix.u0120}: adding prefix \verb{\\u0120} for only non-starting mask words
+}}
 
 \item{file}{File name of \code{.RData} to save the returned data.}
 

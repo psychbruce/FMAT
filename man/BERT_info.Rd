@@ -16,9 +16,10 @@ A data.table:
 \item model name
 \item model type
 \item number of parameters
-\item vocabulary size (of word/token embeddings)
-\item embedding dimensions (of word/token embeddings)
+\item vocabulary size (of input token embeddings)
+\item embedding dimensions (of input token embeddings)
 \item hidden layers
+\item attention heads
 \item [MASK] token
 }
 }
@@ -31,6 +32,7 @@ models = c("bert-base-uncased", "bert-base-cased")
 BERT_info(models)
 
 BERT_info()  # information of all downloaded models
+# speed: ~1.2s/model for first use; <1s afterwards
 }
 
 }

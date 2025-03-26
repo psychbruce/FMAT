@@ -14,7 +14,7 @@ BERT_info_date(models = NULL)
 A data.table:
 \itemize{
 \item model name
-\item earliest date (scraped from huggingface commit history)
+\item initial commit date (scraped from huggingface commit history)
 }
 }
 \description{

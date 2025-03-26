@@ -149,10 +149,15 @@ transformers_init = function(print.info=TRUE) {
 fill_mask_init = function(transformers, model, device=-1L) {
   cache.folder = get_cache_folder(transformers)
   model.local = get_cached_model_path(cache.folder, model)
-  config = transformers$AutoConfig$from_pretrained(model.local, local_files_only=TRUE)
-  fill_mask = transformers$pipeline("fill-mask", model=model.local, config=config,
-                                    model_kwargs=list(local_files_only=TRUE),
-                                    device=device)
+  config = transformers$AutoConfig$from_pretrained(
+    model.local,
+    local_files_only = TRUE)
+  fill_mask = transformers$pipeline(
+    "fill-mask",
+    model = model.local,
+    config = config,
+    model_kwargs = list(local_files_only=TRUE),
+    device = device)
   return(fill_mask)
 }
 
@@ -242,8 +247,17 @@ add_tokens = function(
 set_cache_folder = function(path) {
   if(!dir.exists(path)) dir.create(path)
   if(!dir.exists(path)) stop("No such directory.", call.=FALSE)
+
   os = reticulate::import("os")
   os$environ["HF_HOME"] = path
+
+  transformers = transformers_init(print.info=FALSE)
+  cache.folder = get_cache_folder(transformers)
+  if(dirname(cache.folder) != str_remove(path, "/$")) {
+    cli::cli_alert_danger("Cannot change cache folder in this R session!")
+    stop("Please restart R and run `set_cache_folder()` before other FMAT functions!", call.=FALSE)
+  }
+
   cli::cli_alert_success("Changed HuggingFace cache folder temporarily to {.path {path}}")
   cli::cli_alert_success("Models would be downloaded or could be moved to {.path {paste0(path, 'hub/')}}")
 }
@@ -257,19 +271,18 @@ get_cache_folder = function(transformers) {
 get_cached_models = function(cache.folder) {
   models.name = list.files(cache.folder, "^models--")
   if(length(models.name) > 0) {
-    models.info = do.call("rbind", lapply(paste0(cache.folder, "/", models.name), function(folder) {
+    dm = rbindlist(lapply(paste0(cache.folder, "/", models.name), function(folder) {
       models.file = list.files(folder, pattern="(model.safetensors$|pytorch_model.bin$|tf_model.h5$)", recursive=TRUE, full.names=TRUE)
       # file.size = paste(paste0(sprintf("%.0f", file.size(models.file) / 1024^2), " MB"), collapse=" / ")
       file.size.MB = round(file.size(models.file[1]) / 1024^2)
       download.date = paste(str_remove(file.mtime(models.file), " .*"), collapse=" / ")
-      return(data.frame(file.size.MB, download.date))
+      return(data.table(model=NA, file.size.MB, download.date))
     }))
-    models.name = str_replace_all(str_remove(models.name, "^models--"), "--", "/")
-    row.names(models.info) = models.name
+    dm$model = str_replace_all(str_remove(models.name, "^models--"), "--", "/")
   } else {
-    models.info = NULL
+    dm = NULL
   }
-  return(models.info)
+  return(dm)
 }
 
 
@@ -285,6 +298,14 @@ model_folder = function(cache.folder, model) {
 }
 
 
+check_models_downloaded = function(local.models, models) {
+  if(length(base::setdiff(models, local.models) > 0)) {
+    cli::cli_alert_danger("{.val {models}} not found in local cache folder")
+    stop("Please check model names or first use `BERT_download()` to download models!", call.=FALSE)
+  }
+}
+
+
 #### BERT ####
 
 
@@ -294,9 +315,11 @@ model_folder = function(cache.folder, model) {
 #'
 #' @param models Model names at
 #' [HuggingFace](https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers).
+#' @param verbose Alert if a model has been downloaded.
+#' Defaults to `FALSE`.
 #'
 #' @return
-#' Return a data.frame of
+#' Invisibly return a data.table of
 #' basic file information of local models.
 #'
 #' @seealso
@@ -319,7 +342,7 @@ model_folder = function(cache.folder, model) {
 #' }
 #'
 #' @export
-BERT_download = function(models=NULL) {
+BERT_download = function(models=NULL, verbose=FALSE) {
   transformers = transformers_init(print.info=!is.null(models))
   cache.folder = get_cache_folder(transformers)
 
@@ -344,7 +367,8 @@ BERT_download = function(models=NULL) {
         })
         if(!success) unlink(model.folder, recursive=TRUE)
       } else {
-        cli::cli_alert_success("Model has been downloaded: {.val {model}}")
+        if(verbose)
+          cli::cli_alert_success("Model has been downloaded: {.val {model}}")
       }
     })
   }
@@ -355,10 +379,13 @@ BERT_download = function(models=NULL) {
   if(is.null(local.models)) {
     cli::cli_alert_warning("No models in {.path {cache.folder}}.")
   } else {
-    cli::cli_alert_success("Downloaded models saved in {.path {cache.folder}} ({sprintf('%.2f', cache.sizegb)} GB)")
+    cli::cli_alert_success(paste(
+      "Downloaded {.val {nrow(local.models)}} models",
+      "saved in {.path {cache.folder}}",
+      "({sprintf('%.2f', cache.sizegb)} GB)"))
   }
 
-  return(local.models)
+  invisible(local.models)
 }
 
 
@@ -371,9 +398,10 @@ BERT_download = function(models=NULL) {
 #' - model name
 #' - model type
 #' - number of parameters
-#' - vocabulary size (of word/token embeddings)
-#' - embedding dimensions (of word/token embeddings)
+#' - vocabulary size (of input token embeddings)
+#' - embedding dimensions (of input token embeddings)
 #' - hidden layers
+#' - attention heads
 #' - \[MASK\] token
 #'
 #' @seealso
@@ -387,18 +415,22 @@ BERT_download = function(models=NULL) {
 #' BERT_info(models)
 #'
 #' BERT_info()  # information of all downloaded models
+#' # speed: ~1.2s/model for first use; <1s afterwards
 #' }
 #'
 #' @export
 BERT_info = function(models=NULL) {
   transformers = transformers_init(print.info=FALSE)
   cache.folder = get_cache_folder(transformers)
-  local.models = row.names(get_cached_models(cache.folder))
-  if(is.null(models)) models = local.models
+  infos.folder = paste0(cache.folder, "/.info/")
+  if(!dir.exists(infos.folder)) dir.create(infos.folder)
+  local.models = get_cached_models(cache.folder)
+  if(is.null(models)) models = local.models$model
+  check_models_downloaded(local.models$model, models)
   dm = data.table()
 
   op = options()
-  options(cli.progress_bar_style = "bar")
+  options(cli.progress_bar_style="bar")
   # cli::cli_progress_bar("Reading model info:", total=length(models), clear=TRUE)
   cli::cli_progress_bar(
     clear = FALSE,
@@ -414,33 +446,49 @@ BERT_info = function(models=NULL) {
   )
 
   for(model in models) {
-    model.local = get_cached_model_path(cache.folder, model)
-    tokenizer = transformers$AutoTokenizer$from_pretrained(model.local, local_files_only=TRUE)
-    model.obj = transformers$AutoModel$from_pretrained(model.local, local_files_only=TRUE)
-    vocab = embed = NA
-    try({
-      word.embeddings = model.obj$embeddings$word_embeddings$weight$data$shape
-      vocab = word.embeddings[0]
-      embed = word.embeddings[1]
-    })
-    dm = rbind(
-      dm,
-      data.table(
-        model = as.factor(model),
-        type = as.factor(model.obj$config$model_type),
-        param = model.obj$num_parameters(),
-        vocab = vocab,
-        embed = embed,
-        layer = model.obj$config$num_hidden_layers,
-        mask = as.factor(tokenizer$mask_token)
-      )
-    )
-    gc()
+    model.info.file = paste0(infos.folder, str_replace_all(model, "/", "--"), ".rda")
+    if(!file.exists(model.info.file)) {
+      # cli::cli_progress_step("Loading {.val {model}}")
+      model.local = get_cached_model_path(cache.folder, model)
+      try({
+        tokenizer = transformers$AutoTokenizer$from_pretrained(
+          model.local, local_files_only=TRUE)
+        model.obj = transformers$AutoModel$from_pretrained(
+          model.local, local_files_only=TRUE)
+        vocab = embed = NA
+        # word.embeddings = model.obj$embeddings$word_embeddings$weight$data$shape
+        # vocab = word.embeddings[0]
+        # embed = word.embeddings[1]
+        word.embeddings = model.obj$get_input_embeddings()
+        vocab = word.embeddings$num_embeddings
+        embed = word.embeddings$embedding_dim
+        di = data.table(
+          model = as.factor(model),
+          type = as.factor(model.obj$config$model_type),
+          param = model.obj$num_parameters(),
+          vocab = vocab,
+          embed = embed,
+          layer = model.obj$config$num_hidden_layers,
+          heads = model.obj$config$num_attention_heads,
+          mask = as.factor(tokenizer$mask_token)
+        )
+        save(di, file=model.info.file)
+        rm(di, tokenizer, model.obj, word.embeddings)
+        gc()
+      })
+    }
+    load(model.info.file)
+    dm = rbind(dm, di)
+    if(nrow(di)==0) {
+      cli::cli_alert_danger("Model {.val {model}} may not have BERT-like config")
+    }
     cli::cli_progress_update()
   }
 
   cli::cli_progress_done()
   options(op)
+
+  dm$model = factor(dm$model, levels=models)
 
   return(dm)
 }
@@ -453,7 +501,7 @@ BERT_info = function(models=NULL) {
 #' @return
 #' A data.table:
 #' - model name
-#' - earliest date (scraped from huggingface commit history)
+#' - initial commit date (scraped from huggingface commit history)
 #'
 #' @examples
 #' \dontrun{
@@ -469,7 +517,7 @@ BERT_info = function(models=NULL) {
 BERT_info_date = function(models=NULL) {
   transformers = transformers_init(print.info=FALSE)
   cache.folder = get_cache_folder(transformers)
-  dates.folder = paste0(cache.folder, "/.dates/")
+  dates.folder = paste0(cache.folder, "/.date/")
   if(!dir.exists(dates.folder)) dir.create(dates.folder)
   if(is.null(models)) {
     models = str_replace_all(str_remove(list.files(cache.folder, "^models--"), "^models--"), "--", "/")
@@ -865,18 +913,93 @@ FMAT_query_bind = function(...) {
 }
 
 
-# Using plyr!
-# library(plyr)
-# library(doParallel)
-#
-# minmax = function(d) data.frame(min=min(d$yield), max=max(d$yield))
-#
-# adply(npk, 1, minmax, .progress="time")
-#
-# cl = makeCluster(detectCores())
-# registerDoParallel(cl)
-# suppressWarnings(adply(npk, 1, minmax, .parallel=TRUE))
-# stopCluster(cl)
+#' Run the fill-mask pipeline and check the raw results.
+#'
+#' Normal users should use [`FMAT_run()`].
+#' This function is only for technical check.
+#'
+#' @describeIn fill_mask Check performance of one model.
+#'
+#' @inheritParams FMAT_run
+#' @param query Query sentence with mask token.
+#' @param model,models Model name(s).
+#' @param targets Target words to fill in the mask.
+#' Defaults to `NULL` (return the top 5 most likely words).
+#' @param topn Number of the most likely predictions to return.
+#' Defaults to `5`.
+#'
+#' @return
+#' A data.table of raw results.
+#'
+#' @examples
+#' \dontrun{
+#' query = "Paris is the [MASK] of France."
+#' models = c("bert-base-uncased", "bert-base-cased")
+#'
+#' d.check = fill_mask_check(query, models, topn=2)
+#' }
+#'
+#' @export
+fill_mask = function(query, model, targets=NULL, topn=5, gpu) {
+  if(length(model)>1)
+    stop("Please use `fill_mask_check()` for multiple models.", call.=FALSE)
+
+  device = gpu_to_device(gpu)
+  if(!is.null(targets)) {
+    targets = as.character(unique(targets))
+    topn = length(targets)
+  }
+  topn = as.integer(topn)
+
+  transformers = reticulate::import("transformers")
+  fill_mask = fill_mask_init(transformers, model, device)
+  mask.token = fill_mask$tokenizer$mask_token
+  if(mask.token!="[MASK]")
+    query = str_replace_all(query, "\\[MASK\\]", mask.token)
+
+  res = fill_mask(inputs=query, targets=targets, top_k=topn)
+
+  d = cbind(data.table(model=as.factor(model)),
+            rbindlist(res))
+  rm(fill_mask)
+  gc()
+  return(d)
+}
+
+
+#' @inheritParams fill_mask
+#' @describeIn fill_mask Check performance of multiple models.
+#'
+#' @export
+fill_mask_check = function(query, models, targets=NULL, topn=5, gpu) {
+  op = options()
+  options(cli.progress_bar_style="bar")
+  cli::cli_progress_bar(
+    clear = FALSE,
+    total = length(models),
+    format = paste(
+      "{cli::pb_spin} Checking model performance",
+      "({cli::pb_current}/{cli::pb_total})",
+      "{cli::pb_bar} {cli::pb_percent}"),
+    format_done = paste(
+      "{cli::col_green(cli::symbol$tick)}",
+      "{cli::pb_total} models checked in {cli::pb_elapsed}")
+  )
+
+  dt = data.table()
+  for(model in models) {
+    # cli::cli_progress_step("Loading {.val {model}}")
+    cli::cli_alert("Loading {.val {model}}")
+    try({
+      di = fill_mask(query, model, targets, topn, gpu)
+      dt = rbind(dt, di)
+    })
+    cli::cli_progress_update()
+  }
+  cli::cli_progress_done()
+  options(op)
+  return(dt)
+}
 
 
 #' Run the fill-mask pipeline on multiple models (CPU / GPU).
@@ -928,6 +1051,12 @@ FMAT_query_bind = function(...) {
 #'   which defines the device (e.g.,
 #'   `"cpu"`, `"cuda:0"`, or a GPU device id like `1`)
 #'   on which the pipeline will be allocated.
+#' @param pattern.special Regular expression patterns (matching model names) for special model cases that are uncased or require a special prefix character in certain situations.
+#'
+#' **WARNING**: As the developer is not able to check all models, users are responsible for checking the models they would use and for modifying this argument if necessary.
+#'
+#' - `prefix.u2581`: adding prefix `\u2581` for all mask words
+#' - `prefix.u0120`: adding prefix `\u0120` for only non-starting mask words
 #' @param file File name of `.RData` to save the returned data.
 #' @param progress Show a progress bar? Defaults to `TRUE`.
 #' @param warning Alert warning of out-of-vocabulary word(s)? Defaults to `TRUE`.
@@ -994,6 +1123,13 @@ FMAT_run = function(
     gpu,
     add.tokens = FALSE,
     add.method = c("sum", "mean"),
+    pattern.special = list(
+      uncased = "uncased|albert|electra|muhtasham",
+      prefix.u2581 = "albert|xlm-roberta|xlnet",
+      prefix.u2581.excl = "chinese",
+      prefix.u0120 = "roberta|bart|deberta|bertweet-large",
+      prefix.u0120.excl = "chinese|xlm-|kornosk/"
+    ),
     file = NULL,
     progress = TRUE,
     warning = TRUE,
@@ -1013,6 +1149,8 @@ FMAT_run = function(
     transformers = transformers_init()
     cache.folder = get_cache_folder(transformers)
     cli::cli_text("Loading models from {.path {cache.folder}} ...")
+    local.models = get_cached_models(cache.folder)
+    check_models_downloaded(local.models$model, models)
     cat("\n")
   }
 
@@ -1039,15 +1177,20 @@ FMAT_run = function(
       fill_mask = model$fill.mask
       model = model$model.name
     }
+    model.progress = paste0(which(model==models), "/", length(models))
     if(device %in% c(-1L, "cpu"))
-      cli::cli_h1("{.val {model}} (CPU)")
+      cli::cli_h1("{.val {model}} [{model.progress}]")
     else
-      cli::cli_h1("{.val {model}} (GPU Accelerated)")
+      cli::cli_h1("{.val {model}} [{model.progress}] (GPU)")
 
     # BERT model special cases
-    uncased = str_detect(model, "uncased|albert")
-    prefix.u2581 = str_detect(model, "xlm-roberta|albert")
-    prefix.u0120 = str_detect(model, "roberta|bertweet-large") & !str_detect(model, "xlm")
+    uncased = str_detect(model, pattern.special$uncased)
+    prefix.u2581 = str_detect(
+      model, pattern.special$prefix.u2581) &
+      !str_detect(model, pattern.special$prefix.u2581.excl)
+    prefix.u0120 = str_detect(
+      model, pattern.special$prefix.u0120) &
+      !str_detect(model, pattern.special$prefix.u0120.excl)
 
     # .mask (final mask target words)
     data = mutate(data, .mask = as.character(M_word))
@@ -1056,8 +1199,10 @@ FMAT_run = function(
     if(prefix.u2581)
       data = mutate(data, .mask = paste0("\u2581", .mask))
     if(prefix.u0120)
-      data = mutate(data, .mask = ifelse(!str_detect(.query, "^\\[MASK\\]"),
-                                         paste0("\u0120", .mask), .mask))
+      data = mutate(data, .mask = ifelse(
+        str_detect(.query, "^\\[MASK\\]"),
+        .mask,
+        paste0("\u0120", .mask)))
     mask.token = fill_mask$tokenizer$mask_token
     if(mask.token!="[MASK]")
       data = mutate(data, .query = str_replace(.query, "\\[MASK\\]", mask.token))
@@ -1065,31 +1210,13 @@ FMAT_run = function(
     # add tokens for out-of-vocabulary words
     if(add.tokens) fill_mask = add_tokens(fill_mask, unique(data$.mask), add.method, verbose.in=FALSE)
 
-    # unmask (single version) [DEPRECATED]
-    # unmask_each = function(d) {
-    #   out = reticulate::py_capture_output({
-    #     res = fill_mask(d$.query, targets=d$.mask, top_k=1L)[[1]]
-    #   })
-    #   # UserWarning: You seem to be using the pipelines sequentially on GPU.
-    #   # In order to maximize efficiency please use a dataset.
-    #   d = data.table(
-    #     output = res$sequence,
-    #     token = ifelse(
-    #       out=="" | str_detect(out, "UserWarning|GPU"),  # no extra output from python
-    #       res$token_str,
-    #       paste(res$token_str,
-    #             ifelse(str_detect(out, "vocabulary"),
-    #                    "(out-of-vocabulary)", out))),
-    #     prob = res$score
-    #   )
-    #   return(d)
-    # }
-
     # unmask (list version)
     unmask = function(d, mask.list) {
       out = reticulate::py_capture_output({
-        res = fill_mask(d$.query, targets=mask.list,
-                        top_k=as.integer(length(mask.list)))
+        res = fill_mask(
+          inputs = d$.query,
+          targets = mask.list,
+          top_k = as.integer(length(mask.list)))
       })
       d = rbindlist(res)[, c("token", "sequence", "score")]
       names(d) = c("token.id", "output", "prob")
@@ -1100,11 +1227,6 @@ FMAT_run = function(
     mask_id_map = function(mask.options) {
       vocab = fill_mask$tokenizer$get_vocab()
       ids = vocab[mask.options]
-      # map = data.table(
-      #   .mask = mask.options,
-      #   token.id = sapply(ids, function(id) {ifelse(is.null(id), NA, id)}),
-      #   token = names(ids)
-      # )
       map = rbindlist(lapply(mask.options, function(mask) {
         reticulate::py_capture_output({
           id = as.integer(fill_mask$get_target_ids(mask))
@@ -1117,8 +1239,6 @@ FMAT_run = function(
     }
 
     # progress running
-    # if(parallel==FALSE)
-    # data = plyr::adply(data, 1, unmask_each, .progress=progress)
     map = mask_id_map(unique(data$.mask))
     t1 = Sys.time()
     dq = plyr::adply(unique(data[, ".query"]), 1, unmask,
@@ -1388,66 +1508,4 @@ LPR_reliability = function(
   if(is.null(by)) alphas[[1]] = NULL
   return(as.data.table(alphas))
 }
-
-
-#### Deprecated ####
-
-
-## Install Python modules and initialize local environment.
-##
-## Install required Python modules and
-## initialize a local "conda" environment.
-## Run this function only once after you have installed the package.
-##
-## @examples
-## \dontrun{
-## FMAT_init()  # run it only once
-##
-## # Then please specify the version of Python:
-## # RStudio -> Tools -> Global/Project Options
-## # -> Python -> Select -> Conda Environments
-## # -> Choose ".../textrpp_condaenv/python.exe"
-## }
-##
-## @export
-# FMAT_init = function() {
-#   suppressMessages({
-#     suppressWarnings({
-#       text::textrpp_install(prompt=FALSE)
-#     })
-#   })
-#   cat("\n")
-#   cli::cli_alert_success("{.pkg Successfully installed Python modules in conda environment.}")
-#
-#   try({
-#     error = TRUE
-#     suppressMessages({
-#       suppressWarnings({
-#         text::textrpp_initialize(save_profile=TRUE, prompt=FALSE)
-#       })
-#     })
-#     error = FALSE
-#   }, silent=TRUE)
-#   if(error)
-#     stop("
-#
-#       Please specify the version of Python:
-#         RStudio -> Tools -> Global/Project Options
-#         -> Python -> Select -> Conda Environments
-#         -> Choose \".../textrpp_condaenv/python.exe\"",
-#        call.=FALSE)
-#   cat("\n")
-#   cli::cli_alert_success("{.pkg Initialized the Python modules.}")
-# }
-
-
-# if(parallel) {
-#   cl = parallel::makeCluster(ncores)
-#   models = names(models)
-#   data = rbindlist(parallel::parLapply(cl, models, onerun, data=data))
-#   parallel::stopCluster(cl)
-# } else {
-#   data = rbindlist(lapply(models, onerun, data=data))
-#   cat("\n")
-# }
 
