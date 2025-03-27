@@ -527,7 +527,7 @@ BERT_info = function(models=NULL) {
 }
 
 
-#' Scrape the earliest release date of BERT models.
+#' Scrape the initial commit date of BERT models.
 #'
 #' @inheritParams BERT_info
 #'
@@ -662,38 +662,38 @@ BERT_vocab = function(
 #### FMAT ####
 
 
-#' \[Deprecated\] Load BERT models (useless for GPU).
-#'
-#' Load BERT models from local cache folder "%USERPROFILE%/.cache/huggingface".
-#' For [GPU Acceleration](https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration),
-#' please directly use [`FMAT_run`].
-#' In general, [`FMAT_run`] is always preferred than [`FMAT_load`].
-#'
-#' @inheritParams BERT_download
-#'
-#' @return
-#' A named list of fill-mask pipelines obtained from the models.
-#' The returned object *cannot* be saved as any RData.
-#' You will need to *rerun* this function if you *restart* the R session.
-#'
-#' @seealso
-#' [`set_cache_folder`]
-#'
-#' [`BERT_download`]
-#'
-#' [`FMAT_query`]
-#'
-#' [`FMAT_query_bind`]
-#'
-#' [`FMAT_run`]
-#'
-#' @examples
-#' \dontrun{
-#' models = c("bert-base-uncased", "bert-base-cased")
-#' models = FMAT_load(models)  # load models from cache
-#' }
-#'
-#' @export
+## \[Deprecated\] Load BERT models (useless for GPU).
+##
+## Load BERT models from local cache folder "%USERPROFILE%/.cache/huggingface".
+## For [GPU Acceleration](https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration),
+## please directly use [`FMAT_run`].
+## In general, [`FMAT_run`] is always preferred than [`FMAT_load`].
+##
+## @inheritParams BERT_download
+##
+## @return
+## A named list of fill-mask pipelines obtained from the models.
+## The returned object *cannot* be saved as any RData.
+## You will need to *rerun* this function if you *restart* the R session.
+##
+## @seealso
+## [`set_cache_folder`]
+##
+## [`BERT_download`]
+##
+## [`FMAT_query`]
+##
+## [`FMAT_query_bind`]
+##
+## [`FMAT_run`]
+##
+## @examples
+## \dontrun{
+## models = c("bert-base-uncased", "bert-base-cased")
+## models = FMAT_load(models)  # load models from cache
+## }
+##
+## @export
 FMAT_load = function(models) {
   transformers = transformers_init()
   cache.folder = get_cache_folder(transformers)

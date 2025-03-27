@@ -2,7 +2,7 @@
 % Please edit documentation in R/FMAT.R
 \name{BERT_info_date}
 \alias{BERT_info_date}
-\title{Scrape the earliest release date of BERT models.}
+\title{Scrape the initial commit date of BERT models.}
 \usage{
 BERT_info_date(models = NULL)
 }
@@ -18,7 +18,7 @@ A data.table:
 }
 }
 \description{
-Scrape the earliest release date of BERT models.
+Scrape the initial commit date of BERT models.
 }
 \examples{
 \dontrun{

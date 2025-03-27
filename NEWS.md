@@ -9,6 +9,7 @@
         -   `prefix.u0120`: adding prefix ⁠`\u0120`⁠ for only non-starting mask words
 -   Improved `set_cache_folder()`, `BERT_download()`, `BERT_info()`, and `BERT_info_date()`.
     -   Now model information read from model objects `BERT_info()` and model initial commit date scraped from HuggingFace `BERT_info_date()` will be saved in subfolders of local cache: `/.info/` and `/.date/`, respectively.
+-   Deprecated `FMAT_load()`.
 -   Fixed "R Session Aborted" issue on MacOS (see #1).
 -   Set environment variables when `library(FMAT)`:
     -   `Sys.setenv("HF_HUB_DISABLE_SYMLINKS_WARNING" = "1")`
@@ -20,7 +21,7 @@
 
 -   Added `set_cache_folder()`: Set (change) HuggingFace cache folder temporarily.
     -   **Keep in mind**: This function takes effect only for the current R session temporarily, so you should run this each time *before* you use other FMAT functions in an R session.
--   Added `BERT_info_date()`: Scrape the earliest release date of BERT models.
+-   Added `BERT_info_date()`: Scrape the initial commit date of BERT models from HuggingFace.
 -   Improved `BERT_download()` and `BERT_info()`.
 -   Updated the formal citation format of the *JPSP* article.
 
