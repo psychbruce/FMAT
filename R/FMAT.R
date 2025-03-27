@@ -101,35 +101,40 @@ gpu_to_device = function(gpu) {
 transformers_init = function(print.info=TRUE) {
   FMAT.ver = as.character(utils::packageVersion("FMAT"))
   reticulate.ver = as.character(utils::packageVersion("reticulate"))
-  reticulate::py_capture_output({
-    # os = reticulate::import("os")
-    # os$environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
-    # os$environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-    Sys.setenv("HF_HUB_DISABLE_SYMLINKS_WARNING" = "1")
-    Sys.setenv("TF_ENABLE_ONEDNN_OPTS" = "0")
 
-    # "R Session Aborted" issue on MacOS
-    # https://github.com/psychbruce/FMAT/issues/1
-    Sys.setenv("KMP_DUPLICATE_LIB_OK" = "TRUE")
-    Sys.setenv("OMP_NUM_THREADS" = "1")
+  os = reticulate::import("os")
+  os$environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
+  os$environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+  # Sys.setenv("HF_HUB_DISABLE_SYMLINKS_WARNING" = "1")
+  # Sys.setenv("TF_ENABLE_ONEDNN_OPTS" = "0")
 
-    torch = reticulate::import("torch")
-    torch.ver = torch$`__version__`
-    torch.cuda = torch$cuda$is_available()
-    if(torch.cuda) {
-      cuda.ver = torch$cuda_version
-      gpu.info = paste("GPU (Device):", paste(torch$cuda$get_device_name(), collapse=", "))
-    } else {
-      cuda.ver = "NULL"
-      gpu.info = "To use GPU, see https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration"
-    }
+  # "R Session Aborted" issue on MacOS
+  # https://github.com/psychbruce/FMAT/issues/1
+  os$environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+  os$environ["OMP_NUM_THREADS"] = "1"
+  # Sys.setenv("KMP_DUPLICATE_LIB_OK" = "TRUE")
+  # Sys.setenv("OMP_NUM_THREADS" = "1")
 
-    transformers = reticulate::import("transformers")
-    tf.ver = transformers$`__version__`
+  torch = reticulate::import("torch")
+  torch.ver = torch$`__version__`
+  torch.cuda = torch$cuda$is_available()
+  if(torch.cuda) {
+    cuda.ver = torch$cuda_version
+    gpu.info = paste("GPU (Device):", paste(torch$cuda$get_device_name(), collapse=", "))
+  } else {
+    cuda.ver = "NULL"
+    gpu.info = "To use GPU, see https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration"
+  }
 
-    hfh.ver = reticulate::import("huggingface_hub")$`__version__`
-    url.ver = reticulate::import("urllib3")$`__version__`
-  })
+  transformers = reticulate::import("transformers")
+  tf.ver = transformers$`__version__`
+
+  hf = reticulate::import("huggingface_hub")
+  hfh.ver = hf$`__version__`
+
+  urllib = reticulate::import("urllib3")
+  url.ver = urllib$`__version__`
+
   if(print.info) {
     cli::cli_alert_info(cli::col_blue("Device Info:
 
@@ -149,6 +154,7 @@ transformers_init = function(print.info=TRUE) {
     {gpu.info}
     "))
   }
+
   return(transformers)
 }
 
@@ -353,6 +359,13 @@ check_models_downloaded = function(local.models, models) {
 BERT_download = function(models=NULL, verbose=FALSE) {
   transformers = transformers_init(print.info=!is.null(models))
   cache.folder = get_cache_folder(transformers)
+
+  # if(mirror) {
+  #   os = reticulate::import("os")
+  #   os$environ["HF_INFERENCE_ENDPOINT"] = "https://hf-mirror.com"
+  #   Sys.setenv("HF_INFERENCE_ENDPOINT" = "https://hf-mirror.com")
+  #   # default: "https://api-inference.huggingface.com"
+  # }
 
   if(!is.null(models)) {
     lapply(models, function(model) {
