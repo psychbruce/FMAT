@@ -31,8 +31,6 @@ Combine multiple query data.tables and renumber query ids.
 }
 }
 \seealso{
-\code{\link{FMAT_load}}
-
 \code{\link{FMAT_query}}
 
 \code{\link{FMAT_run}}

@@ -20,20 +20,8 @@ FMAT_run(
 )
 }
 \arguments{
-\item{models}{Options:
-\itemize{
-\item A character vector of model names at
-\href{https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers}{HuggingFace}.
-\itemize{
-\item Can be used for both CPU and GPU.
-}
-\item A returned object from \code{\link{FMAT_load}}.
-\itemize{
-\item Can ONLY be used for CPU.
-\item If you \emph{restart} the R session,
-you will need to \emph{rerun} \code{\link{FMAT_load}}.
-}
-}}
+\item{models}{A character vector of model names at
+\href{https://huggingface.co/models}{HuggingFace}.}
 
 \item{data}{A data.table returned from \code{\link{FMAT_query}} or \code{\link{FMAT_query_bind}}.}
 
@@ -150,8 +138,6 @@ summary(data2)
 \code{\link{BERT_download}}
 
 \code{\link{BERT_vocab}}
-
-\code{\link{FMAT_load}} (deprecated)
 
 \code{\link{FMAT_query}}
 

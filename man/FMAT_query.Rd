@@ -60,8 +60,6 @@ FMAT_query(
 }
 }
 \seealso{
-\code{\link{FMAT_load}}
-
 \code{\link{FMAT_query_bind}}
 
 \code{\link{FMAT_run}}

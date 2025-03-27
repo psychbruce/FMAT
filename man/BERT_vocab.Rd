@@ -12,8 +12,8 @@ BERT_vocab(
 )
 }
 \arguments{
-\item{models}{Model names at
-\href{https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers}{HuggingFace}.}
+\item{models}{A character vector of model names at
+\href{https://huggingface.co/models}{HuggingFace}.}
 
 \item{mask.words}{Option words filling in the mask.}
 

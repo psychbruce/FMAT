@@ -7,8 +7,8 @@
 BERT_download(models = NULL, verbose = FALSE)
 }
 \arguments{
-\item{models}{Model names at
-\href{https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers}{HuggingFace}.}
+\item{models}{A character vector of model names at
+\href{https://huggingface.co/models}{HuggingFace}.}
 
 \item{verbose}{Alert if a model has been downloaded.
 Defaults to \code{FALSE}.}
@@ -37,6 +37,4 @@ BERT_info()  # information of all downloaded models
 \code{\link{BERT_info}}
 
 \code{\link{BERT_vocab}}
-
-\code{\link{FMAT_load}}
 }

@@ -336,8 +336,8 @@ check_models_downloaded = function(local.models, models) {
 #'
 #' Download and save BERT models to local cache folder "%USERPROFILE%/.cache/huggingface".
 #'
-#' @param models Model names at
-#' [HuggingFace](https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers).
+#' @param models A character vector of model names at
+#' [HuggingFace](https://huggingface.co/models).
 #' @param verbose Alert if a model has been downloaded.
 #' Defaults to `FALSE`.
 #'
@@ -351,8 +351,6 @@ check_models_downloaded = function(local.models, models) {
 #' [`BERT_info`]
 #'
 #' [`BERT_vocab`]
-#'
-#' [`FMAT_load`]
 #'
 #' @examples
 #' \dontrun{
@@ -813,8 +811,6 @@ append_X = function(dq, X, var="TARGET") {
 #' A data.table of queries and variables.
 #'
 #' @seealso
-#' [`FMAT_load`]
-#'
 #' [`FMAT_query_bind`]
 #'
 #' [`FMAT_run`]
@@ -906,8 +902,6 @@ FMAT_query = function(
 #' A data.table of queries and variables.
 #'
 #' @seealso
-#' [`FMAT_load`]
-#'
 #' [`FMAT_query`]
 #'
 #' [`FMAT_run`]
@@ -1058,14 +1052,6 @@ fill_mask_check = function(query, models, targets=NULL, topn=5, gpu) {
 #' but these differences would have little impact on main results.
 #'
 #' @inheritParams BERT_vocab
-#' @param models Options:
-#' - A character vector of model names at
-#'   [HuggingFace](https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers).
-#'   - Can be used for both CPU and GPU.
-#' - A returned object from [`FMAT_load`].
-#'   - Can ONLY be used for CPU.
-#'   - If you *restart* the R session,
-#'     you will need to *rerun* [`FMAT_load`].
 #' @param data A data.table returned from [`FMAT_query`] or [`FMAT_query_bind`].
 #' @param gpu Use GPU (3x faster than CPU) to run the fill-mask pipeline?
 #' Defaults to missing value that will *automatically* use available GPU
@@ -1111,8 +1097,6 @@ fill_mask_check = function(query, models, targets=NULL, topn=5, gpu) {
 #' [`BERT_download`]
 #'
 #' [`BERT_vocab`]
-#'
-#' [`FMAT_load`] (deprecated)
 #'
 #' [`FMAT_query`]
 #'
@@ -1170,19 +1154,12 @@ FMAT_run = function(
   device = gpu_to_device(gpu)
   progress = ifelse(progress, "text", "none")
 
-  if(inherits(models, "fill.mask")) {
-    if(!device %in% c(-1L, "cpu"))
-      stop("
-      To use GPU, please specify `models` as model names,
-      rather than the returned object from `FMAT_load()`.", call.=FALSE)
-  } else {
-    transformers = transformers_init()
-    cache.folder = get_cache_folder(transformers)
-    cli::cli_text("Loading models from {.path {cache.folder}} ...")
-    local.models = get_cached_models(cache.folder)
-    check_models_downloaded(local.models$model, models)
-    cat("\n")
-  }
+  transformers = transformers_init()
+  cache.folder = get_cache_folder(transformers)
+  cli::cli_text("Loading models from {.path {cache.folder}} ...")
+  local.models = get_cached_models(cache.folder)
+  check_models_downloaded(local.models$model, models)
+  cat("\n")
 
   query = .query = mask = .mask = M_word = T_word = A_word = token = NULL
 

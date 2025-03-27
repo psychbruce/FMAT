@@ -7,8 +7,8 @@
 BERT_info_date(models = NULL)
 }
 \arguments{
-\item{models}{Model names at
-\href{https://huggingface.co/models?pipeline_tag=fill-mask&library=transformers}{HuggingFace}.}
+\item{models}{A character vector of model names at
+\href{https://huggingface.co/models}{HuggingFace}.}
 }
 \value{
 A data.table:
