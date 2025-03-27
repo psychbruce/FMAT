@@ -9,6 +9,13 @@
 #' @importFrom stats na.omit
 #' @importFrom crayon italic underline green blue magenta
 .onAttach = function(libname, pkgname) {
+  Sys.setenv("HF_HUB_DISABLE_SYMLINKS_WARNING" = "1")
+  Sys.setenv("TF_ENABLE_ONEDNN_OPTS" = "0")
+  Sys.setenv("KMP_DUPLICATE_LIB_OK" = "TRUE")
+  Sys.setenv("OMP_NUM_THREADS" = "1")
+  # Fixed "R Session Aborted" issue on MacOS
+  # https://github.com/psychbruce/FMAT/issues/1
+
   inst.ver = as.character(utils::packageVersion("FMAT"))
   pkg.date = substr(utils::packageDate("FMAT"), 1, 4)
   pkgs = c("data.table", "stringr", "forcats")
@@ -102,16 +109,16 @@ transformers_init = function(print.info=TRUE) {
   FMAT.ver = as.character(utils::packageVersion("FMAT"))
   reticulate.ver = as.character(utils::packageVersion("reticulate"))
 
-  os = reticulate::import("os")
-  os$environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
-  os$environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+  # os = reticulate::import("os")
+  # os$environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
+  # os$environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
   # Sys.setenv("HF_HUB_DISABLE_SYMLINKS_WARNING" = "1")
   # Sys.setenv("TF_ENABLE_ONEDNN_OPTS" = "0")
 
   # "R Session Aborted" issue on MacOS
   # https://github.com/psychbruce/FMAT/issues/1
-  os$environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
-  os$environ["OMP_NUM_THREADS"] = "1"
+  # os$environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+  # os$environ["OMP_NUM_THREADS"] = "1"
   # Sys.setenv("KMP_DUPLICATE_LIB_OK" = "TRUE")
   # Sys.setenv("OMP_NUM_THREADS" = "1")
 
@@ -162,15 +169,17 @@ transformers_init = function(print.info=TRUE) {
 fill_mask_init = function(transformers, model, device=-1L) {
   cache.folder = get_cache_folder(transformers)
   model.local = get_cached_model_path(cache.folder, model)
-  config = transformers$AutoConfig$from_pretrained(
-    model.local,
-    local_files_only = TRUE)
-  fill_mask = transformers$pipeline(
-    "fill-mask",
-    model = model.local,
-    config = config,
-    model_kwargs = list(local_files_only=TRUE),
-    device = device)
+  reticulate::py_capture_output({
+    config = transformers$AutoConfig$from_pretrained(
+      model.local,
+      local_files_only = TRUE)
+    fill_mask = transformers$pipeline(
+      "fill-mask",
+      model = model.local,
+      config = config,
+      model_kwargs = list(local_files_only=TRUE),
+      device = device)
+  })
   return(fill_mask)
 }
 
@@ -368,7 +377,7 @@ BERT_download = function(models=NULL, verbose=FALSE) {
   # }
 
   if(!is.null(models)) {
-    lapply(models, function(model) {
+    lapply(as.character(models), function(model) {
       model.path = get_cached_model_path(cache.folder, model)
       if(is.na(model.path)) {
         model.folder = model_folder(cache.folder, model)
@@ -447,6 +456,7 @@ BERT_info = function(models=NULL) {
   if(!dir.exists(infos.folder)) dir.create(infos.folder)
   local.models = get_cached_models(cache.folder)
   if(is.null(models)) models = local.models$model
+  models = as.character(models)
   check_models_downloaded(local.models$model, models)
   dm = data.table()
 
@@ -472,10 +482,12 @@ BERT_info = function(models=NULL) {
       # cli::cli_progress_step("Loading {.val {model}}")
       model.local = get_cached_model_path(cache.folder, model)
       try({
-        tokenizer = transformers$AutoTokenizer$from_pretrained(
-          model.local, local_files_only=TRUE)
-        model.obj = transformers$AutoModel$from_pretrained(
-          model.local, local_files_only=TRUE)
+        reticulate::py_capture_output({
+          tokenizer = transformers$AutoTokenizer$from_pretrained(
+            model.local, local_files_only=TRUE)
+          model.obj = transformers$AutoModel$from_pretrained(
+            model.local, local_files_only=TRUE)
+        })
         vocab = embed = NA
         # word.embeddings = model.obj$embeddings$word_embeddings$weight$data$shape
         # vocab = word.embeddings[0]
@@ -543,6 +555,7 @@ BERT_info_date = function(models=NULL) {
   if(is.null(models)) {
     models = str_replace_all(str_remove(list.files(cache.folder, "^models--"), "^models--"), "--", "/")
   }
+  models = as.character(models)
   dd = data.table()
 
   op = options()
@@ -626,19 +639,17 @@ BERT_vocab = function(
   transformers = transformers_init(print.info=FALSE)
   mask.words = as.character(mask.words)
 
-  maps = rbindlist(lapply(models, function(model) {
-    reticulate::py_capture_output({
-      fill_mask = fill_mask_init(transformers, model)
-      if(add.tokens) fill_mask = add_tokens(fill_mask, mask.words, add.method, verbose.in=FALSE)
-      vocab = fill_mask$tokenizer$get_vocab()
-      ids = vocab[mask.words]
-      map = rbindlist(lapply(mask.words, function(mask) {
-        id = as.integer(fill_mask$get_target_ids(mask))
-        token = names(vocab[vocab==id])
-        if(is.null(ids[[mask]])) token = paste(token, "(out-of-vocabulary)")
-        data.table(model=as_factor(model), M_word=as_factor(mask), token=token, token.id=id)
-      }))
-    })
+  maps = rbindlist(lapply(as.character(models), function(model) {
+    fill_mask = fill_mask_init(transformers, model)
+    if(add.tokens) fill_mask = add_tokens(fill_mask, mask.words, add.method, verbose.in=FALSE)
+    vocab = fill_mask$tokenizer$get_vocab()
+    ids = vocab[mask.words]
+    map = rbindlist(lapply(mask.words, function(mask) {
+      id = as.integer(fill_mask$get_target_ids(mask))
+      token = names(vocab[vocab==id])
+      if(is.null(ids[[mask]])) token = paste(token, "(out-of-vocabulary)")
+      data.table(model=as_factor(model), M_word=as_factor(mask), token=token, token.id=id)
+    }))
     return(map)
   }))
 
@@ -687,11 +698,9 @@ FMAT_load = function(models) {
   transformers = transformers_init()
   cache.folder = get_cache_folder(transformers)
   cli::cli_text("Loading models from {.path {cache.folder}} ...")
-  fms = lapply(models, function(model) {
+  fms = lapply(as.character(models), function(model) {
     t0 = Sys.time()
-    reticulate::py_capture_output({
-      fill_mask = fill_mask_init(transformers, model)
-    })
+    fill_mask = fill_mask_init(transformers, model)
     cli::cli_alert_success("{model} ({dtime(t0)})")
     return(list(model.name=model, fill.mask=fill_mask))
   })
@@ -973,6 +982,7 @@ fill_mask = function(query, model, targets=NULL, topn=5, gpu) {
   topn = as.integer(topn)
 
   transformers = reticulate::import("transformers")
+  cli::cli_alert("Loading {.val {model}}")
   fill_mask = fill_mask_init(transformers, model, device)
   mask.token = fill_mask$tokenizer$mask_token
   if(mask.token!="[MASK]")
@@ -1008,9 +1018,8 @@ fill_mask_check = function(query, models, targets=NULL, topn=5, gpu) {
   )
 
   dt = data.table()
-  for(model in models) {
+  for(model in as.character(models)) {
     # cli::cli_progress_step("Loading {.val {model}}")
-    cli::cli_alert("Loading {.val {model}}")
     try({
       di = fill_mask(query, model, targets, topn, gpu)
       dt = rbind(dt, di)
@@ -1191,9 +1200,7 @@ FMAT_run = function(
   onerun = function(model, data) {
     ## ---- One Run Begin ---- ##
     if(is.character(model)) {
-      reticulate::py_capture_output({
-        fill_mask = fill_mask_init(transformers, model, device)
-      })
+      fill_mask = fill_mask_init(transformers, model, device)
     } else {
       fill_mask = model$fill.mask
       model = model$model.name
@@ -1249,10 +1256,8 @@ FMAT_run = function(
       vocab = fill_mask$tokenizer$get_vocab()
       ids = vocab[mask.options]
       map = rbindlist(lapply(mask.options, function(mask) {
-        reticulate::py_capture_output({
-          id = as.integer(fill_mask$get_target_ids(mask))
-          token = names(vocab[vocab==id])
-        })
+        id = as.integer(fill_mask$get_target_ids(mask))
+        token = names(vocab[vocab==id])
         if(is.null(ids[[mask]])) token = paste(token, "(out-of-vocabulary)")
         data.table(.mask=mask, token.id=id, token=token)
       }))
@@ -1286,7 +1291,7 @@ FMAT_run = function(
   }
 
   cli::cli_alert_info("Task: {length(models)} models * {nrow(data)} queries")
-  data = rbindlist(lapply(models, onerun, data=data))
+  data = rbindlist(lapply(as.character(models), onerun, data=data))
   cat("\n")
   attr(data, "type") = type
   class(data) = c("fmat", class(data))
