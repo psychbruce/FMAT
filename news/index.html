@@ -45,16 +45,8 @@
 </ul></li>
 <li>Improved <code><a href="../reference/set_cache_folder.html">set_cache_folder()</a></code>, <code><a href="../reference/BERT_download.html">BERT_download()</a></code>, <code><a href="../reference/BERT_info.html">BERT_info()</a></code>, and <code><a href="../reference/BERT_info_date.html">BERT_info_date()</a></code>.
 <ul><li>Now model information read from model objects <code><a href="../reference/BERT_info.html">BERT_info()</a></code> and model initial commit date scraped from HuggingFace <code><a href="../reference/BERT_info_date.html">BERT_info_date()</a></code> will be saved in subfolders of local cache: <code>/.info/</code> and <code>/.date/</code>, respectively.</li>
-<li>Now use <code><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv()</a></code> to set environment variables for initialization, which is faster than importing the Python <code>os</code> package.
-<ul><li><code>Sys.setenv("HF_HOME" = path)</code></li>
-<li><code>Sys.setenv("HF_HUB_DISABLE_SYMLINKS_WARNING" = "1")</code></li>
-<li><code>Sys.setenv("TF_ENABLE_ONEDNN_OPTS" = "0")</code></li>
-<li>
-<code>Sys.setenv("KMP_DUPLICATE_LIB_OK" = "TRUE")</code> (see <a href="https://github.com/psychbruce/FMAT/issues/1" class="external-link">#1</a>)</li>
-<li>
-<code>Sys.setenv("OMP_NUM_THREADS" = "1")</code> (see <a href="https://github.com/psychbruce/FMAT/issues/1" class="external-link">#1</a>)</li>
 </ul></li>
-</ul></li>
+<li>Fixed “R Session Aborted” issue on MacOS (see <a href="https://github.com/psychbruce/FMAT/issues/1" class="external-link">#1</a>).</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2025.3" id="fmat-20253">FMAT 2025.3<a class="anchor" aria-label="anchor" href="#fmat-20253"></a></h2><p class="text-muted">CRAN release: 2025-03-19</p>
