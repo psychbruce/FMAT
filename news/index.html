@@ -46,6 +46,7 @@
 <li>Improved <code><a href="../reference/set_cache_folder.html">set_cache_folder()</a></code>, <code><a href="../reference/BERT_download.html">BERT_download()</a></code>, <code><a href="../reference/BERT_info.html">BERT_info()</a></code>, and <code><a href="../reference/BERT_info_date.html">BERT_info_date()</a></code>.
 <ul><li>Now model information read from model objects <code><a href="../reference/BERT_info.html">BERT_info()</a></code> and model initial commit date scraped from HuggingFace <code><a href="../reference/BERT_info_date.html">BERT_info_date()</a></code> will be saved in subfolders of local cache: <code>/.info/</code> and <code>/.date/</code>, respectively.</li>
 </ul></li>
+<li>Deprecated <code>FMAT_load()</code>.</li>
 <li>Fixed “R Session Aborted” issue on MacOS (see <a href="https://github.com/psychbruce/FMAT/issues/1" class="external-link">#1</a>).</li>
 <li>Set environment variables when <code><a href="https://psychbruce.github.io/FMAT/">library(FMAT)</a></code>:
 <ul><li><code>Sys.setenv("HF_HUB_DISABLE_SYMLINKS_WARNING" = "1")</code></li>
@@ -60,7 +61,7 @@
 <ul><li>
 <strong>Keep in mind</strong>: This function takes effect only for the current R session temporarily, so you should run this each time <em>before</em> you use other FMAT functions in an R session.</li>
 </ul></li>
-<li>Added <code><a href="../reference/BERT_info_date.html">BERT_info_date()</a></code>: Scrape the earliest release date of BERT models.</li>
+<li>Added <code><a href="../reference/BERT_info_date.html">BERT_info_date()</a></code>: Scrape the initial commit date of BERT models from HuggingFace.</li>
 <li>Improved <code><a href="../reference/BERT_download.html">BERT_download()</a></code> and <code><a href="../reference/BERT_info.html">BERT_info()</a></code>.</li>
 <li>Updated the formal citation format of the <em>JPSP</em> article.</li>
 </ul></div>
@@ -78,7 +79,7 @@
 <ul><li>Added <code><a href="../reference/BERT_info.html">BERT_info()</a></code>.</li>
 <li>Added <code>add.tokens</code> and <code>add.method</code> arguments for <code><a href="../reference/BERT_vocab.html">BERT_vocab()</a></code> and <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code>: An <em>experimental</em> functionality to add new tokens (e.g., out-of-vocabulary words, compound words, or even phrases) as [MASK] options. Validation is still needed for this novel practice (one of my ongoing projects), so currently please only use at your own risk, waiting until the publication of my validation work.</li>
 <li>All functions except <code><a href="../reference/BERT_download.html">BERT_download()</a></code> now import local model files only, without automatically downloading models. Users must first use <code><a href="../reference/BERT_download.html">BERT_download()</a></code> to download models.</li>
-<li>Deprecating <code><a href="../reference/FMAT_load.html">FMAT_load()</a></code>: Better to use <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code> directly.</li>
+<li>Deprecating <code>FMAT_load()</code>: Better to use <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code> directly.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2024.4" id="fmat-20244">FMAT 2024.4<a class="anchor" aria-label="anchor" href="#fmat-20244"></a></h2><p class="text-muted">CRAN release: 2024-04-29</p>
@@ -89,10 +90,10 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2024.3" id="fmat-20243">FMAT 2024.3<a class="anchor" aria-label="anchor" href="#fmat-20243"></a></h2><p class="text-muted">CRAN release: 2024-03-22</p>
 <ul><li>The FMAT methodology paper has been accepted (March 14, 2024) for publication in the <em>Journal of Personality and Social Psychology: Attitudes and Social Cognition</em> (DOI: 10.1037/pspa0000396)!</li>
-<li>Added <code><a href="../reference/BERT_download.html">BERT_download()</a></code> (downloading models to local cache folder “%USERPROFILE%/.cache/huggingface”) to differentiate from <code><a href="../reference/FMAT_load.html">FMAT_load()</a></code> (loading saved models from local cache). But indeed <code><a href="../reference/FMAT_load.html">FMAT_load()</a></code> can also download models <em>silently</em> if they have not been downloaded.</li>
+<li>Added <code><a href="../reference/BERT_download.html">BERT_download()</a></code> (downloading models to local cache folder “%USERPROFILE%/.cache/huggingface”) to differentiate from <code>FMAT_load()</code> (loading saved models from local cache). But indeed <code>FMAT_load()</code> can also download models <em>silently</em> if they have not been downloaded.</li>
 <li>Added <code>gpu</code> argument (see <a href="https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration">Guidance for GPU Acceleration</a>) in <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code> to allow for specifying an NVIDIA GPU device on which the fill-mask pipeline will be allocated. GPU roughly performs 3x faster than CPU for the fill-mask pipeline. By default, <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code> would automatically detect and use any available GPU with an installed CUDA-supported Python <code>torch</code> package (if not, it would use CPU).</li>
 <li>Added running speed information (queries/min) for <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code>.</li>
-<li>Added device information for <code><a href="../reference/BERT_download.html">BERT_download()</a></code>, <code><a href="../reference/FMAT_load.html">FMAT_load()</a></code>, and <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code>.</li>
+<li>Added device information for <code><a href="../reference/BERT_download.html">BERT_download()</a></code>, <code>FMAT_load()</code>, and <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code>.</li>
 <li>Deprecated <code>parallel</code> in <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code>: <code>FMAT_run(model.names, data, gpu=TRUE)</code> is the fastest.</li>
 <li>A progress bar is displayed by default for <code>progress</code> in <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code>.</li>
 </ul></div>
