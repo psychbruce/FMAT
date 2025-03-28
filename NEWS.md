@@ -11,7 +11,7 @@
     -   Now model information read from model objects `BERT_info()` and model initial commit date scraped from HuggingFace `BERT_info_date()` will be saved in subfolders of local cache: `/.info/` and `/.date/`, respectively.
 -   Deprecated `FMAT_load()`.
 -   Fixed "R Session Aborted" issue on MacOS (see #1).
--   Set environment variables when `library(FMAT)`:
+-   Set necessary environment variables automatically when `library(FMAT)`:
     -   `Sys.setenv("HF_HUB_DISABLE_SYMLINKS_WARNING" = "1")`
     -   `Sys.setenv("TF_ENABLE_ONEDNN_OPTS" = "0")`
     -   `Sys.setenv("KMP_DUPLICATE_LIB_OK" = "TRUE")`

@@ -8,7 +8,8 @@ BERT_vocab(
   models,
   mask.words,
   add.tokens = FALSE,
-  add.method = c("sum", "mean")
+  add.method = c("sum", "mean"),
+  add.verbose = TRUE
 )
 }
 \arguments{
@@ -17,11 +18,19 @@ BERT_vocab(
 
 \item{mask.words}{Option words filling in the mask.}
 
-\item{add.tokens}{Add new tokens (for out-of-vocabulary words or even phrases) to model vocabulary?
-Defaults to \code{FALSE}. It only temporarily adds tokens for tasks but does not change the raw model file.}
+\item{add.tokens}{Add new tokens
+(for out-of-vocabulary words or phrases)
+to model vocabulary?
+Defaults to \code{FALSE}.
+It only temporarily adds tokens for tasks
+but does not change the raw model file.}
 
-\item{add.method}{Method used to produce the token embeddings of new added tokens.
+\item{add.method}{Method used to produce the token embeddings of newly added tokens.
 Can be \code{"sum"} (default) or \code{"mean"} of subword token embeddings.}
+
+\item{add.verbose}{Print composition information of new tokens
+(for out-of-vocabulary words or phrases)?
+Defaults to \code{TRUE}.}
 }
 \value{
 A data.table of model name, mask word, real token (replaced if out of vocabulary),

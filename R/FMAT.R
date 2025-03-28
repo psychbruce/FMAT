@@ -597,10 +597,17 @@ get_model_date = function(model) {
 #'
 #' @inheritParams BERT_download
 #' @param mask.words Option words filling in the mask.
-#' @param add.tokens Add new tokens (for out-of-vocabulary words or even phrases) to model vocabulary?
-#' Defaults to `FALSE`. It only temporarily adds tokens for tasks but does not change the raw model file.
-#' @param add.method Method used to produce the token embeddings of new added tokens.
+#' @param add.tokens Add new tokens
+#' (for out-of-vocabulary words or phrases)
+#' to model vocabulary?
+#' Defaults to `FALSE`.
+#' It only temporarily adds tokens for tasks
+#' but does not change the raw model file.
+#' @param add.method Method used to produce the token embeddings of newly added tokens.
 #' Can be `"sum"` (default) or `"mean"` of subword token embeddings.
+#' @param add.verbose Print composition information of new tokens
+#' (for out-of-vocabulary words or phrases)?
+#' Defaults to `TRUE`.
 #'
 #' @return
 #' A data.table of model name, mask word, real token (replaced if out of vocabulary),
@@ -632,14 +639,15 @@ get_model_date = function(model) {
 BERT_vocab = function(
     models, mask.words,
     add.tokens = FALSE,
-    add.method = c("sum", "mean")
+    add.method = c("sum", "mean"),
+    add.verbose = TRUE
 ) {
   transformers = transformers_init(print.info=FALSE)
   mask.words = as.character(mask.words)
 
   maps = rbindlist(lapply(as.character(models), function(model) {
     fill_mask = fill_mask_init(transformers, model)
-    if(add.tokens) fill_mask = add_tokens(fill_mask, mask.words, add.method, verbose.in=FALSE)
+    if(add.tokens) fill_mask = add_tokens(fill_mask, mask.words, add.method, verbose.in=FALSE, verbose.out=add.verbose)
     vocab = fill_mask$tokenizer$get_vocab()
     ids = vocab[mask.words]
     map = rbindlist(lapply(mask.words, function(mask) {
@@ -848,6 +856,14 @@ FMAT_query = function(
   } else {
     MASK = fix_pair(MASK)
   }
+
+  sapply(MASK, function(x) {
+    if(anyDuplicated(x)) {
+      dup = x[duplicated(x)]
+      cli::cli_alert_danger("Duplicated mask words: {.val {unique(dup)}}")
+      stop("Duplicated mask words found in `MASK`!", call.=FALSE)
+    }
+  })
 
   if(length(TARGET) == 0 & length(ATTRIB) == 0) {
     # No TARGET or ATTRIB
@@ -1137,6 +1153,7 @@ FMAT_run = function(
     gpu,
     add.tokens = FALSE,
     add.method = c("sum", "mean"),
+    add.verbose = TRUE,
     pattern.special = list(
       uncased = "uncased|albert|electra|muhtasham",
       prefix.u2581 = "albert|xlm-roberta|xlnet",
@@ -1213,7 +1230,7 @@ FMAT_run = function(
       data = mutate(data, .query = str_replace(.query, "\\[MASK\\]", mask.token))
 
     # add tokens for out-of-vocabulary words
-    if(add.tokens) fill_mask = add_tokens(fill_mask, unique(data$.mask), add.method, verbose.in=FALSE)
+    if(add.tokens) fill_mask = add_tokens(fill_mask, unique(data$.mask), add.method, verbose.in=FALSE, verbose.out=add.verbose)
 
     # unmask (list version)
     unmask = function(d, mask.list) {
