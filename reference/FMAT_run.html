@@ -47,6 +47,7 @@
 <span>  <span class="va">gpu</span>,</span>
 <span>  add.tokens <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  add.method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sum"</span>, <span class="st">"mean"</span><span class="op">)</span>,</span>
+<span>  add.verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  pattern.special <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>uncased <span class="op">=</span> <span class="st">"uncased|albert|electra|muhtasham"</span>, prefix.u2581 <span class="op">=</span></span>
 <span>    <span class="st">"albert|xlm-roberta|xlnet"</span>, prefix.u2581.excl <span class="op">=</span> <span class="st">"chinese"</span>, prefix.u0120 <span class="op">=</span></span>
 <span>    <span class="st">"roberta|bart|deberta|bertweet-large"</span>, prefix.u0120.excl <span class="op">=</span> <span class="st">"chinese|xlm-|kornosk/"</span><span class="op">)</span>,</span>
@@ -87,13 +88,23 @@ on which the pipeline will be allocated.</p></li>
 
 
 <dt id="arg-add-tokens">add.tokens<a class="anchor" aria-label="anchor" href="#arg-add-tokens"></a></dt>
-<dd><p>Add new tokens (for out-of-vocabulary words or even phrases) to model vocabulary?
-Defaults to <code>FALSE</code>. It only temporarily adds tokens for tasks but does not change the raw model file.</p></dd>
+<dd><p>Add new tokens
+(for out-of-vocabulary words or phrases)
+to model vocabulary?
+Defaults to <code>FALSE</code>.
+It only temporarily adds tokens for tasks
+but does not change the raw model file.</p></dd>
 
 
 <dt id="arg-add-method">add.method<a class="anchor" aria-label="anchor" href="#arg-add-method"></a></dt>
-<dd><p>Method used to produce the token embeddings of new added tokens.
+<dd><p>Method used to produce the token embeddings of newly added tokens.
 Can be <code>"sum"</code> (default) or <code>"mean"</code> of subword token embeddings.</p></dd>
+
+
+<dt id="arg-add-verbose">add.verbose<a class="anchor" aria-label="anchor" href="#arg-add-verbose"></a></dt>
+<dd><p>Print composition information of new tokens
+(for out-of-vocabulary words or phrases)?
+Defaults to <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-pattern-special">pattern.special<a class="anchor" aria-label="anchor" href="#arg-pattern-special"></a></dt>
