@@ -417,6 +417,27 @@ BERT_download = function(models=NULL, verbose=FALSE) {
 }
 
 
+#' Remove BERT models from local cache folder.
+#'
+#' @param models Model names.
+#'
+#' @export
+BERT_remove = function(models) {
+  transformers = transformers_init(print.info=FALSE)
+  cache.folder = get_cache_folder(transformers)
+  lapply(as.character(models), function(model) {
+    model.folder = model_folder(cache.folder, model)
+    if(dir.exists(model.folder)) {
+      unlink(model.folder, recursive=TRUE)
+      cli::cli_alert_success("Model removed: {.val {model}}")
+    } else {
+      cli::cli_alert_danger("Model not found: {.val {model}}")
+    }
+  })
+  invisible(NULL)
+}
+
+
 #' Get basic information of BERT models.
 #'
 #' @inheritParams BERT_download

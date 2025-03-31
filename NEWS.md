@@ -2,6 +2,7 @@
 
 # FMAT 2025.4
 
+-   Added `BERT_remove()`: Remove models from local cache folder.
 -   Added `fill_mask()` and `fill_mask_check()`: These functions are only for technical check (i.e., checking the raw results of fill-mask pipeline). Normal users should usually use `FMAT_run()`.
 -   Added `pattern.special` argument for `FMAT_run()`: Regular expression patterns (matching model names) for special model cases that are uncased or require a special prefix character in certain situations.
     -   **WARNING**: As the developer is not able to check all models, users are responsible for checking the models they would use and for modifying this argument if necessary.
