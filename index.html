@@ -78,6 +78,9 @@
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
+<div class="section level3">
+<h3 id="id_1-fmat-package-citation">(1) FMAT Package Citation<a class="anchor" aria-label="anchor" href="#id_1-fmat-package-citation"></a>
+</h3>
 <ul>
 <li>Bao, H.-W.-S. (2023). <em>FMAT: The Fill-Mask Association Test</em>. <a href="https://CRAN.R-project.org/package=FMAT" class="external-link uri">https://CRAN.R-project.org/package=FMAT</a>
 <ul>
@@ -85,11 +88,25 @@
 <em>Note</em>: This is the original citation. Please refer to the information when you <code><a href="https://psychbruce.github.io/FMAT/">library(FMAT)</a></code> for the APA-7 format of the version you installed.</li>
 </ul>
 </li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="id_2-fmat-research-articles---methodology">(2) FMAT Research Articles - Methodology<a class="anchor" aria-label="anchor" href="#id_2-fmat-research-articles---methodology"></a>
+</h3>
+<ul>
 <li>Bao, H.-W.-S. (2024). The Fill-Mask Association Test (FMAT): Measuring propositions in natural language. <em>Journal of Personality and Social Psychology, 127</em>(3), 537–561. <a href="https://doi.org/10.1037/pspa0000396" class="external-link uri">https://doi.org/10.1037/pspa0000396</a>
 </li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="id_3-fmat-research-articles---application">(3) FMAT Research Articles - Application<a class="anchor" aria-label="anchor" href="#id_3-fmat-research-articles---application"></a>
+</h3>
+<ul>
 <li>Bao, H.-W.-S., &amp; Gries, P. (2024). Intersectional race–gender stereotypes in natural language. <em>British Journal of Social Psychology, 63</em>(4), 1771–1786. <a href="https://doi.org/10.1111/bjso.12748" class="external-link uri">https://doi.org/10.1111/bjso.12748</a>
 </li>
+<li>Bao, H.-W.-S., &amp; Gries, P. (2025). Bias toward Chinese in English language use. <em>China Quarterly</em>. (accepted)</li>
 </ul>
+</div>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -143,8 +160,8 @@ pip install torch==2.2.1 --index-url https://download.pytorch.org/whl/cu121</cod
 <div class="section level3">
 <h3 id="step-1-download-bert-models">Step 1: Download BERT Models<a class="anchor" aria-label="anchor" href="#step-1-download-bert-models"></a>
 </h3>
-<p>Use <code><a href="reference/BERT_download.html">BERT_download()</a></code> to download <a href="#bert-models">BERT models</a>. Model files are saved to your local folder “%USERPROFILE%/.cache/huggingface”. A full list of BERT models are available at <a href="https://huggingface.co/models?pipeline_tag=fill-mask&amp;library=transformers" class="external-link">Hugging Face</a>.</p>
-<p>Use <code><a href="reference/BERT_info.html">BERT_info()</a></code> and <code><a href="reference/BERT_vocab.html">BERT_vocab()</a></code> to find detailed information of BERT models.</p>
+<p>Use <code><a href="reference/BERT_download.html">BERT_download()</a></code> to download <a href="#bert-models">BERT models</a>. Model files are saved in your local cache folder “%USERPROFILE%/.cache/huggingface”. A full list of BERT models are available at <a href="https://huggingface.co/models?pipeline_tag=fill-mask" class="external-link">Hugging Face</a>.</p>
+<p>Use <code><a href="reference/BERT_info.html">BERT_info()</a></code> and <code><a href="reference/BERT_vocab.html">BERT_vocab()</a></code> to obtain detailed information of BERT models.</p>
 </div>
 <div class="section level3">
 <h3 id="step-2-design-fmat-queries">Step 2: Design FMAT Queries<a class="anchor" aria-label="anchor" href="#step-2-design-fmat-queries"></a>
@@ -199,8 +216,8 @@ pip install torch==2.2.1 --index-url https://download.pytorch.org/whl/cu121</cod
 <div class="section level2">
 <h2 id="bert-models">BERT Models<a class="anchor" aria-label="anchor" href="#bert-models"></a>
 </h2>
-<p>The reliability and validity of the following 12 BERT models in the FMAT have been established in my research, but future work is needed to examine the performance of other models.</p>
-<p>(model name on Hugging Face - downloaded model file size)</p>
+<p>The reliability and validity of the following 12 BERT models in the FMAT have been established in our research, but future work is needed to examine the performance of other models.</p>
+<p>(model name on Hugging Face - model file size)</p>
 <ol style="list-style-type: decimal">
 <li>
 <a href="https://huggingface.co/bert-base-uncased" class="external-link">bert-base-uncased</a> (420 MB)</li>
