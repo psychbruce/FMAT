@@ -421,6 +421,8 @@ BERT_download = function(models=NULL, verbose=FALSE) {
 #'
 #' @param models Model names.
 #'
+#' @return `NULL`.
+#'
 #' @export
 BERT_remove = function(models) {
   transformers = transformers_init(print.info=FALSE)

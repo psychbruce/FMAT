@@ -9,6 +9,9 @@ BERT_remove(models)
 \arguments{
 \item{models}{Model names.}
 }
+\value{
+\code{NULL}.
+}
 \description{
 Remove BERT models from local cache folder.
 }
