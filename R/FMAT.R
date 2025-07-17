@@ -25,7 +25,8 @@
     })
   })
   if(all(loaded)) {
-    packageStartupMessage(glue::glue_col("
+    packageStartupMessage(
+      glue::glue_col("
 
     {magenta FMAT (v{inst.ver})}
     {blue The Fill-Mask Association Test}
@@ -37,16 +38,16 @@
     {underline https://psychbruce.github.io/FMAT}
 
     {magenta To use this package in publications, please cite:}
-    Bao, H.-W.-S. ({pkg.date}). "),
-    glue::glue_col("{italic FMAT: The Fill-Mask Association Test}"),
-    glue::glue_col(" (Version {inst.ver}) [Computer software]. "),
-    glue::glue_col("{underline https://CRAN.R-project.org/package=FMAT}"),
-    "\n\n",
-    glue::glue_col("Bao, H.-W.-S. (2024). The Fill-Mask Association Test (FMAT): "),
-    glue::glue_col("Measuring propositions in natural language. "),
-    glue::glue_col("{italic Journal of Personality and Social Psychology, 127}"),
-    glue::glue_col("(3), 537-561. {underline https://doi.org/10.1037/pspa0000396}"),
-    "\n")
+    Bao, H. W. S. ({pkg.date}). "),
+      glue::glue_col("{italic FMAT: The Fill-Mask Association Test}"),
+      glue::glue_col(" (Version {inst.ver}) [Computer software]. "),
+      glue::glue_col("{underline https://CRAN.R-project.org/package=FMAT}"),
+      "\n\n",
+      glue::glue_col("Bao, H. W. S. (2024). The Fill-Mask Association Test (FMAT): "),
+      glue::glue_col("Measuring propositions in natural language. "),
+      glue::glue_col("{italic Journal of Personality and Social Psychology, 127}"),
+      glue::glue_col("(3), 537-561. {underline https://doi.org/10.1037/pspa0000396}"),
+      "\n")
   }
 }
 
@@ -881,6 +882,7 @@ FMAT_query = function(
   }
 
   sapply(MASK, function(x) {
+    x = na.omit(x)
     if(anyDuplicated(x)) {
       dup = x[duplicated(x)]
       cli::cli_alert_danger("Duplicated mask words: {.val {unique(dup)}}")
