@@ -10,13 +10,10 @@ set_cache_folder(path)
 \item{path}{Folder path to store HuggingFace models.}
 }
 \description{
-This function allows you to change the default cache directory (when it lacks disk capacity) to another path (e.g., your portable SSD) temporarily.
+This function allows you to change the default cache directory (when it lacks storage space) to another path (e.g., your portable SSD) \emph{temporarily}.
 
 \strong{Keep in mind}:
-This function takes effect only for
-the current R session temporarily,
-so you should run this each time
-BEFORE you use other FMAT functions in an R session.
+This function takes effect only for the current R session \emph{temporarily}, so you should run this each time BEFORE you use other FMAT functions in an R session.
 }
 \examples{
 \dontrun{

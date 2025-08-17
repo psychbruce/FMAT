@@ -1,5 +1,9 @@
 **Please check the [latest news (change log)](https://psychbruce.github.io/FMAT/news/index.html) and keep this package updated.**
 
+# FMAT 2025.8
+
+-   Refined help pages in the style of Roxygen markdown.
+
 # FMAT 2025.4
 
 -   Added `BERT_remove()`: Remove models from local cache folder.

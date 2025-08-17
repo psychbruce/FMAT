@@ -32,9 +32,9 @@ BERT_info()  # information of all downloaded models
 
 }
 \seealso{
-\code{\link{set_cache_folder}}
+\code{\link[=set_cache_folder]{set_cache_folder()}}
 
-\code{\link{BERT_info}}
+\code{\link[=BERT_info]{BERT_info()}}
 
-\code{\link{BERT_vocab}}
+\code{\link[=BERT_vocab]{BERT_vocab()}}
 }

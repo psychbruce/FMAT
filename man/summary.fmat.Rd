@@ -14,8 +14,7 @@
 )
 }
 \arguments{
-\item{object}{A data.table (of new class \code{fmat})
-returned from \code{\link{FMAT_run}}.}
+\item{object}{A data.table (class \code{fmat}) returned from \code{\link[=FMAT_run]{FMAT_run()}}.}
 
 \item{mask.pair, target.pair, attrib.pair}{Pairwise contrast of
 \verb{[MASK]}, \code{TARGET}, \code{ATTRIB}?
@@ -46,5 +45,5 @@ to perform the formal analyses and hypothesis tests based on the LPR.
 
 }
 \seealso{
-\code{\link{FMAT_run}}
+\code{\link[=FMAT_run]{FMAT_run()}}
 }

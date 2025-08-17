@@ -7,7 +7,7 @@
 ICC_models(data, type = "agreement", unit = "average")
 }
 \arguments{
-\item{data}{Raw data returned from \code{\link{FMAT_run}}.}
+\item{data}{Raw data returned from \code{\link[=FMAT_run]{FMAT_run()}}.}
 
 \item{type}{Interrater \code{"agreement"} (default) or \code{"consistency"}.}
 

@@ -37,7 +37,7 @@ BERT_info()  # information of all downloaded models
 
 }
 \seealso{
-\code{\link{BERT_download}}
+\code{\link[=BERT_download]{BERT_download()}}
 
-\code{\link{BERT_vocab}}
+\code{\link[=BERT_vocab]{BERT_vocab()}}
 }

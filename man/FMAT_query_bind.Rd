@@ -7,7 +7,7 @@
 FMAT_query_bind(...)
 }
 \arguments{
-\item{...}{Query data.tables returned from \code{\link{FMAT_query}}.}
+\item{...}{Query data.tables returned from \code{\link[=FMAT_query]{FMAT_query()}}.}
 }
 \value{
 A data.table of queries and variables.
@@ -31,7 +31,7 @@ Combine multiple query data.tables and renumber query ids.
 }
 }
 \seealso{
-\code{\link{FMAT_query}}
+\code{\link[=FMAT_query]{FMAT_query()}}
 
-\code{\link{FMAT_run}}
+\code{\link[=FMAT_run]{FMAT_run()}}
 }

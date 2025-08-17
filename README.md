@@ -28,7 +28,7 @@ Bruce H. W. S. Bao 包寒吴霜
 
 ### (1) FMAT Package
 
--   Bao, H. W. S. (2023). *FMAT: The Fill-Mask Association Test*. <https://CRAN.R-project.org/package=FMAT>
+-   Bao, H. W. S. (2023). *FMAT: The Fill-Mask Association Test*. <https://doi.org/10.32614/CRAN.package.FMAT>
 
 ### (2) FMAT Research Articles - Methodology
 
@@ -38,6 +38,7 @@ Bruce H. W. S. Bao 包寒吴霜
 
 -   Bao, H. W. S., & Gries, P. (2024). Intersectional race–gender stereotypes in natural language. *British Journal of Social Psychology, 63*(4), 1771–1786. <https://doi.org/10.1111/bjso.12748>
 -   Bao, H. W. S., & Gries, P. (2025). Biases about Chinese people in English language use: Stereotypes, prejudice and discrimination. *China Quarterly*. <https://doi.org/10.1017/S0305741025100532>
+-   Wang, Z., Xia, H., Bao, H. W. S., Jing, Y., & Gu, R. (2025). Artificial intelligence is stereotypically linked more with socially dominant groups in natural language. *Advanced Science*. <https://doi.org/10.1002/advs.202508623>
 
 ## Installation
 

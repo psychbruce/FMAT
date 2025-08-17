@@ -18,18 +18,13 @@ BERT_vocab(
 
 \item{mask.words}{Option words filling in the mask.}
 
-\item{add.tokens}{Add new tokens
-(for out-of-vocabulary words or phrases)
-to model vocabulary?
-Defaults to \code{FALSE}.
-It only temporarily adds tokens for tasks
-but does not change the raw model file.}
+\item{add.tokens}{Add new tokens (for out-of-vocabulary words or phrases) to model vocabulary? It only temporarily adds tokens for tasks but does not change the raw model file.
+Defaults to \code{FALSE}.}
 
 \item{add.method}{Method used to produce the token embeddings of newly added tokens.
 Can be \code{"sum"} (default) or \code{"mean"} of subword token embeddings.}
 
-\item{add.verbose}{Print composition information of new tokens
-(for out-of-vocabulary words or phrases)?
+\item{add.verbose}{Print composition information of new tokens (for out-of-vocabulary words or phrases)?
 Defaults to \code{TRUE}.}
 }
 \value{
@@ -56,9 +51,9 @@ BERT_vocab(models,
 
 }
 \seealso{
-\code{\link{BERT_download}}
+\code{\link[=BERT_download]{BERT_download()}}
 
-\code{\link{BERT_info}}
+\code{\link[=BERT_info]{BERT_info()}}
 
-\code{\link{FMAT_run}}
+\code{\link[=FMAT_run]{FMAT_run()}}
 }

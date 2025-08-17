@@ -18,7 +18,7 @@ Multiple queries share the same set of
 \code{MASK}, \code{TARGET}, and \code{ATTRIB}.
 For multiple queries with different
 \code{MASK}, \code{TARGET}, and/or \code{ATTRIB},
-please use \code{\link{FMAT_query_bind}} to combine them.}
+please use \code{\link[=FMAT_query_bind]{FMAT_query_bind()}} to combine them.}
 
 \item{MASK}{A named list of \verb{[MASK]} target words.
 Must be single words in the vocabulary of a certain masked language model.
@@ -60,7 +60,7 @@ FMAT_query(
 }
 }
 \seealso{
-\code{\link{FMAT_query_bind}}
+\code{\link[=FMAT_query_bind]{FMAT_query_bind()}}
 
-\code{\link{FMAT_run}}
+\code{\link[=FMAT_run]{FMAT_run()}}
 }

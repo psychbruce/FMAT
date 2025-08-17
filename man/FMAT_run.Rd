@@ -24,11 +24,10 @@ FMAT_run(
 \item{models}{A character vector of model names at
 \href{https://huggingface.co/models}{HuggingFace}.}
 
-\item{data}{A data.table returned from \code{\link{FMAT_query}} or \code{\link{FMAT_query_bind}}.}
+\item{data}{A data.table returned from \code{\link[=FMAT_query]{FMAT_query()}} or \code{\link[=FMAT_query_bind]{FMAT_query_bind()}}.}
 
 \item{gpu}{Use GPU (3x faster than CPU) to run the fill-mask pipeline?
-Defaults to missing value that will \emph{automatically} use available GPU
-(if not available, then use CPU).
+Defaults to missing value that will \emph{automatically} use available GPU (if not available, then use CPU).
 An NVIDIA GPU device (e.g., GeForce RTX Series) is required to use GPU.
 See \href{https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration}{Guidance for GPU Acceleration}.
 
@@ -43,18 +42,13 @@ which defines the device (e.g.,
 on which the pipeline will be allocated.
 }}
 
-\item{add.tokens}{Add new tokens
-(for out-of-vocabulary words or phrases)
-to model vocabulary?
-Defaults to \code{FALSE}.
-It only temporarily adds tokens for tasks
-but does not change the raw model file.}
+\item{add.tokens}{Add new tokens (for out-of-vocabulary words or phrases) to model vocabulary? It only temporarily adds tokens for tasks but does not change the raw model file.
+Defaults to \code{FALSE}.}
 
 \item{add.method}{Method used to produce the token embeddings of newly added tokens.
 Can be \code{"sum"} (default) or \code{"mean"} of subword token embeddings.}
 
-\item{add.verbose}{Print composition information of new tokens
-(for out-of-vocabulary words or phrases)?
+\item{add.verbose}{Print composition information of new tokens (for out-of-vocabulary words or phrases)?
 Defaults to \code{TRUE}.}
 
 \item{pattern.special}{Regular expression patterns (matching model names) for special model cases that are uncased or require a special prefix character in certain situations.
@@ -74,7 +68,7 @@ Defaults to \code{TRUE}.}
 \item{na.out}{Replace probabilities of out-of-vocabulary word(s) with \code{NA}? Defaults to \code{TRUE}.}
 }
 \value{
-A data.table (of new class \code{fmat}) appending \code{data} with these new variables:
+A data.table (class \code{fmat}) appending \code{data} with these new variables:
 \itemize{
 \item \code{model}: model name.
 \item \code{output}: complete sentence output with unmasked token.
@@ -86,13 +80,13 @@ given the provided context, estimated by the masked language model.
 \itemize{
 \item It is NOT SUGGESTED to directly interpret the raw probabilities
 because the \emph{contrast} between a pair of probabilities
-is more interpretable. See \code{\link{summary.fmat}}.
+is more interpretable. See \code{\link[=summary.fmat]{summary.fmat()}}.
 }
 }
 }
 \description{
 Run the fill-mask pipeline on multiple models with CPU or GPU
-(faster but requiring an NVIDIA GPU device).
+(faster but requires an NVIDIA GPU device).
 }
 \details{
 The function automatically adjusts for
@@ -142,15 +136,15 @@ summary(data2)
 
 }
 \seealso{
-\code{\link{set_cache_folder}}
+\code{\link[=set_cache_folder]{set_cache_folder()}}
 
-\code{\link{BERT_download}}
+\code{\link[=BERT_download]{BERT_download()}}
 
-\code{\link{BERT_vocab}}
+\code{\link[=BERT_vocab]{BERT_vocab()}}
 
-\code{\link{FMAT_query}}
+\code{\link[=FMAT_query]{FMAT_query()}}
 
-\code{\link{FMAT_query_bind}}
+\code{\link[=FMAT_query_bind]{FMAT_query_bind()}}
 
-\code{\link{summary.fmat}}
+\code{\link[=summary.fmat]{summary.fmat()}}
 }

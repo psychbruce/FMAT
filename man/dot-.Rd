@@ -19,3 +19,4 @@ A simple function equivalent to \code{list}.
 .(Male=c("he", "his"), Female=c("she", "her"))
 
 }
+\keyword{internal}

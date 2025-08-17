@@ -21,8 +21,7 @@ Defaults to \code{NULL} (return the top 5 most likely words).}
 Defaults to \code{5}.}
 
 \item{gpu}{Use GPU (3x faster than CPU) to run the fill-mask pipeline?
-Defaults to missing value that will \emph{automatically} use available GPU
-(if not available, then use CPU).
+Defaults to missing value that will \emph{automatically} use available GPU (if not available, then use CPU).
 An NVIDIA GPU device (e.g., GeForce RTX Series) is required to use GPU.
 See \href{https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration}{Guidance for GPU Acceleration}.
 
