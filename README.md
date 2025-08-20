@@ -91,7 +91,6 @@ pip install sentencepiece
 -   According to the May 2024 releases, "transformers" ≥ 4.41 depends on "huggingface-hub" ≥ 0.23. The suggested versions of "transformers" (4.40.2) and "huggingface-hub" (0.20.3) ensure the console display of progress bars when downloading BERT models while keeping these packages as new as possible.
 -   Proxy users may use the "global mode" (全局模式) to download models.
 -   If you find the error `HTTPSConnectionPool(host='huggingface.co', port=443)`, please try to (1) reinstall [Anaconda](https://www.anaconda.com/download/success) so that some unknown issues may be fixed, or (2) downgrade the "[urllib3](https://pypi.org/project/urllib3/)" package to version ≤ 1.25.11 (`pip install urllib3==1.25.11`) so that it will use HTTP proxies (rather than HTTPS proxies as in later versions) to connect to Hugging Face.
-    -   <https://www.cnblogs.com/xyz/p/17872452.html>
 
 ## Guidance for FMAT
 

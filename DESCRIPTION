@@ -11,7 +11,7 @@ Authors@R:
 Maintainer: Han Wu Shuang Bao <baohws@foxmail.com>
 Description:
     The Fill-Mask Association Test ('FMAT')
-    (Bao, 2024, JPSP) <doi:10.1037/pspa0000396>
+    <doi:10.1037/pspa0000396>
     is an integrative and probability-based method using
     Masked Language Models to measure conceptual associations
     (e.g., attitudes, biases, stereotypes, social norms, cultural values)

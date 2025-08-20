@@ -18,18 +18,14 @@ BERT_vocab(
 
 \item{mask.words}{Option words filling in the mask.}
 
-\item{add.tokens}{Add new tokens (for out-of-vocabulary words or phrases) to model vocabulary? It only temporarily adds tokens for tasks but does not change the raw model file.
-Defaults to \code{FALSE}.}
+\item{add.tokens}{Add new tokens (for out-of-vocabulary words or phrases) to model vocabulary? It only temporarily adds tokens for tasks but does not change the raw model file. Defaults to \code{FALSE}.}
 
-\item{add.method}{Method used to produce the token embeddings of newly added tokens.
-Can be \code{"sum"} (default) or \code{"mean"} of subword token embeddings.}
+\item{add.method}{Method used to produce the token embeddings of newly added tokens. Can be \code{"sum"} (default) or \code{"mean"} of subword token embeddings.}
 
-\item{add.verbose}{Print composition information of new tokens (for out-of-vocabulary words or phrases)?
-Defaults to \code{TRUE}.}
+\item{add.verbose}{Print composition information of new tokens (for out-of-vocabulary words or phrases)? Defaults to \code{TRUE}.}
 }
 \value{
-A data.table of model name, mask word, real token (replaced if out of vocabulary),
-and token id (0~N).
+A data.table of model name, mask word, real token (replaced if out of vocabulary), and token id (0~N).
 }
 \description{
 Check if mask words are in the model vocabulary.

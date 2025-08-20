@@ -17,7 +17,5 @@ ICC_models(data, type = "agreement", unit = "average")
 A data.table of ICC.
 }
 \description{
-Interrater agreement of log probabilities (treated as "ratings"/rows)
-among BERT language models (treated as "raters"/columns),
-with both row and column as ("two-way") random effects.
+Interrater agreement of log probabilities (treated as "ratings"/rows) among BERT language models (treated as "raters"/columns), with both row and column as ("two-way") random effects.
 }

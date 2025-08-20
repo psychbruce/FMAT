@@ -26,30 +26,20 @@ FMAT_run(
 
 \item{data}{A data.table returned from \code{\link[=FMAT_query]{FMAT_query()}} or \code{\link[=FMAT_query_bind]{FMAT_query_bind()}}.}
 
-\item{gpu}{Use GPU (3x faster than CPU) to run the fill-mask pipeline?
-Defaults to missing value that will \emph{automatically} use available GPU (if not available, then use CPU).
-An NVIDIA GPU device (e.g., GeForce RTX Series) is required to use GPU.
-See \href{https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration}{Guidance for GPU Acceleration}.
+\item{gpu}{Use GPU (3x faster than CPU) to run the fill-mask pipeline? Defaults to missing value that will \emph{automatically} use available GPU (if not available, then use CPU). An NVIDIA GPU device (e.g., GeForce RTX Series) is required to use GPU. See \href{https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration}{Guidance for GPU Acceleration}.
 
-Options passing to the \code{device} parameter in Python:
+Options passing on to the \code{device} parameter in Python:
 \itemize{
 \item \code{FALSE}: CPU (\code{device = -1}).
 \item \code{TRUE}: GPU (\code{device = 0}).
-\item Any other value: passing to
-\href{https://huggingface.co/docs/transformers/main_classes/pipelines#transformers.pipeline.device}{transformers.pipeline(device=...)}
-which defines the device (e.g.,
-\code{"cpu"}, \code{"cuda:0"}, or a GPU device id like \code{1})
-on which the pipeline will be allocated.
+\item Others: passing on to \href{https://huggingface.co/docs/transformers/main_classes/pipelines#transformers.pipeline.device}{\code{transformers.pipeline(device=...)}} which defines the device (e.g., \code{"cpu"}, \code{"cuda:0"}, or a GPU device id like \code{1}) on which the pipeline will be allocated.
 }}
 
-\item{add.tokens}{Add new tokens (for out-of-vocabulary words or phrases) to model vocabulary? It only temporarily adds tokens for tasks but does not change the raw model file.
-Defaults to \code{FALSE}.}
+\item{add.tokens}{Add new tokens (for out-of-vocabulary words or phrases) to model vocabulary? It only temporarily adds tokens for tasks but does not change the raw model file. Defaults to \code{FALSE}.}
 
-\item{add.method}{Method used to produce the token embeddings of newly added tokens.
-Can be \code{"sum"} (default) or \code{"mean"} of subword token embeddings.}
+\item{add.method}{Method used to produce the token embeddings of newly added tokens. Can be \code{"sum"} (default) or \code{"mean"} of subword token embeddings.}
 
-\item{add.verbose}{Print composition information of new tokens (for out-of-vocabulary words or phrases)?
-Defaults to \code{TRUE}.}
+\item{add.verbose}{Print composition information of new tokens (for out-of-vocabulary words or phrases)? Defaults to \code{TRUE}.}
 
 \item{pattern.special}{Regular expression patterns (matching model names) for special model cases that are uncased or require a special prefix character in certain situations.
 
@@ -75,38 +65,21 @@ A data.table (class \code{fmat}) appending \code{data} with these new variables:
 \item \code{token}: actual token to be filled in the blank mask
 (a note "out-of-vocabulary" will be added
 if the original word is not found in the model vocabulary).
-\item \code{prob}: (raw) conditional probability of the unmasked token
-given the provided context, estimated by the masked language model.
+\item \code{prob}: (raw) conditional probability of the unmasked token given the provided context, estimated by the masked language model.
 \itemize{
-\item It is NOT SUGGESTED to directly interpret the raw probabilities
-because the \emph{contrast} between a pair of probabilities
-is more interpretable. See \code{\link[=summary.fmat]{summary.fmat()}}.
+\item It is \emph{NOT SUGGESTED} to directly interpret the raw probabilities because the \emph{contrast} between a pair of probabilities is more interpretable. See \code{\link[=summary.fmat]{summary.fmat()}}.
 }
 }
 }
 \description{
-Run the fill-mask pipeline on multiple models with CPU or GPU
-(faster but requires an NVIDIA GPU device).
+Run the fill-mask pipeline on multiple models with CPU or GPU (faster but requires an NVIDIA GPU device).
 }
 \details{
-The function automatically adjusts for
-the compatibility of tokens used in certain models:
-(1) for uncased models (e.g., ALBERT), it turns tokens to lowercase;
-(2) for models that use \verb{<mask>} rather than \verb{[MASK]},
-it automatically uses the corrected mask token;
-(3) for models that require a prefix to estimate whole words than subwords
-(e.g., ALBERT, RoBERTa), it adds a certain prefix (usually a white space;
-\\u2581 for ALBERT and XLM-RoBERTa, \\u0120 for RoBERTa and DistilRoBERTa).
+The function automatically adjusts for the compatibility of tokens used in certain models: (1) for uncased models (e.g., ALBERT), it turns tokens to lowercase; (2) for models that use \verb{<mask>} rather than \verb{[MASK]}, it automatically uses the corrected mask token; (3) for models that require a prefix to estimate whole words than subwords (e.g., ALBERT, RoBERTa), it adds a certain prefix (usually a white space; \\u2581 for ALBERT and XLM-RoBERTa, \\u0120 for RoBERTa and DistilRoBERTa).
 
-Note that these changes only affect the \code{token} variable
-in the returned data, but will not affect the \code{M_word} variable.
-Thus, users may analyze data based on the unchanged \code{M_word}
-rather than the \code{token}.
+These changes only affect the \code{token} variable in the returned data, but will not affect the \code{M_word} variable. Thus, users may analyze data based on the unchanged \code{M_word} rather than the \code{token}.
 
-Note also that there may be extremely trivial differences
-(after 5~6 significant digits) in the
-raw probability estimates between using CPU and GPU,
-but these differences would have little impact on main results.
+Note also that there may be extremely trivial differences (after 5~6 significant digits) in the raw probability estimates between using CPU and GPU, but these differences would have little impact on main results.
 }
 \examples{
 ## Running the examples requires the models downloaded

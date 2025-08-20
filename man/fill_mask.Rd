@@ -17,23 +17,15 @@ fill_mask_check(query, models, targets = NULL, topn = 5, gpu)
 \item{targets}{Target words to fill in the mask.
 Defaults to \code{NULL} (return the top 5 most likely words).}
 
-\item{topn}{Number of the most likely predictions to return.
-Defaults to \code{5}.}
+\item{topn}{Number of the most likely predictions to return. Defaults to \code{5}.}
 
-\item{gpu}{Use GPU (3x faster than CPU) to run the fill-mask pipeline?
-Defaults to missing value that will \emph{automatically} use available GPU (if not available, then use CPU).
-An NVIDIA GPU device (e.g., GeForce RTX Series) is required to use GPU.
-See \href{https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration}{Guidance for GPU Acceleration}.
+\item{gpu}{Use GPU (3x faster than CPU) to run the fill-mask pipeline? Defaults to missing value that will \emph{automatically} use available GPU (if not available, then use CPU). An NVIDIA GPU device (e.g., GeForce RTX Series) is required to use GPU. See \href{https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration}{Guidance for GPU Acceleration}.
 
-Options passing to the \code{device} parameter in Python:
+Options passing on to the \code{device} parameter in Python:
 \itemize{
 \item \code{FALSE}: CPU (\code{device = -1}).
 \item \code{TRUE}: GPU (\code{device = 0}).
-\item Any other value: passing to
-\href{https://huggingface.co/docs/transformers/main_classes/pipelines#transformers.pipeline.device}{transformers.pipeline(device=...)}
-which defines the device (e.g.,
-\code{"cpu"}, \code{"cuda:0"}, or a GPU device id like \code{1})
-on which the pipeline will be allocated.
+\item Others: passing on to \href{https://huggingface.co/docs/transformers/main_classes/pipelines#transformers.pipeline.device}{\code{transformers.pipeline(device=...)}} which defines the device (e.g., \code{"cpu"}, \code{"cuda:0"}, or a GPU device id like \code{1}) on which the pipeline will be allocated.
 }}
 }
 \value{

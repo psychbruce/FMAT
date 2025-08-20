@@ -12,28 +12,15 @@ FMAT_query(
 )
 }
 \arguments{
-\item{query}{Query text (should be a character string/vector
-with at least one \verb{[MASK]} token).
-Multiple queries share the same set of
-\code{MASK}, \code{TARGET}, and \code{ATTRIB}.
-For multiple queries with different
-\code{MASK}, \code{TARGET}, and/or \code{ATTRIB},
-please use \code{\link[=FMAT_query_bind]{FMAT_query_bind()}} to combine them.}
+\item{query}{Query text (should be a character string/vector with at least one \verb{[MASK]} token). Multiple queries share the same set of \code{MASK}, \code{TARGET}, and \code{ATTRIB}. For multiple queries with different \code{MASK}, \code{TARGET}, and/or \code{ATTRIB}, please use \code{\link[=FMAT_query_bind]{FMAT_query_bind()}} to combine them.}
 
-\item{MASK}{A named list of \verb{[MASK]} target words.
-Must be single words in the vocabulary of a certain masked language model.
+\item{MASK}{A named list of \verb{[MASK]} target words. Must be single words in the vocabulary of a certain masked language model.
+\itemize{
+\item For model vocabulary, see, e.g., \url{https://huggingface.co/bert-base-uncased/raw/main/vocab.txt}
+\item Infrequent words may be not included in a model's vocabulary, and in this case you may insert the words into the context by specifying either \code{TARGET} or \code{ATTRIB}.
+}}
 
-For model vocabulary, see, e.g.,
-\url{https://huggingface.co/bert-base-uncased/raw/main/vocab.txt}
-
-Infrequent words may be not included in a model's vocabulary,
-and in this case you may insert the words into the context by
-specifying either \code{TARGET} or \code{ATTRIB}.}
-
-\item{TARGET, ATTRIB}{A named list of Target/Attribute words or phrases.
-If specified, then \code{query} must contain
-\code{{TARGET}} and/or \code{{ATTRIB}} (in all uppercase and in braces)
-to be replaced by the words/phrases.}
+\item{TARGET, ATTRIB}{A named list of Target/Attribute words or phrases. If specified, then \code{query} must contain \code{{TARGET}} and/or \code{{ATTRIB}} (in all uppercase and in braces) to be replaced by the words/phrases.}
 }
 \value{
 A data.table of queries and variables.

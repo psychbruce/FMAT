@@ -11,10 +11,11 @@ set_cache_folder(path)
 }
 \description{
 This function allows you to change the default cache directory (when it lacks storage space) to another path (e.g., your portable SSD) \emph{temporarily}.
-
-\strong{Keep in mind}:
+}
+\section{Keep in Mind}{
 This function takes effect only for the current R session \emph{temporarily}, so you should run this each time BEFORE you use other FMAT functions in an R session.
 }
+
 \examples{
 \dontrun{
 library(FMAT)

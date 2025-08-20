@@ -16,9 +16,7 @@
 \arguments{
 \item{object}{A data.table (class \code{fmat}) returned from \code{\link[=FMAT_run]{FMAT_run()}}.}
 
-\item{mask.pair, target.pair, attrib.pair}{Pairwise contrast of
-\verb{[MASK]}, \code{TARGET}, \code{ATTRIB}?
-Defaults to \code{TRUE}.}
+\item{mask.pair, target.pair, attrib.pair}{Pairwise contrast of \verb{[MASK]}, \code{TARGET}, \code{ATTRIB}? Defaults to \code{TRUE}.}
 
 \item{warning}{Alert warning of out-of-vocabulary word(s)? Defaults to \code{TRUE}.}
 
@@ -28,17 +26,12 @@ Defaults to \code{TRUE}.}
 A data.table of the summarized results with Log Probability Ratio (LPR).
 }
 \description{
-Summarize the results of \emph{Log Probability Ratio} (LPR),
-which indicates the \emph{relative} (vs. \emph{absolute})
-association between concepts.
+Summarize the results of \emph{Log Probability Ratio} (LPR), which indicates the \emph{relative} (vs. \emph{absolute}) association between concepts.
+}
+\details{
+The LPR of just one contrast (e.g., only between a pair of attributes) may \emph{not} be sufficient for a proper interpretation of the results, and may further require a second contrast (e.g., between a pair of targets).
 
-The LPR of just one contrast (e.g., only between a pair of attributes)
-may \emph{not} be sufficient for a proper interpretation of the results,
-and may further require a second contrast (e.g., between a pair of targets).
-
-Users are suggested to use linear mixed models
-(with the R packages \code{nlme} or \code{lme4}/\code{lmerTest})
-to perform the formal analyses and hypothesis tests based on the LPR.
+Users are suggested to use linear mixed models (with the R packages \code{nlme} or \code{lme4}/\code{lmerTest}) to perform the formal analyses and hypothesis tests based on the LPR.
 }
 \examples{
 # see examples in `FMAT_run`
