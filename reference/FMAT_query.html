@@ -51,30 +51,17 @@
 
 
 <dl><dt id="arg-query">query<a class="anchor" aria-label="anchor" href="#arg-query"></a></dt>
-<dd><p>Query text (should be a character string/vector
-with at least one <code>[MASK]</code> token).
-Multiple queries share the same set of
-<code>MASK</code>, <code>TARGET</code>, and <code>ATTRIB</code>.
-For multiple queries with different
-<code>MASK</code>, <code>TARGET</code>, and/or <code>ATTRIB</code>,
-please use <code><a href="FMAT_query_bind.html">FMAT_query_bind()</a></code> to combine them.</p></dd>
+<dd><p>Query text (should be a character string/vector with at least one <code>[MASK]</code> token). Multiple queries share the same set of <code>MASK</code>, <code>TARGET</code>, and <code>ATTRIB</code>. For multiple queries with different <code>MASK</code>, <code>TARGET</code>, and/or <code>ATTRIB</code>, please use <code><a href="FMAT_query_bind.html">FMAT_query_bind()</a></code> to combine them.</p></dd>
 
 
 <dt id="arg-mask">MASK<a class="anchor" aria-label="anchor" href="#arg-mask"></a></dt>
-<dd><p>A named list of <code>[MASK]</code> target words.
-Must be single words in the vocabulary of a certain masked language model.</p>
-<p>For model vocabulary, see, e.g.,
-<a href="https://huggingface.co/bert-base-uncased/raw/main/vocab.txt" class="external-link">https://huggingface.co/bert-base-uncased/raw/main/vocab.txt</a></p>
-<p>Infrequent words may be not included in a model's vocabulary,
-and in this case you may insert the words into the context by
-specifying either <code>TARGET</code> or <code>ATTRIB</code>.</p></dd>
+<dd><p>A named list of <code>[MASK]</code> target words. Must be single words in the vocabulary of a certain masked language model.</p><ul><li><p>For model vocabulary, see, e.g., <a href="https://huggingface.co/bert-base-uncased/raw/main/vocab.txt" class="external-link">https://huggingface.co/bert-base-uncased/raw/main/vocab.txt</a></p></li>
+<li><p>Infrequent words may be not included in a model's vocabulary, and in this case you may insert the words into the context by specifying either <code>TARGET</code> or <code>ATTRIB</code>.</p></li>
+</ul></dd>
 
 
 <dt id="arg-target-attrib">TARGET, ATTRIB<a class="anchor" aria-label="anchor" href="#arg-target-attrib"></a></dt>
-<dd><p>A named list of Target/Attribute words or phrases.
-If specified, then <code>query</code> must contain
-<code>{TARGET}</code> and/or <code>{ATTRIB}</code> (in all uppercase and in braces)
-to be replaced by the words/phrases.</p></dd>
+<dd><p>A named list of Target/Attribute words or phrases. If specified, then <code>query</code> must contain <code>{TARGET}</code> and/or <code>{ATTRIB}</code> (in all uppercase and in braces) to be replaced by the words/phrases.</p></dd>
 
 </dl></div>
     <div class="section level2">

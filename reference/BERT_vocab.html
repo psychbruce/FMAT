@@ -61,24 +61,20 @@
 
 
 <dt id="arg-add-tokens">add.tokens<a class="anchor" aria-label="anchor" href="#arg-add-tokens"></a></dt>
-<dd><p>Add new tokens (for out-of-vocabulary words or phrases) to model vocabulary? It only temporarily adds tokens for tasks but does not change the raw model file.
-Defaults to <code>FALSE</code>.</p></dd>
+<dd><p>Add new tokens (for out-of-vocabulary words or phrases) to model vocabulary? It only temporarily adds tokens for tasks but does not change the raw model file. Defaults to <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-add-method">add.method<a class="anchor" aria-label="anchor" href="#arg-add-method"></a></dt>
-<dd><p>Method used to produce the token embeddings of newly added tokens.
-Can be <code>"sum"</code> (default) or <code>"mean"</code> of subword token embeddings.</p></dd>
+<dd><p>Method used to produce the token embeddings of newly added tokens. Can be <code>"sum"</code> (default) or <code>"mean"</code> of subword token embeddings.</p></dd>
 
 
 <dt id="arg-add-verbose">add.verbose<a class="anchor" aria-label="anchor" href="#arg-add-verbose"></a></dt>
-<dd><p>Print composition information of new tokens (for out-of-vocabulary words or phrases)?
-Defaults to <code>TRUE</code>.</p></dd>
+<dd><p>Print composition information of new tokens (for out-of-vocabulary words or phrases)? Defaults to <code>TRUE</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A data.table of model name, mask word, real token (replaced if out of vocabulary),
-and token id (0~N).</p>
+    <p>A data.table of model name, mask word, real token (replaced if out of vocabulary), and token id (0~N).</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

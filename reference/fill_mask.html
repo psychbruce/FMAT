@@ -64,22 +64,14 @@ Defaults to <code>NULL</code> (return the top 5 most likely words).</p></dd>
 
 
 <dt id="arg-topn">topn<a class="anchor" aria-label="anchor" href="#arg-topn"></a></dt>
-<dd><p>Number of the most likely predictions to return.
-Defaults to <code>5</code>.</p></dd>
+<dd><p>Number of the most likely predictions to return. Defaults to <code>5</code>.</p></dd>
 
 
 <dt id="arg-gpu">gpu<a class="anchor" aria-label="anchor" href="#arg-gpu"></a></dt>
-<dd><p>Use GPU (3x faster than CPU) to run the fill-mask pipeline?
-Defaults to missing value that will <em>automatically</em> use available GPU (if not available, then use CPU).
-An NVIDIA GPU device (e.g., GeForce RTX Series) is required to use GPU.
-See <a href="https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration">Guidance for GPU Acceleration</a>.</p>
-<p>Options passing to the <code>device</code> parameter in Python:</p><ul><li><p><code>FALSE</code>: CPU (<code>device = -1</code>).</p></li>
+<dd><p>Use GPU (3x faster than CPU) to run the fill-mask pipeline? Defaults to missing value that will <em>automatically</em> use available GPU (if not available, then use CPU). An NVIDIA GPU device (e.g., GeForce RTX Series) is required to use GPU. See <a href="https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration">Guidance for GPU Acceleration</a>.</p>
+<p>Options passing on to the <code>device</code> parameter in Python:</p><ul><li><p><code>FALSE</code>: CPU (<code>device = -1</code>).</p></li>
 <li><p><code>TRUE</code>: GPU (<code>device = 0</code>).</p></li>
-<li><p>Any other value: passing to
-<a href="https://huggingface.co/docs/transformers/main_classes/pipelines#transformers.pipeline.device" class="external-link">transformers.pipeline(device=...)</a>
-which defines the device (e.g.,
-<code>"cpu"</code>, <code>"cuda:0"</code>, or a GPU device id like <code>1</code>)
-on which the pipeline will be allocated.</p></li>
+<li><p>Others: passing on to <a href="https://huggingface.co/docs/transformers/main_classes/pipelines#transformers.pipeline.device" class="external-link"><code>transformers.pipeline(device=...)</code></a> which defines the device (e.g., <code>"cpu"</code>, <code>"cuda:0"</code>, or a GPU device id like <code>1</code>) on which the pipeline will be allocated.</p></li>
 </ul></dd>
 
 </dl></div>
