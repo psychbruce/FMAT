@@ -613,7 +613,7 @@ BERT_info(models.cn)
 - `"albert"` series: 3 missing
   - 1807, 1809, 1817
 - `"ModernBERT"` series: 65 missing
-  - 1801~1829, 1831~1839, 1841~1847, 1849, 1851~1859, 1869， 1871~1875,
+  - 1801~1829, 1831~1839, 1841~1847, 1849, 1851~1859, 1869, 1871~1875,
     1877~1879, 1883
 - `"roberta"` series, `"muppet"` series, `"distilroberta-base"`,
   `"cardiffnlp/twitter-roberta-base"`, `"vinai/bertweet-large"`: 79
@@ -667,6 +667,27 @@ BERT_info(models.cn)
 - All: 77 missing
   - 1801~1839, 1841~1849, 1851~1859, 1861~1866, 1869, 1872~1879, 1881,
     1883, 1887, 1891, 1892
+
+#### Device Information
+
+    ℹ Device Info:
+
+    R Packages:
+    FMAT          2025.12
+    reticulate    1.44.1
+
+    Python Packages:
+    transformers  4.57.3
+    torch         2.9.1+cu130
+    huggingface-hub  0.36.0
+
+    NVIDIA GPU CUDA Support:
+    CUDA Enabled: TRUE
+    GPU (Device): NVIDIA GeForce RTX 5060 Laptop GPU
+
+(Tested 2025-12-14 on the developer’s computer: HP Zbook X ZHAN99 G1i 16
+inch - Intel Ultra9 285H - 64GB/2T - NVIDIA GeForce RTX 5060 Laptop
+GPU - Mobile Workstation PC)
 
 ## Related Packages
 
