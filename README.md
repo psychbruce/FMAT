@@ -34,11 +34,11 @@ Bruce H. W. S. Bao 包寒吴霜
 
 -   Bao, H. W. S. (2024). The Fill-Mask Association Test (FMAT): Measuring propositions in natural language. *Journal of Personality and Social Psychology, 127*(3), 537–561. <https://doi.org/10.1037/pspa0000396>
 
-### (3) FMAT Research Articles - Application
+### (3) FMAT Research Articles - Applications
 
 -   Bao, H. W. S., & Gries, P. (2024). Intersectional race–gender stereotypes in natural language. *British Journal of Social Psychology, 63*(4), 1771–1786. <https://doi.org/10.1111/bjso.12748>
--   Bao, H. W. S., & Gries, P. (2025). Biases about Chinese people in English language use: Stereotypes, prejudice and discrimination. *China Quarterly*. <https://doi.org/10.1017/S0305741025100532>
--   Wang, Z., Xia, H., Bao, H. W. S., Jing, Y., & Gu, R. (2025). Artificial intelligence is stereotypically linked more with socially dominant groups in natural language. *Advanced Science*. <https://doi.org/10.1002/advs.202508623>
+-   Bao, H. W. S., & Gries, P. (2025). Biases about Chinese people in English language use: Stereotypes, prejudice and discrimination. *China Quarterly, 263*, 830–842. <https://doi.org/10.1017/S0305741025100532>
+-   Wang, Z., Xia, H., Bao, H. W. S., Jing, Y., & Gu, R. (2025). Artificial intelligence is stereotypically linked more with socially dominant groups in natural language. *Advanced Science, 12*(39), e08623. <https://doi.org/10.1002/advs.202508623>
 
 ## Installation
 
@@ -59,19 +59,45 @@ devtools::install_github("psychbruce/FMAT", force=TRUE)
 
 Install [Anaconda](https://www.anaconda.com/download/success) (a recommended package manager that automatically installs Python, its IDEs like Spyder, and a large list of common Python packages).
 
-Specify the Anaconda's Python interpreter in RStudio.
+Set RStudio to "Run as Administrator" by default to enable `pip` command.
+
+> RStudio (find "rstudio.exe" in its installation path)\
+> → File Properties → Compatibility → Settings\
+> → Tick **"Run this program as an administrator"**
+
+Open RStudio and specify the Anaconda's Python interpreter in RStudio.
 
 > RStudio → Tools → Global/Project Options\
 > → Python → Select → **Conda Environments**\
 > → Choose **".../Anaconda3/python.exe"**
 
-Install specific versions of Python packages "[transformers](https://pypi.org/project/transformers/#history)", "[torch](https://pypi.org/project/torch/#history)", and "[huggingface-hub](https://pypi.org/project/huggingface-hub/#history)".\
-(RStudio Terminal / Anaconda Prompt / Windows Command)
+Install Python packages "[transformers](https://pypi.org/project/transformers/#history)", "[torch](https://pypi.org/project/torch/#history)", and "[huggingface-hub](https://pypi.org/project/huggingface-hub/#history)".\
+(with **Terminal** in RStudio or **Command Prompt** on Windows system)
+
+#### Option #1: Install Latest Versions (Better Functionality for Modern Models)
 
 For CPU users:
 
 ```         
-pip install transformers==4.40.2 torch==2.2.1 huggingface-hub==0.20.3
+pip install transformers huggingface-hub torch
+```
+
+For GPU (CUDA) users:
+
+```         
+pip install transformers huggingface-hub
+pip install torch --index-url https://download.pytorch.org/whl/cu130
+```
+
+-   See [Guidance for GPU Acceleration] for installation guidance if you have an NVIDIA GPU device on your PC and want to use GPU to accelerate the pipeline.
+-   See also [PyTorch Build Command](https://pytorch.org/get-started/locally/) and install [CUDA Toolkit 13.0](https://developer.nvidia.com/cuda-13-0-0-download-archive).
+
+#### Option #2: Install Specific Versions (with Downloading Progress Bars)
+
+For CPU users:
+
+```         
+pip install transformers==4.40.2 huggingface-hub==0.20.3 torch==2.2.1
 ```
 
 For GPU (CUDA) users:
@@ -81,14 +107,7 @@ pip install transformers==4.40.2 huggingface-hub==0.20.3
 pip install torch==2.2.1 --index-url https://download.pytorch.org/whl/cu121
 ```
 
-To use some models (e.g., `microsoft/deberta-v3-base`), "You need to have sentencepiece installed to convert a slow tokenizer to a fast one":
-
-```         
-pip install sentencepiece
-```
-
--   See [Guidance for GPU Acceleration] for installation guidance if you have an NVIDIA GPU device on your PC and want to use GPU to accelerate the pipeline.
--   According to the May 2024 releases, "transformers" ≥ 4.41 depends on "huggingface-hub" ≥ 0.23. The suggested versions of "transformers" (4.40.2) and "huggingface-hub" (0.20.3) ensure the console display of progress bars when downloading BERT models while keeping these packages as new as possible.
+-   According to the May 2024 releases, "transformers" ≥ 4.41 depends on "huggingface-hub" ≥ 0.23. The "transformers" (4.40.2) and "huggingface-hub" (0.20.3) can ensure the display of progress bars when downloading BERT models.
 -   Proxy users may use the "global mode" (全局模式) to download models.
 -   If you find the error `HTTPSConnectionPool(host='huggingface.co', port=443)`, please try to (1) reinstall [Anaconda](https://www.anaconda.com/download/success) so that some unknown issues may be fixed, or (2) downgrade the "[urllib3](https://pypi.org/project/urllib3/)" package to version ≤ 1.25.11 (`pip install urllib3==1.25.11`) so that it will use HTTP proxies (rather than HTTPS proxies as in later versions) to connect to Hugging Face.
 
@@ -122,7 +141,7 @@ Several steps of preprocessing have been included in the function for easier use
 
 ## Guidance for GPU Acceleration
 
-By default, the `FMAT` package uses CPU to enable the functionality for all users. But for advanced users who want to accelerate the pipeline with GPU, the `FMAT_run()` function now supports using a GPU device, about **3x faster** than CPU.
+By default, the `FMAT` package uses CPU to enable the functionality for all users. But for advanced users who want to accelerate the pipeline with GPU, the `FMAT_run()` function supports using a GPU device.
 
 Test results (on the developer's computer, depending on BERT model size):
 
@@ -135,19 +154,12 @@ Checklist:
 2.  Install PyTorch (Python `torch` package) with CUDA support.
     -   Find guidance for installation command at <https://pytorch.org/get-started/locally/>.
     -   CUDA is available only on Windows and Linux, but not on MacOS.
-    -   If you have installed a version of `torch` without CUDA support, please first uninstall it (command: `pip uninstall torch`) and then install the suggested one.
+    -   If you have installed a version of `torch` without CUDA support, please first uninstall it (command: `pip uninstall torch`).
     -   You may also install the corresponding version of CUDA Toolkit (e.g., for the `torch` version supporting CUDA 12.1, the same version of [CUDA Toolkit 12.1](https://developer.nvidia.com/cuda-12-1-0-download-archive) may also be installed).
-
-Example code for installing PyTorch with CUDA support:\
-(RStudio Terminal / Anaconda Prompt / Windows Command)
-
-```         
-pip install torch==2.2.1 --index-url https://download.pytorch.org/whl/cu121
-```
 
 ## BERT Models
 
-The reliability and validity of the following 12 BERT models in the FMAT have been established in our research, but future work is needed to examine the performance of other models.
+The reliability and validity of the following 12 English BERT models for the FMAT have been established in our earlier research.
 
 (model name on Hugging Face - model file size)
 
@@ -163,6 +175,8 @@ The reliability and validity of the following 12 BERT models in the FMAT have be
 10. [distilroberta-base](https://huggingface.co/distilroberta-base) (316 MB)
 11. [vinai/bertweet-base](https://huggingface.co/vinai/bertweet-base) (517 MB)
 12. [vinai/bertweet-large](https://huggingface.co/vinai/bertweet-large) (1356 MB)
+
+We are using a more comprehensive list of 32 English BERT models and 32 Chinese BERT models in our ongoing and future projects.
 
 For details about [BERT](https://arxiv.org/abs/1810.04805), see:
 

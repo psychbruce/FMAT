@@ -125,10 +125,11 @@ transformers_init = function(print.info=TRUE) {
   torch.ver = torch$`__version__`
   torch.cuda = torch$cuda$is_available()
   if(torch.cuda) {
-    cuda.ver = torch$cuda_version
+    # cuda.ver = torch$cuda_version
+    # new torch: AttributeError: module 'torch' has no attribute 'cuda_version'
     gpu.info = paste("GPU (Device):", paste(torch$cuda$get_device_name(), collapse=", "))
   } else {
-    cuda.ver = "NULL"
+    # cuda.ver = "NULL"
     gpu.info = "To use GPU, see https://psychbruce.github.io/FMAT/#guidance-for-gpu-acceleration"
   }
 
@@ -156,7 +157,6 @@ transformers_init = function(print.info=TRUE) {
 
     NVIDIA GPU CUDA Support:
     CUDA Enabled: {torch.cuda}
-    CUDA Version: {cuda.ver}
     {gpu.info}
     "))
   }
@@ -656,16 +656,24 @@ BERT_vocab = function(
   mask.words = as.character(mask.words)
 
   maps = rbindlist(lapply(as.character(models), function(model) {
-    fill_mask = fill_mask_init(transformers, model)
-    if(add.tokens) fill_mask = add_tokens(fill_mask, mask.words, add.method, verbose.in=FALSE, verbose.out=add.verbose)
-    vocab = fill_mask$tokenizer$get_vocab()
-    ids = vocab[mask.words]
-    map = rbindlist(lapply(mask.words, function(mask) {
-      id = as.integer(fill_mask$get_target_ids(mask))
-      token = names(vocab[vocab==id])
-      if(is.null(ids[[mask]])) token = paste(token, "(out-of-vocabulary)")
-      data.table(model=as_factor(model), M_word=as_factor(mask), token=token, token.id=id)
-    }))
+    try({
+      map = NULL
+      if(add.tokens) {
+        cli::cli_alert("{.val {model}} add tokens...")
+      }
+      fill_mask = fill_mask_init(transformers, model)
+      if(add.tokens) {
+        fill_mask = add_tokens(fill_mask, mask.words, add.method, verbose.in=FALSE, verbose.out=add.verbose)
+      }
+      vocab = fill_mask$tokenizer$get_vocab()
+      ids = vocab[mask.words]
+      map = rbindlist(lapply(mask.words, function(mask) {
+        id = as.integer(fill_mask$get_target_ids(mask))
+        token = names(vocab[vocab==id])
+        if(is.null(ids[[mask]])) token = paste(token, "(out-of-vocabulary)")
+        data.table(model=as_factor(model), M_word=as_factor(mask), token=token, token.id=id)
+      }))
+    })
     return(map)
   }))
 
@@ -976,10 +984,11 @@ fill_mask_check = function(query, models, targets=NULL, topn=5, gpu) {
 
   dt = data.table()
   for(model in as.character(models)) {
-    # cli::cli_progress_step("Loading {.val {model}}")
     try({
+      t0 = Sys.time()
       di = fill_mask(query, model, targets, topn, gpu)
       dt = rbind(dt, di)
+      cli::cli_alert("------- ({dtime(t0)})")
     })
     cli::cli_progress_update()
   }
@@ -1210,7 +1219,7 @@ FMAT_run = function(
   attr(data, "type") = type
   class(data) = c("fmat", class(data))
   gc()
-  cli::cli_alert_success("Task completed ({dtime(t0)})")
+  cli::cli_alert_success("Task completed: {length(models)} models ({dtime(t0)})")
 
   if(warning) warning_oov(data)
   if(na.out) data[str_detect(token, "out-of-vocabulary")]$prob = NA
