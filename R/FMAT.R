@@ -185,7 +185,7 @@ fill_mask_init = function(transformers, model, device=-1L) {
 
 add_tokens = function(
     fill_mask, tokens,
-    method = c("sum", "mean"),
+    method = c("mean", "sum"),
     verbose.in = TRUE,
     verbose.out = TRUE
 ) {
@@ -248,7 +248,7 @@ add_tokens = function(
 #'
 #' This function takes effect only for the current R session *temporarily*, so you should run this each time BEFORE you use other FMAT functions in an R session.
 #'
-#' @param path Folder path to store HuggingFace models.
+#' @param path Folder path to store HuggingFace models. If `NULL`, then return the current cache folder.
 #'
 #' @examples
 #' \dontrun{
@@ -262,23 +262,29 @@ add_tokens = function(
 #' }
 #'
 #' @export
-set_cache_folder = function(path) {
-  if(!dir.exists(path)) dir.create(path)
-  if(!dir.exists(path)) stop("No such directory.", call.=FALSE)
-
-  # os = reticulate::import("os")
-  # os$environ["HF_HOME"] = path
-  Sys.setenv("HF_HOME" = path)
+set_cache_folder = function(path=NULL) {
+  if(!is.null(path)) {
+    if(!dir.exists(path)) dir.create(path)
+    if(!dir.exists(path)) stop("No such directory.", call.=FALSE)
+    # os = reticulate::import("os")
+    # os$environ["HF_HOME"] = path
+    Sys.setenv("HF_HOME" = path)
+  }
 
   transformers = transformers_init(print.info=FALSE)
   cache.folder = get_cache_folder(transformers)
-  if(dirname(cache.folder) != str_remove(path, "/$")) {
-    cli::cli_alert_danger("Cannot change cache folder in this R session!")
-    stop("Please restart R and run `set_cache_folder()` before other FMAT functions!", call.=FALSE)
-  }
 
-  cli::cli_alert_success("Changed HuggingFace cache folder temporarily to {.path {path}}")
-  cli::cli_alert_success("Models would be downloaded or could be moved to {.path {paste0(path, 'hub/')}}")
+  if(!is.null(path)) {
+    if(dirname(cache.folder) != str_remove(path, "/$")) {
+      cli::cli_alert_danger("Cannot change cache folder in this R session!")
+      stop("Please restart R and run `set_cache_folder()` before other FMAT functions!", call.=FALSE)
+    }
+
+    cli::cli_alert_success("Changed HuggingFace cache folder temporarily to {.path {path}}")
+    cli::cli_alert_success("Models would be downloaded or could be moved to {.path {paste0(path, 'hub/')}}")
+  } else {
+    cli::cli_alert_warning("Current HuggingFace cache folder is {.path {cache.folder}}")
+  }
 }
 
 
@@ -617,7 +623,7 @@ get_model_date = function(model) {
 #' @inheritParams BERT_download
 #' @param mask.words Option words filling in the mask.
 #' @param add.tokens Add new tokens (for out-of-vocabulary words or phrases) to model vocabulary? It only temporarily adds tokens for tasks but does not change the raw model file. Defaults to `FALSE`.
-#' @param add.method Method used to produce the token embeddings of newly added tokens. Can be `"sum"` (default) or `"mean"` of subword token embeddings.
+#' @param add.method Method used to produce the token embeddings of appended tokens. Can be `"mean"` (default) or `"sum"` of subword token embeddings.
 #' @param add.verbose Print composition information of new tokens (for out-of-vocabulary words or phrases)? Defaults to `TRUE`.
 #'
 #' @return
@@ -649,7 +655,7 @@ get_model_date = function(model) {
 BERT_vocab = function(
     models, mask.words,
     add.tokens = FALSE,
-    add.method = c("sum", "mean"),
+    add.method = c("mean", "sum"),
     add.verbose = TRUE
 ) {
   transformers = transformers_init(print.info=FALSE)
@@ -1081,13 +1087,13 @@ FMAT_run = function(
     data,
     gpu,
     add.tokens = FALSE,
-    add.method = c("sum", "mean"),
+    add.method = c("mean", "sum"),
     add.verbose = TRUE,
     pattern.special = list(
       uncased = "uncased|albert|electra|muhtasham",
       prefix.u2581 = "albert|xlm-roberta|xlnet",
       prefix.u2581.excl = "chinese",
-      prefix.u0120 = "roberta|bart|deberta|bertweet-large",
+      prefix.u0120 = "roberta|bart|deberta|bertweet-large|ModernBERT",
       prefix.u0120.excl = "chinese|xlm-|kornosk/"
     ),
     file = NULL,

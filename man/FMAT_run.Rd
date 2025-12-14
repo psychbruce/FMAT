@@ -9,11 +9,12 @@ FMAT_run(
   data,
   gpu,
   add.tokens = FALSE,
-  add.method = c("sum", "mean"),
+  add.method = c("mean", "sum"),
   add.verbose = TRUE,
   pattern.special = list(uncased = "uncased|albert|electra|muhtasham", prefix.u2581 =
     "albert|xlm-roberta|xlnet", prefix.u2581.excl = "chinese", prefix.u0120 =
-    "roberta|bart|deberta|bertweet-large", prefix.u0120.excl = "chinese|xlm-|kornosk/"),
+    "roberta|bart|deberta|bertweet-large|ModernBERT", prefix.u0120.excl =
+    "chinese|xlm-|kornosk/"),
   file = NULL,
   progress = TRUE,
   warning = TRUE,
@@ -37,7 +38,7 @@ Options passing on to the \code{device} parameter in Python:
 
 \item{add.tokens}{Add new tokens (for out-of-vocabulary words or phrases) to model vocabulary? It only temporarily adds tokens for tasks but does not change the raw model file. Defaults to \code{FALSE}.}
 
-\item{add.method}{Method used to produce the token embeddings of newly added tokens. Can be \code{"sum"} (default) or \code{"mean"} of subword token embeddings.}
+\item{add.method}{Method used to produce the token embeddings of appended tokens. Can be \code{"mean"} (default) or \code{"sum"} of subword token embeddings.}
 
 \item{add.verbose}{Print composition information of new tokens (for out-of-vocabulary words or phrases)? Defaults to \code{TRUE}.}
 

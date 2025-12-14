@@ -8,7 +8,7 @@ BERT_vocab(
   models,
   mask.words,
   add.tokens = FALSE,
-  add.method = c("sum", "mean"),
+  add.method = c("mean", "sum"),
   add.verbose = TRUE
 )
 }
@@ -20,7 +20,7 @@ BERT_vocab(
 
 \item{add.tokens}{Add new tokens (for out-of-vocabulary words or phrases) to model vocabulary? It only temporarily adds tokens for tasks but does not change the raw model file. Defaults to \code{FALSE}.}
 
-\item{add.method}{Method used to produce the token embeddings of newly added tokens. Can be \code{"sum"} (default) or \code{"mean"} of subword token embeddings.}
+\item{add.method}{Method used to produce the token embeddings of appended tokens. Can be \code{"mean"} (default) or \code{"sum"} of subword token embeddings.}
 
 \item{add.verbose}{Print composition information of new tokens (for out-of-vocabulary words or phrases)? Defaults to \code{TRUE}.}
 }

@@ -4,10 +4,10 @@
 \alias{set_cache_folder}
 \title{Set (change) HuggingFace cache folder temporarily.}
 \usage{
-set_cache_folder(path)
+set_cache_folder(path = NULL)
 }
 \arguments{
-\item{path}{Folder path to store HuggingFace models.}
+\item{path}{Folder path to store HuggingFace models. If \code{NULL}, then return the current cache folder.}
 }
 \description{
 This function allows you to change the default cache directory (when it lacks storage space) to another path (e.g., your portable SSD) \emph{temporarily}.
