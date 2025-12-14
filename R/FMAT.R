@@ -139,8 +139,8 @@ transformers_init = function(print.info=TRUE) {
   hf = reticulate::import("huggingface_hub")
   hfh.ver = hf$`__version__`
 
-  urllib = reticulate::import("urllib3")
-  url.ver = urllib$`__version__`
+  # urllib = reticulate::import("urllib3")
+  # url.ver = urllib$`__version__`
 
   if(print.info) {
     cli::cli_alert_info(cli::col_blue("Device Info:
@@ -152,7 +152,6 @@ transformers_init = function(print.info=TRUE) {
     Python Packages:
     transformers  {tf.ver}
     torch         {torch.ver}
-    urllib3       {url.ver}
     huggingface-hub  {hfh.ver}
 
     NVIDIA GPU CUDA Support:
