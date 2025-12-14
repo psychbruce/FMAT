@@ -222,6 +222,8 @@ Checklist:
 
 ## BERT Models
 
+### Classic 12 English Models
+
 The reliability and validity of the following 12 English BERT models for
 the FMAT have been established in our earlier research.
 
@@ -247,9 +249,6 @@ the FMAT have been established in our earlier research.
     (517 MB)
 12. [vinai/bertweet-large](https://huggingface.co/vinai/bertweet-large)
     (1356 MB)
-
-We are using a more comprehensive list of 32 English BERT models and 32
-Chinese BERT models in our ongoing and future projects.
 
 For details about [BERT](https://arxiv.org/abs/1810.04805), see:
 
@@ -473,6 +472,201 @@ BERT_info(models)
 
 (Tested 2024-05-16 on the developer’s computer: HP Probook 450 G10
 Notebook PC)
+
+### Modern & General 30 English + 30 Chinese Models
+
+We are using a more comprehensive list of 30 English BERT models and 30
+Chinese BERT models in our ongoing and future projects.
+
+``` r
+library(FMAT)
+set_cache_folder("E:/HuggingFace_Cache/")  # models saved in my portable SSD
+
+## 30 English Models
+models.en = c(
+  # BERT (base/large/large-wwm, uncased/cased)
+  "bert-base-uncased",
+  "bert-base-cased",
+  "bert-large-uncased",
+  "bert-large-cased",
+  "bert-large-uncased-whole-word-masking",
+  "bert-large-cased-whole-word-masking",
+  # ALBERT (base/large/xlarge, v1/v2)
+  "albert-base-v1",
+  "albert-base-v2",
+  "albert-large-v1",
+  "albert-large-v2",
+  "albert-xlarge-v1",
+  "albert-xlarge-v2",
+  # DistilBERT (uncased/cased/distilroberta)
+  "distilbert-base-uncased",
+  "distilbert-base-cased",
+  "distilroberta-base",
+  # RoBERTa (roberta/muppet, base/large)
+  "roberta-base",
+  "roberta-large",
+  "facebook/muppet-roberta-base",
+  "facebook/muppet-roberta-large",
+  # ELECTRA (base/large)
+  "google/electra-base-generator",
+  "google/electra-large-generator",
+  # MobileBERT (uncased)
+  "google/mobilebert-uncased",
+  # ModernBERT (base/large)
+  "answerdotai/ModernBERT-base",   # transformers >= 4.48.0
+  "answerdotai/ModernBERT-large",  # transformers >= 4.48.0
+  # [Tweets] (BERT/RoBERTa/BERTweet-base/BERTweet-large)
+  "muhtasham/base-mlm-tweet",
+  "cardiffnlp/twitter-roberta-base",
+  "vinai/bertweet-base",
+  "vinai/bertweet-large",
+  # [PubMed Abstracts] (BiomedBERT, base/large)
+  "microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract",
+  "microsoft/BiomedNLP-BiomedBERT-large-uncased-abstract"
+)
+
+## 30 Chinese Models
+models.cn = c(
+  # BERT [Google]
+  "bert-base-chinese",
+  # BERT [Alibaba-PAI] (base/ck-base/ck-large/ck-huge)
+  "alibaba-pai/pai-bert-base-zh",
+  "alibaba-pai/pai-ckbert-base-zh",
+  "alibaba-pai/pai-ckbert-large-zh",
+  "alibaba-pai/pai-ckbert-huge-zh",
+  # BERT [HFL] (wwm, bert-wiki/bert-ext/roberta-ext)
+  "hfl/chinese-bert-wwm",
+  "hfl/chinese-bert-wwm-ext",
+  "hfl/chinese-roberta-wwm-ext",
+  # BERT [HFL] (lert/macbert/electra, base/large)
+  "hfl/chinese-lert-base",
+  "hfl/chinese-lert-large",
+  "hfl/chinese-macbert-base",
+  "hfl/chinese-macbert-large",
+  "hfl/chinese-electra-180g-base-generator",
+  "hfl/chinese-electra-180g-large-generator",
+  # RoBERTa [UER] (H=512/768, L=6/8/10/12)
+  "uer/chinese_roberta_L-6_H-512",
+  "uer/chinese_roberta_L-8_H-512",
+  "uer/chinese_roberta_L-10_H-512",
+  "uer/chinese_roberta_L-12_H-512",
+  "uer/chinese_roberta_L-6_H-768",
+  "uer/chinese_roberta_L-8_H-768",
+  "uer/chinese_roberta_L-10_H-768",
+  "uer/chinese_roberta_L-12_H-768",
+  # RoBERTa [UER] (wwm, base/large)
+  "uer/roberta-base-wwm-chinese-cluecorpussmall",
+  "uer/roberta-large-wwm-chinese-cluecorpussmall",
+  # BERT [IDEA-CCNL] (MacBERT/TCBert-base/TCBert-large)
+  "IDEA-CCNL/Erlangshen-MacBERT-325M-NLI-Chinese",
+  "IDEA-CCNL/Erlangshen-TCBert-330M-Classification-Chinese",
+  "IDEA-CCNL/Erlangshen-TCBert-330M-Sentence-Embedding-Chinese",
+  # RoBERTa [IDEA-CCNL] (UniMC, base/large)
+  "IDEA-CCNL/Erlangshen-UniMC-RoBERTa-110M-Chinese",
+  "IDEA-CCNL/Erlangshen-UniMC-RoBERTa-330M-Chinese",
+  # MegatronBERT [IDEA-CCNL] (huge)
+  "IDEA-CCNL/Erlangshen-UniMC-MegatronBERT-1.3B-Chinese"
+)
+
+BERT_info(models.en)
+BERT_info(models.cn)
+```
+
+#### Information of the 30 English Models
+
+                                                        model       type     param vocab embed layer heads   mask
+                                                       <fctr>     <fctr>     <int> <int> <int> <int> <int> <fctr>
+     1:                                     bert-base-uncased       bert 109482240 30522   768    12    12 [MASK]
+     2:                                       bert-base-cased       bert 108310272 28996   768    12    12 [MASK]
+     3:                                    bert-large-uncased       bert 335141888 30522  1024    24    16 [MASK]
+     4:                                      bert-large-cased       bert 333579264 28996  1024    24    16 [MASK]
+     5:                 bert-large-uncased-whole-word-masking       bert 335141888 30522  1024    24    16 [MASK]
+     6:                   bert-large-cased-whole-word-masking       bert 333579264 28996  1024    24    16 [MASK]
+     7:                                        albert-base-v1     albert  11683584 30000   128    12    12 [MASK]
+     8:                                        albert-base-v2     albert  11683584 30000   128    12    12 [MASK]
+     9:                                       albert-large-v1     albert  17683968 30000   128    24    16 [MASK]
+    10:                                       albert-large-v2     albert  17683968 30000   128    24    16 [MASK]
+    11:                                      albert-xlarge-v1     albert  58724864 30000   128    24    16 [MASK]
+    12:                                      albert-xlarge-v2     albert  58724864 30000   128    24    16 [MASK]
+    13:                               distilbert-base-uncased distilbert  66362880 30522   768     6    12 [MASK]
+    14:                                 distilbert-base-cased distilbert  65190912 28996   768     6    12 [MASK]
+    15:                                    distilroberta-base    roberta  82118400 50265   768     6    12 <mask>
+    16:                                          roberta-base    roberta 124645632 50265   768    12    12 <mask>
+    17:                                         roberta-large    roberta 355359744 50265  1024    24    16 <mask>
+    18:                          facebook/muppet-roberta-base    roberta 124645632 50265   768    12    12 <mask>
+    19:                         facebook/muppet-roberta-large    roberta 355359744 50265  1024    24    16 <mask>
+    20:                         google/electra-base-generator    electra  33511168 30522   768    12     4 [MASK]
+    21:                        google/electra-large-generator    electra  50999552 30522  1024    24     4 [MASK]
+    22:                             google/mobilebert-uncased mobilebert  24581888 30522   128    24     4 [MASK]
+    23:                           answerdotai/ModernBERT-base modernbert 149014272 50368   768    22    12 [MASK]
+    24:                          answerdotai/ModernBERT-large modernbert 394781696 50368  1024    28    16 [MASK]
+    25:                              muhtasham/base-mlm-tweet       bert 109482240 30522   768    12    12 [MASK]
+    26:                       cardiffnlp/twitter-roberta-base    roberta 124645632 50265   768    12    12 <mask>
+    27:                                   vinai/bertweet-base    roberta 134899968 64001   768    12    12 <mask>
+    28:                                  vinai/bertweet-large    roberta 355359744 50265  1024    24    16 <mask>
+    29:  microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract       bert 109482240 30522   768    12    12 [MASK]
+    30: microsoft/BiomedNLP-BiomedBERT-large-uncased-abstract       bert 335141888 30522  1024    24    16 [MASK]
+                                                        model       type     param vocab embed layer heads   mask
+
+**Missing values of year tokens (1800~2019):**
+
+- `"albert"` series: 3 missing
+  - 1807, 1809, 1817
+- `"ModernBERT"` series: 65 missing
+  - 1801~1829, 1831~1839, 1841~1847, 1849, 1851~1859, 1869， 1871~1875,
+    1877~1879, 1883
+- `"roberta"` series, `"muppet"` series, `"distilroberta-base"`,
+  `"cardiffnlp/twitter-roberta-base"`, `"vinai/bertweet-large"`: 79
+  missing
+  - 1801~1829, 1831~1839, 1841~1849, 1851~1859, 1864, 1866~1869,
+    1871~1879, 1881~1885, 1887, 1891, 1892, 1894
+- `"vinai/bertweet-base"`: 29 missing
+  - 1801~1811, 1813~1814, 1816~1819, 1821~1823, 1825~1829, 1831, 1833,
+    1834, 1843
+- `"BiomedBERT"` series: 163 missing
+  - 1801~1949, 1951~1959, 1961~1964, 1967
+
+#### Information of the 30 Chinese Models
+
+                                                              model          type      param vocab embed layer heads   mask
+                                                             <fctr>        <fctr>      <int> <int> <int> <int> <int> <fctr>
+     1:                                           bert-base-chinese          bert  102267648 21128   768    12    12 [MASK]
+     2:                                alibaba-pai/pai-bert-base-zh          bert  102267648 21128   768    12    12 [MASK]
+     3:                              alibaba-pai/pai-ckbert-base-zh          bert  102269184 21130   768    12    12 [MASK]
+     4:                             alibaba-pai/pai-ckbert-large-zh          bert  325524480 21130  1024    24    16 [MASK]
+     5:                              alibaba-pai/pai-ckbert-huge-zh megatron-bert 1257367552 21248  2048    24     8 [MASK]
+     6:                                        hfl/chinese-bert-wwm          bert  102267648 21128   768    12    12 [MASK]
+     7:                                    hfl/chinese-bert-wwm-ext          bert  102267648 21128   768    12    12 [MASK]
+     8:                                 hfl/chinese-roberta-wwm-ext          bert  102267648 21128   768    12    12 [MASK]
+     9:                                       hfl/chinese-lert-base          bert  102267648 21128   768    12    12 [MASK]
+    10:                                      hfl/chinese-lert-large          bert  325522432 21128  1024    24    16 [MASK]
+    11:                                    hfl/chinese-macbert-base          bert  102267648 21128   768    12    12 [MASK]
+    12:                                   hfl/chinese-macbert-large          bert  325522432 21128  1024    24    16 [MASK]
+    13:                     hfl/chinese-electra-180g-base-generator       electra   22108608 21128   768    12     3 [MASK]
+    14:                    hfl/chinese-electra-180g-large-generator       electra   41380096 21128  1024    24     4 [MASK]
+    15:                               uer/chinese_roberta_L-6_H-512          bert   30258688 21128   512     6     8 [MASK]
+    16:                               uer/chinese_roberta_L-8_H-512          bert   36563456 21128   512     8     8 [MASK]
+    17:                              uer/chinese_roberta_L-10_H-512          bert   42868224 21128   512    10     8 [MASK]
+    18:                              uer/chinese_roberta_L-12_H-512          bert   49172992 21128   512    12     8 [MASK]
+    19:                               uer/chinese_roberta_L-6_H-768          bert   59740416 21128   768     6    12 [MASK]
+    20:                               uer/chinese_roberta_L-8_H-768          bert   73916160 21128   768     8    12 [MASK]
+    21:                              uer/chinese_roberta_L-10_H-768          bert   88091904 21128   768    10    12 [MASK]
+    22:                              uer/chinese_roberta_L-12_H-768          bert  102267648 21128   768    12    12 [MASK]
+    23:                uer/roberta-base-wwm-chinese-cluecorpussmall          bert  102267648 21128   768    12    12 [MASK]
+    24:               uer/roberta-large-wwm-chinese-cluecorpussmall          bert  325522432 21128  1024    24    16 [MASK]
+    25:               IDEA-CCNL/Erlangshen-MacBERT-325M-NLI-Chinese          bert  325625856 21229  1024    24    16 [MASK]
+    26:     IDEA-CCNL/Erlangshen-TCBert-330M-Classification-Chinese          bert  325522432 21128  1024    24    16 [MASK]
+    27: IDEA-CCNL/Erlangshen-TCBert-330M-Sentence-Embedding-Chinese          bert  325522432 21128  1024    24    16 [MASK]
+    28:             IDEA-CCNL/Erlangshen-UniMC-RoBERTa-110M-Chinese          bert  102267648 21128   768    12    12 [MASK]
+    29:             IDEA-CCNL/Erlangshen-UniMC-RoBERTa-330M-Chinese          bert  325522432 21128  1024    24    16 [MASK]
+    30:        IDEA-CCNL/Erlangshen-UniMC-MegatronBERT-1.3B-Chinese megatron-bert 1257367552 21248  2048    24     8 [MASK]
+                                                              model          type      param vocab embed layer heads   mask
+
+**Missing values of year tokens (1800~2019):**
+
+- All: 77 missing
+  - 1801~1839, 1841~1849, 1851~1859, 1861~1866, 1869, 1872~1879, 1881,
+    1883, 1887, 1891, 1892
 
 ## Related Packages
 

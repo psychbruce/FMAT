@@ -7,14 +7,15 @@ lacks storage space) to another path (e.g., your portable SSD)
 ## Usage
 
 ``` r
-set_cache_folder(path)
+set_cache_folder(path = NULL)
 ```
 
 ## Arguments
 
 - path:
 
-  Folder path to store HuggingFace models.
+  Folder path to store HuggingFace models. If `NULL`, then return the
+  current cache folder.
 
 ## Keep in Mind
 

@@ -11,11 +11,12 @@ FMAT_run(
   data,
   gpu,
   add.tokens = FALSE,
-  add.method = c("sum", "mean"),
+  add.method = c("mean", "sum"),
   add.verbose = TRUE,
   pattern.special = list(uncased = "uncased|albert|electra|muhtasham", prefix.u2581 =
     "albert|xlm-roberta|xlnet", prefix.u2581.excl = "chinese", prefix.u0120 =
-    "roberta|bart|deberta|bertweet-large", prefix.u0120.excl = "chinese|xlm-|kornosk/"),
+    "roberta|bart|deberta|bertweet-large|ModernBERT", prefix.u0120.excl =
+    "chinese|xlm-|kornosk/"),
   file = NULL,
   progress = TRUE,
   warning = TRUE,
@@ -64,8 +65,8 @@ FMAT_run(
 
 - add.method:
 
-  Method used to produce the token embeddings of newly added tokens. Can
-  be `"sum"` (default) or `"mean"` of subword token embeddings.
+  Method used to produce the token embeddings of appended tokens. Can be
+  `"mean"` (default) or `"sum"` of subword token embeddings.
 
 - add.verbose:
 

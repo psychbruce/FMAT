@@ -9,7 +9,7 @@ BERT_vocab(
   models,
   mask.words,
   add.tokens = FALSE,
-  add.method = c("sum", "mean"),
+  add.method = c("mean", "sum"),
   add.verbose = TRUE
 )
 ```
@@ -33,8 +33,8 @@ BERT_vocab(
 
 - add.method:
 
-  Method used to produce the token embeddings of newly added tokens. Can
-  be `"sum"` (default) or `"mean"` of subword token embeddings.
+  Method used to produce the token embeddings of appended tokens. Can be
+  `"mean"` (default) or `"sum"` of subword token embeddings.
 
 - add.verbose:
 

@@ -2,6 +2,14 @@
 
 ## FMAT 2025.12
 
+- Changed the default `add.method` of `add.tokens` from `"sum"` to
+  `"mean"`, relevant to
+  [`BERT_vocab()`](https://psychbruce.github.io/FMAT/reference/BERT_vocab.md)
+  and
+  [`FMAT_run()`](https://psychbruce.github.io/FMAT/reference/FMAT_run.md).
+  Using the averaged rather than the summed subword token embeddings for
+  out-of-vocabulary tokens would have a smaller impact on the
+  probability estimates of vocabulary tokens.
 - Improved functionality for the latest versions of Python packages.
 - Refined help pages in the style of Roxygen markdown.
 
