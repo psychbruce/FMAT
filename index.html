@@ -109,7 +109,7 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>The R package <code>FMAT</code> and three Python packages (<code>transformers</code>, <code>torch</code>, <code>huggingface-hub</code>) all need to be installed.</p>
+<p>Besides the R package <code>FMAT</code>, you also need to have a Python environment and install three Python packages (<code>transformers</code>, <code>huggingface-hub</code>, and <code>torch</code>).</p>
 <div class="section level3">
 <h3 id="id_1-r-package">(1) R Package<a class="anchor" aria-label="anchor" href="#id_1-r-package"></a>
 </h3>
@@ -124,23 +124,26 @@
 <div class="section level3">
 <h3 id="id_2-python-environment-and-packages">(2) Python Environment and Packages<a class="anchor" aria-label="anchor" href="#id_2-python-environment-and-packages"></a>
 </h3>
-<p>Install <a href="https://www.anaconda.com/download/success" class="external-link">Anaconda</a> (a recommended package manager that automatically installs Python, its IDEs like Spyder, and a large list of common Python packages).</p>
-<p>Set RStudio to “Run as Administrator” by default to enable <code>pip</code> command.</p>
+<p>Install <a href="https://www.anaconda.com/download/success" class="external-link">Anaconda</a> (an environment/package manager that automatically installs Python, its IDEs like Spyder, and a large list of common Python packages).</p>
+<p>Set RStudio to “Run as Administrator” to enable <code>pip</code> command in Terminal.</p>
 <blockquote>
 <p>RStudio (find “rstudio.exe” in its installation path)<br>
 → File Properties → Compatibility → Settings<br>
 → Tick <strong>“Run this program as an administrator”</strong></p>
 </blockquote>
-<p>Open RStudio and specify the Anaconda’s Python interpreter in RStudio.</p>
+<p>Open RStudio and specify the Anaconda’s Python interpreter.</p>
 <blockquote>
 <p>RStudio → Tools → Global/Project Options<br>
 → Python → Select → <strong>Conda Environments</strong><br>
 → Choose <strong>“…/Anaconda3/python.exe”</strong></p>
 </blockquote>
-<p>Install Python packages “<a href="https://pypi.org/project/transformers/#history" class="external-link">transformers</a>”, “<a href="https://pypi.org/project/torch/#history" class="external-link">torch</a>”, and “<a href="https://pypi.org/project/huggingface-hub/#history" class="external-link">huggingface-hub</a>”.<br>
+<p>Check Python packages installed and versions:<br>
 (with <strong>Terminal</strong> in RStudio or <strong>Command Prompt</strong> on Windows system)</p>
+<pre><code>pip list</code></pre>
+<p>Install Python packages “<a href="https://pypi.org/project/transformers/#history" class="external-link">transformers</a>”, “<a href="https://pypi.org/project/huggingface-hub/#history" class="external-link">huggingface-hub</a>”, and “<a href="https://pypi.org/project/torch/#history" class="external-link">torch</a>”.</p>
+<p>You may install either the latest versions (with better support for modern models) or specific versions (with downloading progress bars).</p>
 <div class="section level4">
-<h4 id="option-1-install-latest-versions-better-functionality-for-modern-models">Option #1: Install Latest Versions (Better Functionality for Modern Models)<a class="anchor" aria-label="anchor" href="#option-1-install-latest-versions-better-functionality-for-modern-models"></a>
+<h4 id="option-1-install-latest-versions-with-better-support-for-modern-models">Option 1: Install Latest Versions (with Better Support for Modern Models)<a class="anchor" aria-label="anchor" href="#option-1-install-latest-versions-with-better-support-for-modern-models"></a>
 </h4>
 <p>For CPU users:</p>
 <pre><code>pip install transformers huggingface-hub torch</code></pre>
@@ -148,12 +151,11 @@
 <pre><code>pip install transformers huggingface-hub
 pip install torch --index-url https://download.pytorch.org/whl/cu130</code></pre>
 <ul>
-<li>See <a href="#guidance-for-gpu-acceleration">Guidance for GPU Acceleration</a> for installation guidance if you have an NVIDIA GPU device on your PC and want to use GPU to accelerate the pipeline.</li>
-<li>See also <a href="https://pytorch.org/get-started/locally/" class="external-link">PyTorch Build Command</a> and install <a href="https://developer.nvidia.com/cuda-13-0-0-download-archive" class="external-link">CUDA Toolkit 13.0</a>.</li>
+<li>See <a href="#guidance-for-gpu-acceleration">Guidance for GPU Acceleration</a> if you have an NVIDIA GPU device on your PC and would use GPU to accelerate the pipeline. See also <a href="https://pytorch.org/get-started/locally/" class="external-link">PyTorch Build Command</a> and install <a href="https://developer.nvidia.com/cuda-13-0-0-download-archive" class="external-link">CUDA Toolkit 13.0</a>.</li>
 </ul>
 </div>
 <div class="section level4">
-<h4 id="option-2-install-specific-versions-with-downloading-progress-bars">Option #2: Install Specific Versions (with Downloading Progress Bars)<a class="anchor" aria-label="anchor" href="#option-2-install-specific-versions-with-downloading-progress-bars"></a>
+<h4 id="option-2-install-specific-versions-with-downloading-progress-bars">Option 2: Install Specific Versions (with Downloading Progress Bars)<a class="anchor" aria-label="anchor" href="#option-2-install-specific-versions-with-downloading-progress-bars"></a>
 </h4>
 <p>For CPU users:</p>
 <pre><code>pip install transformers==4.40.2 huggingface-hub==0.20.3 torch==2.2.1</code></pre>
@@ -161,7 +163,7 @@ pip install torch --index-url https://download.pytorch.org/whl/cu130</code></pre
 <pre><code>pip install transformers==4.40.2 huggingface-hub==0.20.3
 pip install torch==2.2.1 --index-url https://download.pytorch.org/whl/cu121</code></pre>
 <ul>
-<li>According to the May 2024 releases, “transformers” ≥ 4.41 depends on “huggingface-hub” ≥ 0.23. The “transformers” (4.40.2) and “huggingface-hub” (0.20.3) can ensure the display of progress bars when downloading BERT models.</li>
+<li>According to the May 2024 releases, “transformers” ≥ 4.41 depends on “huggingface-hub” ≥ 0.23. The “transformers” (4.40.2) and “huggingface-hub” (0.20.3) can display progress bars when downloading BERT models.</li>
 <li>Proxy users may use the “global mode” (全局模式) to download models.</li>
 <li>If you find the error <code>HTTPSConnectionPool(host='huggingface.co', port=443)</code>, please try to (1) reinstall <a href="https://www.anaconda.com/download/success" class="external-link">Anaconda</a> so that some unknown issues may be fixed, or (2) downgrade the “<a href="https://pypi.org/project/urllib3/" class="external-link">urllib3</a>” package to version ≤ 1.25.11 (<code>pip install urllib3==1.25.11</code>) so that it will use HTTP proxies (rather than HTTPS proxies as in later versions) to connect to Hugging Face.</li>
 </ul>
@@ -174,7 +176,8 @@ pip install torch==2.2.1 --index-url https://download.pytorch.org/whl/cu121</cod
 <div class="section level3">
 <h3 id="step-1-download-bert-models">Step 1: Download BERT Models<a class="anchor" aria-label="anchor" href="#step-1-download-bert-models"></a>
 </h3>
-<p>Use <code><a href="reference/BERT_download.html">BERT_download()</a></code> to download <a href="#bert-models">BERT models</a>. Model files are saved in your local cache folder “%USERPROFILE%/.cache/huggingface”. A full list of BERT models are available at <a href="https://huggingface.co/models?pipeline_tag=fill-mask" class="external-link">Hugging Face</a>.</p>
+<p>Use <code><a href="reference/set_cache_folder.html">set_cache_folder()</a></code> to change the default HuggingFace cache directory from “%USERPROFILE%/.cache/huggingface/hub” to another folder you like, so that all models would be downloaded and saved in that folder. Keep in mind: This function takes effect only for the current R session <em>temporarily</em>, so you should run this each time BEFORE you use other FMAT functions in an R session.</p>
+<p>Use <code><a href="reference/BERT_download.html">BERT_download()</a></code> to download <a href="#bert-models">BERT models</a>. A full list of BERT models are available at <a href="https://huggingface.co/models?pipeline_tag=fill-mask" class="external-link">Hugging Face</a>.</p>
 <p>Use <code><a href="reference/BERT_info.html">BERT_info()</a></code> and <code><a href="reference/BERT_vocab.html">BERT_vocab()</a></code> to obtain detailed information of BERT models.</p>
 </div>
 <div class="section level3">
@@ -197,8 +200,8 @@ pip install torch==2.2.1 --index-url https://download.pytorch.org/whl/cu121</cod
 <h3 id="notes">Notes<a class="anchor" aria-label="anchor" href="#notes"></a>
 </h3>
 <ul>
-<li>Improvements are ongoing, especially for adaptation to more diverse (less popular) BERT models.</li>
-<li>If you find bugs or have problems using the functions, please report them at <a href="https://github.com/psychbruce/FMAT/issues" class="external-link">GitHub Issues</a> or send me an email.</li>
+<li>Improvements are ongoing, especially for more diverse (less popular) BERT models.</li>
+<li>If you have problems using the functions, please report at <a href="https://github.com/psychbruce/FMAT/issues" class="external-link">GitHub Issues</a>.</li>
 </ul>
 </div>
 </div>
@@ -266,7 +269,7 @@ pip install torch==2.2.1 --index-url https://download.pytorch.org/whl/cu121</cod
 <li><a href="https://jalammar.github.io/illustrated-bert/" class="external-link">Illustrated BERT</a></li>
 <li><a href="https://jalammar.github.io/a-visual-guide-to-using-bert-for-the-first-time/" class="external-link">Visual Guide to BERT</a></li>
 </ul>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://psychbruce.github.io/FMAT/">FMAT</a></span><span class="op">)</span></span>
 <span><span class="va">models</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="st">"bert-base-uncased"</span>,</span>
@@ -450,7 +453,7 @@ vinai/bertweet-base      517 MB
 vinai/bertweet-large    1356 MB
 
 ✔ Downloaded models saved at C:/Users/Bruce/.cache/huggingface/hub (6.52 GB)</code></pre>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/BERT_info.html">BERT_info</a></span><span class="op">(</span><span class="va">models</span><span class="op">)</span></span></code></pre></div>
 <pre><code>                      model   size vocab  dims   mask
                      &lt;fctr&gt; &lt;char&gt; &lt;int&gt; &lt;int&gt; &lt;char&gt;
@@ -469,12 +472,12 @@ vinai/bertweet-large    1356 MB
 <p>(Tested 2024-05-16 on the developer’s computer: HP Probook 450 G10 Notebook PC)</p>
 </div>
 <div class="section level3">
-<h3 id="modern--general-30-english--30-chinese-models">Modern &amp; General 30 English + 30 Chinese Models<a class="anchor" aria-label="anchor" href="#modern--general-30-english--30-chinese-models"></a>
+<h3 id="general-30-english-and-30-chinese-models">General 30 English and 30 Chinese Models<a class="anchor" aria-label="anchor" href="#general-30-english-and-30-chinese-models"></a>
 </h3>
 <p>We are using a more comprehensive list of 30 English BERT models and 30 Chinese BERT models in our ongoing and future projects.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://psychbruce.github.io/FMAT/">FMAT</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/set_cache_folder.html">set_cache_folder</a></span><span class="op">(</span><span class="st">"E:/HuggingFace_Cache/"</span><span class="op">)</span>  <span class="co"># models saved in my portable SSD</span></span>
+<span><span class="fu"><a href="reference/set_cache_folder.html">set_cache_folder</a></span><span class="op">(</span><span class="st">"G:/HuggingFace_Cache/"</span><span class="op">)</span>  <span class="co"># models saved in my portable SSD</span></span>
 <span></span>
 <span><span class="co">## 30 English Models</span></span>
 <span><span class="va">models.en</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
