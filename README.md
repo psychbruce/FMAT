@@ -42,7 +42,7 @@ Bruce H. W. S. Bao 包寒吴霜
 
 ## Installation
 
-The R package `FMAT` and three Python packages (`transformers`, `torch`, `huggingface-hub`) all need to be installed.
+Besides the R package `FMAT`, you also need to have a Python environment and install three Python packages (`transformers`, `huggingface-hub`, and `torch`).
 
 ### (1) R Package
 
@@ -57,24 +57,32 @@ devtools::install_github("psychbruce/FMAT", force=TRUE)
 
 ### (2) Python Environment and Packages
 
-Install [Anaconda](https://www.anaconda.com/download/success) (a recommended package manager that automatically installs Python, its IDEs like Spyder, and a large list of common Python packages).
+Install [Anaconda](https://www.anaconda.com/download/success) (an environment/package manager that automatically installs Python, its IDEs like Spyder, and a large list of common Python packages).
 
-Set RStudio to "Run as Administrator" by default to enable `pip` command.
+Set RStudio to "Run as Administrator" to enable `pip` command in Terminal.
 
 > RStudio (find "rstudio.exe" in its installation path)\
 > → File Properties → Compatibility → Settings\
 > → Tick **"Run this program as an administrator"**
 
-Open RStudio and specify the Anaconda's Python interpreter in RStudio.
+Open RStudio and specify the Anaconda's Python interpreter.
 
 > RStudio → Tools → Global/Project Options\
 > → Python → Select → **Conda Environments**\
 > → Choose **".../Anaconda3/python.exe"**
 
-Install Python packages "[transformers](https://pypi.org/project/transformers/#history)", "[torch](https://pypi.org/project/torch/#history)", and "[huggingface-hub](https://pypi.org/project/huggingface-hub/#history)".\
+Check Python packages installed and versions:\
 (with **Terminal** in RStudio or **Command Prompt** on Windows system)
 
-#### Option #1: Install Latest Versions (Better Functionality for Modern Models)
+```         
+pip list
+```
+
+Install Python packages "[transformers](https://pypi.org/project/transformers/#history)", "[huggingface-hub](https://pypi.org/project/huggingface-hub/#history)", and "[torch](https://pypi.org/project/torch/#history)".
+
+You may install either the latest versions (with better support for modern models) or specific versions (with downloading progress bars).
+
+#### Option 1: Install Latest Versions (with Better Support for Modern Models)
 
 For CPU users:
 
@@ -89,10 +97,9 @@ pip install transformers huggingface-hub
 pip install torch --index-url https://download.pytorch.org/whl/cu130
 ```
 
--   See [Guidance for GPU Acceleration] for installation guidance if you have an NVIDIA GPU device on your PC and want to use GPU to accelerate the pipeline.
--   See also [PyTorch Build Command](https://pytorch.org/get-started/locally/) and install [CUDA Toolkit 13.0](https://developer.nvidia.com/cuda-13-0-0-download-archive).
+-   See [Guidance for GPU Acceleration] if you have an NVIDIA GPU device on your PC and would use GPU to accelerate the pipeline. See also [PyTorch Build Command](https://pytorch.org/get-started/locally/) and install [CUDA Toolkit 13.0](https://developer.nvidia.com/cuda-13-0-0-download-archive).
 
-#### Option #2: Install Specific Versions (with Downloading Progress Bars)
+#### Option 2: Install Specific Versions (with Downloading Progress Bars)
 
 For CPU users:
 
@@ -107,7 +114,7 @@ pip install transformers==4.40.2 huggingface-hub==0.20.3
 pip install torch==2.2.1 --index-url https://download.pytorch.org/whl/cu121
 ```
 
--   According to the May 2024 releases, "transformers" ≥ 4.41 depends on "huggingface-hub" ≥ 0.23. The "transformers" (4.40.2) and "huggingface-hub" (0.20.3) can ensure the display of progress bars when downloading BERT models.
+-   According to the May 2024 releases, "transformers" ≥ 4.41 depends on "huggingface-hub" ≥ 0.23. The "transformers" (4.40.2) and "huggingface-hub" (0.20.3) can display progress bars when downloading BERT models.
 -   Proxy users may use the "global mode" (全局模式) to download models.
 -   If you find the error `HTTPSConnectionPool(host='huggingface.co', port=443)`, please try to (1) reinstall [Anaconda](https://www.anaconda.com/download/success) so that some unknown issues may be fixed, or (2) downgrade the "[urllib3](https://pypi.org/project/urllib3/)" package to version ≤ 1.25.11 (`pip install urllib3==1.25.11`) so that it will use HTTP proxies (rather than HTTPS proxies as in later versions) to connect to Hugging Face.
 
@@ -115,7 +122,9 @@ pip install torch==2.2.1 --index-url https://download.pytorch.org/whl/cu121
 
 ### Step 1: Download BERT Models
 
-Use `BERT_download()` to download [BERT models]. Model files are saved in your local cache folder "%USERPROFILE%/.cache/huggingface". A full list of BERT models are available at [Hugging Face](https://huggingface.co/models?pipeline_tag=fill-mask).
+Use `set_cache_folder()` to change the default HuggingFace cache directory from "%USERPROFILE%/.cache/huggingface/hub" to another folder you like, so that all models would be downloaded and saved in that folder. Keep in mind: This function takes effect only for the current R session *temporarily*, so you should run this each time BEFORE you use other FMAT functions in an R session.
+
+Use `BERT_download()` to download [BERT models]. A full list of BERT models are available at [Hugging Face](https://huggingface.co/models?pipeline_tag=fill-mask).
 
 Use `BERT_info()` and `BERT_vocab()` to obtain detailed information of BERT models.
 
@@ -136,8 +145,8 @@ Several steps of preprocessing have been included in the function for easier use
 
 ### Notes
 
--   Improvements are ongoing, especially for adaptation to more diverse (less popular) BERT models.
--   If you find bugs or have problems using the functions, please report them at [GitHub Issues](https://github.com/psychbruce/FMAT/issues) or send me an email.
+-   Improvements are ongoing, especially for more diverse (less popular) BERT models.
+-   If you have problems using the functions, please report at [GitHub Issues](https://github.com/psychbruce/FMAT/issues).
 
 ## Guidance for GPU Acceleration
 
@@ -398,13 +407,13 @@ BERT_info(models)
 
 (Tested 2024-05-16 on the developer's computer: HP Probook 450 G10 Notebook PC)
 
-### Modern & General 30 English + 30 Chinese Models
+### General 30 English and 30 Chinese Models
 
 We are using a more comprehensive list of 30 English BERT models and 30 Chinese BERT models in our ongoing and future projects.
 
 ``` r
 library(FMAT)
-set_cache_folder("E:/HuggingFace_Cache/")  # models saved in my portable SSD
+set_cache_folder("G:/HuggingFace_Cache/")  # models saved in my portable SSD
 
 ## 30 English Models
 models.en = c(
