@@ -7,15 +7,15 @@
 ICC_models(data, type = "agreement", unit = "average")
 }
 \arguments{
-\item{data}{Raw data returned from \code{\link[=FMAT_run]{FMAT_run()}}.}
+\item{data}{Raw data returned from \code{\link[=FMAT_run]{FMAT_run()}} (with variable \code{prob}) or its summarized data obtained with \code{\link[=summary.fmat]{summary.fmat()}} (with variable \code{LPR}).}
 
 \item{type}{Interrater \code{"agreement"} (default) or \code{"consistency"}.}
 
 \item{unit}{Reliability of \code{"average"} scores (default) or \code{"single"} scores.}
 }
 \value{
-A data.table of ICC.
+A data.frame of ICC.
 }
 \description{
-Interrater agreement of log probabilities (treated as "ratings"/rows) among BERT language models (treated as "raters"/columns), with both row and column as ("two-way") random effects.
+Interrater agreement of \emph{log probabilities} (treated as "ratings"/rows) among BERT language models (treated as "raters"/columns), with both row and column as ("two-way") random effects.
 }

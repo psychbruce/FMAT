@@ -14,7 +14,7 @@ LPR_reliability(fmat, item = c("query", "T_word", "A_word"), by = NULL)
 \item{by}{Variable(s) to split data by. Options can be \code{"model"}, \code{"TARGET"}, \code{"ATTRIB"}, or any combination of them.}
 }
 \value{
-A data.table of Cronbach's \eqn{\alpha}.
+A data.frame of Cronbach's \eqn{\alpha}.
 }
 \description{
 Reliability analysis (Cronbach's \eqn{\alpha}) of LPR.

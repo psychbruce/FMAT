@@ -32,8 +32,7 @@ Options passing on to the \code{device} parameter in Python:
 A data.table of raw results.
 }
 \description{
-Normal users should use \code{\link[=FMAT_run]{FMAT_run()}}.
-This function is only for technical check.
+This function is only for technical check. Please use \code{\link[=FMAT_run]{FMAT_run()}} for general purposes.
 }
 \section{Functions}{
 \itemize{

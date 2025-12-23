@@ -105,6 +105,7 @@ gpu_to_device = function(gpu) {
 
 
 transformers_init = function(print.info=TRUE) {
+  t0 = Sys.time()
   FMAT.ver = as.character(utils::packageVersion("FMAT"))
   reticulate.ver = as.character(utils::packageVersion("reticulate"))
 
@@ -157,6 +158,8 @@ transformers_init = function(print.info=TRUE) {
     NVIDIA GPU CUDA Support:
     CUDA Enabled: {torch.cuda}
     {gpu.info}
+
+    (transformers initialized in {dtime(t0)})
     "))
   }
 
@@ -182,29 +185,89 @@ fill_mask_init = function(transformers, model, device=-1L) {
 }
 
 
+#' Compute a vector of weights with a decay rate.
+#'
+#' @param vector Vector of sequence.
+#' @param decay Decay factor for computing weights. A smaller decay value would give greater weight to the former items than to the latter items. The i-th item has raw weight = decay ^ i.
+#' - decay = 1: all items are **equally** important
+#' - 0 < decay < 1: **first** items are more important
+#' - decay > 1: **last** items are more important
+#'
+#' @return
+#' *Normalized* weights (i.e., sum of weights = 1).
+#'
+#' @seealso
+#' [FMAT_run()]
+#'
+#' @examples
+#' # "individualism"
+#' weight_decay(c("individual", "##ism"), 0.5)
+#' weight_decay(c("individual", "##ism"), 0.8)
+#' weight_decay(c("individual", "##ism"), 1)
+#' weight_decay(c("individual", "##ism"), 2)
+#'
+#' # "East Asian people"
+#' weight_decay(c("East", "Asian", "people"), 0.5)
+#' weight_decay(c("East", "Asian", "people"), 0.8)
+#' weight_decay(c("East", "Asian", "people"), 1)
+#' weight_decay(c("East", "Asian", "people"), 2)
+#'
+#' @export
+weight_decay = function(vector, decay) {
+  weights = decay^seq_along(vector)
+  weights = weights / sum(weights)
+  names(weights) = vector
+  return(weights)
+}
+
+
 add_tokens = function(
-    fill_mask, tokens,
-    method = c("mean", "sum"),
-    verbose.in = TRUE,
+    fill_mask,
+    tokens,
+    weight.decay = 1,
+    # = 1: equally important
+    # < 1: first more important
+    # > 1: last more important
+    device = -1L,  # CPU
     verbose.out = TRUE
 ) {
   # encode new tokens from subwords
-  method = match.arg(method)
+  method = ifelse(
+    weight.decay==1,
+    "mean",
+    paste0("mean_weighted_[decay=", weight.decay, "]")
+  )
+  # debug shortcut:
+  # fill_mask = FMAT:::fill_mask_init(FMAT:::transformers_init(), "roberta-base")
+  # fill_mask = FMAT:::fill_mask_init(FMAT:::transformers_init(), "albert-base-v1")
+  # sapply(encode, function(id) vocab[vocab==id])
+  # fill_mask("<mask> people are good.", top_k=5L)
+  # fill_mask("<mask> people are good.", targets="African")[[1]]
+  # fill_mask("The <mask> people are good.", targets=" African")[[1]]
+  # fill_mask("Most <mask> people are good.", targets=" African")[[1]]
   vocab = fill_mask$tokenizer$get_vocab()
   embed = fill_mask$model$get_input_embeddings()$weight$data
   tlist = lapply(tokens, function(token) {
-    encode = fill_mask$tokenizer$encode(token)
-    encode = encode[c(-1, -length(encode))]
+    encode = fill_mask$tokenizer$encode(token, add_special_tokens=FALSE)
     decode = fill_mask$tokenizer$decode(encode)
     if(length(encode)==1) {
+      out = FALSE
       token.embed = embed[encode]
     } else {
-      if(method=="sum")
-        token.embed = embed[encode]$sum(0L)
-      if(method=="mean")
-        token.embed = embed[encode]$mean(0L)
+      out = TRUE
+      embeds = embed[encode]  # tensor of subwords
+      if(weight.decay==1) {
+        token.embed = embeds$mean(0L)
+      } else {
+        torch = reticulate::import("torch")
+        weights = weight_decay(encode, weight.decay)
+        weights = torch$tensor(weights, device=device)$view(-1L, 1L)
+        embeds.weighted = embeds * weights
+        token.embed = embeds.weighted$sum(0L)
+      }
     }
     return(list(
+      out = out,
       token = token,
       encode = encode,
       decode = decode,
@@ -215,7 +278,13 @@ add_tokens = function(
   names(tlist) = tokens
 
   # add new tokens to the tokenizer vocabulary
-  fill_mask$tokenizer$add_tokens(tokens)
+  new.tokens = as.character(unlist(sapply(
+    tlist, function(t) if(t$out) return(t$token)
+  )))
+  # new.tokens = str_replace(new.tokens, "^ ", "\u0120")
+  n.tokens.added = fill_mask$tokenizer$add_tokens(new.tokens)
+  if(n.tokens.added > 0)
+    cli::cli_alert_success("Added {n.tokens.added} new tokens (weight decay = {weight.decay})")
 
   # initialize random embeddings for the new tokens
   fill_mask$model$resize_token_embeddings(length(fill_mask$tokenizer))
@@ -224,14 +293,11 @@ add_tokens = function(
   vocab.new = fill_mask$tokenizer$get_vocab()
   embed.new = fill_mask$model$get_input_embeddings()$weight$data
   for(t in tlist) {
-    if(is.null(vocab[[t$token]])) {
+    if(t$out) {
       embed.new[vocab.new[[t$token]]] = t$token.embed
       subwords = paste(names(t$token.raw), collapse=", ")
       if(verbose.out)
-        cli::cli_alert_success("Added token {.val {t$token}}: {t$decode} = {method}_embed({subwords})")
-    } else {
-      if(verbose.in)
-        cli::cli_alert_success("{t$token}: already in vocab (token id = {t$encode})")
+        cli::cli_alert_success("Added token {.val {t$token}} := embed_{method}({subwords})")
     }
   }
 
@@ -282,7 +348,8 @@ set_cache_folder = function(path=NULL) {
     cli::cli_alert_success("Changed HuggingFace cache folder temporarily to {.path {path}}")
     cli::cli_alert_success("Models would be downloaded or could be moved to {.path {paste0(path, 'hub/')}}")
   } else {
-    cli::cli_alert_warning("Current HuggingFace cache folder is {.path {cache.folder}}")
+    Sys.setenv("HF_HOME" = cache.folder)
+    cli::cli_alert_success("Current HuggingFace cache folder is {.path {cache.folder}}")
   }
 }
 
@@ -484,7 +551,6 @@ BERT_info = function(models=NULL) {
 
   op = options()
   options(cli.progress_bar_style="bar")
-  # cli::cli_progress_bar("Reading model info:", total=length(models), clear=TRUE)
   cli::cli_progress_bar(
     clear = FALSE,
     total = length(models),
@@ -621,9 +687,16 @@ get_model_date = function(model) {
 #'
 #' @inheritParams BERT_download
 #' @param mask.words Option words filling in the mask.
-#' @param add.tokens Add new tokens (for out-of-vocabulary words or phrases) to model vocabulary? It only temporarily adds tokens for tasks but does not change the raw model file. Defaults to `FALSE`.
-#' @param add.method Method used to produce the token embeddings of appended tokens. Can be `"mean"` (default) or `"sum"` of subword token embeddings.
-#' @param add.verbose Print composition information of new tokens (for out-of-vocabulary words or phrases)? Defaults to `TRUE`.
+#' @param add.tokens Add new tokens (for out-of-vocabulary words or phrases) to model vocabulary? Defaults to `FALSE`.
+#' - Default method of producing the new token embeddings is computing the (equally weighted) average subword token embeddings. To change the weights of different subwords, specify `weight.decay`.
+#' - It just adds tokens temporarily without changing the raw model file.
+#' @param add.verbose Print subwords of each new token? Defaults to `FALSE`.
+#' @param weight.decay Decay factor of relative importance of multiple subwords. Defaults to `1` (see [weight_decay()] for computational details). A smaller decay value would give greater weight to the former subwords than to the latter subwords. The i-th subword has raw weight = decay ^ i.
+#' - decay = 1: all subwords are **equally** important (default)
+#' - 0 < decay < 1: **first** subwords are more important
+#' - decay > 1: **last** subwords are more important
+#'
+#' For example, decay = 0.5 would give 0.5 and 0.25 (with normalized weights 0.667 and 0.333) to two subwords (e.g., "individualism" = 0.667 "individual" + 0.333 "##ism").
 #'
 #' @return
 #' A data.table of model name, mask word, real token (replaced if out of vocabulary), and token id (0~N).
@@ -654,8 +727,8 @@ get_model_date = function(model) {
 BERT_vocab = function(
     models, mask.words,
     add.tokens = FALSE,
-    add.method = c("mean", "sum"),
-    add.verbose = TRUE
+    add.verbose = FALSE,
+    weight.decay = 1
 ) {
   transformers = transformers_init(print.info=FALSE)
   mask.words = as.character(mask.words)
@@ -667,15 +740,24 @@ BERT_vocab = function(
         cli::cli_alert("{.val {model}} add tokens...")
       }
       fill_mask = fill_mask_init(transformers, model)
+      id.max = max(unlist(fill_mask$tokenizer$get_vocab()))
       if(add.tokens) {
-        fill_mask = add_tokens(fill_mask, mask.words, add.method, verbose.in=FALSE, verbose.out=add.verbose)
+        fill_mask = add_tokens(
+          fill_mask,
+          mask.words,
+          weight.decay = weight.decay,
+          verbose.out = add.verbose)
       }
       vocab = fill_mask$tokenizer$get_vocab()
-      ids = vocab[mask.words]
       map = rbindlist(lapply(mask.words, function(mask) {
-        id = as.integer(fill_mask$get_target_ids(mask))
-        token = names(vocab[vocab==id])
-        if(is.null(ids[[mask]])) token = paste(token, "(out-of-vocabulary)")
+        encode = fill_mask$tokenizer$encode(mask, add_special_tokens=FALSE)
+        if(length(encode) > 1 & max(encode) <= id.max) {
+          id = encode[1]
+          token = paste(names(vocab[vocab==id]), "(out-of-vocabulary)")
+        } else {
+          id = as.integer(fill_mask$get_target_ids(mask))
+          token = names(vocab[vocab==id])
+        }
         data.table(model=as_factor(model), M_word=as_factor(mask), token=token, token.id=id)
       }))
     })
@@ -916,8 +998,7 @@ FMAT_query_bind = function(...) {
 
 #' Run the fill-mask pipeline and check the raw results.
 #'
-#' Normal users should use [FMAT_run()].
-#' This function is only for technical check.
+#' This function is only for technical check. Please use [FMAT_run()] for general purposes.
 #'
 #' @describeIn fill_mask Check performance of one model.
 #'
@@ -1003,11 +1084,48 @@ fill_mask_check = function(query, models, targets=NULL, topn=5, gpu) {
 }
 
 
+#' Specify models that require special treatment to ensure accuracy.
+#'
+#' @param uncased Regular expression pattern (matching model names) for uncased models.
+#' @param u2581,u0120 Regular expression pattern (matching model names) for models that require a special prefix character when performing whole-word fill-mask pipeline.
+#'
+#' **WARNING**: The developer is unable to check all models, so users need to check the models they use and modify these parameters if necessary.
+#' - `u2581`: add prefix `\u2581` (white space) for all mask words
+#' - `u0120`: add prefix `\u0120` (white space) for only non-starting mask words
+#' @param u2581.excl,u0120.excl Exclusions to negate `u2581` and `u0120` matching results.
+#'
+#' @return
+#' A list of regular expression patterns.
+#'
+#' @seealso
+#' [FMAT_run()]
+#'
+#' @examples
+#' special_case()
+#'
+#' @export
+special_case = function(
+    uncased = "uncased|albert|electra|muhtasham",
+    u2581 = "albert|xlm-roberta|xlnet",
+    u2581.excl = "chinese",
+    u0120 = "roberta|bart|deberta|bertweet-large|ModernBERT",
+    u0120.excl = "chinese|xlm-|kornosk/"
+) {
+  list(
+    uncased = uncased,
+    prefix.u2581 = u2581,
+    prefix.u2581.excl = u2581.excl,
+    prefix.u0120 = u0120,
+    prefix.u0120.excl = u0120.excl
+  )
+}
+
+
 #' Run the fill-mask pipeline on multiple models (CPU / GPU).
 #'
 #' Run the fill-mask pipeline on multiple models with CPU or GPU (faster but requires an NVIDIA GPU device).
 #'
-#' The function automatically adjusts for the compatibility of tokens used in certain models: (1) for uncased models (e.g., ALBERT), it turns tokens to lowercase; (2) for models that use `<mask>` rather than `[MASK]`, it automatically uses the corrected mask token; (3) for models that require a prefix to estimate whole words than subwords (e.g., ALBERT, RoBERTa), it adds a certain prefix (usually a white space; \\u2581 for ALBERT and XLM-RoBERTa, \\u0120 for RoBERTa and DistilRoBERTa).
+#' The function automatically adjusts for the compatibility of tokens used in certain models: (1) for uncased models (e.g., ALBERT), it turns tokens to lowercase; (2) for models that use `<mask>` rather than `[MASK]`, it automatically uses the corrected mask token; (3) for models that require a prefix to estimate whole words than subwords (e.g., ALBERT, RoBERTa), it adds a white space before each mask option word. See [special_case()] for details.
 #'
 #' These changes only affect the `token` variable in the returned data, but will not affect the `M_word` variable. Thus, users may analyze data based on the unchanged `M_word` rather than the `token`.
 #'
@@ -1021,11 +1139,7 @@ fill_mask_check = function(query, models, targets=NULL, topn=5, gpu) {
 #' - `FALSE`: CPU (`device = -1`).
 #' - `TRUE`: GPU (`device = 0`).
 #' - Others: passing on to [`transformers.pipeline(device=...)`](https://huggingface.co/docs/transformers/main_classes/pipelines#transformers.pipeline.device) which defines the device (e.g., `"cpu"`, `"cuda:0"`, or a GPU device id like `1`) on which the pipeline will be allocated.
-#' @param pattern.special Regular expression patterns (matching model names) for special model cases that are uncased or require a special prefix character in certain situations.
-#'
-#' **WARNING**: As the developer is not able to check all models, users are responsible for checking the models they would use and for modifying this argument if necessary.
-#' - `prefix.u2581`: adding prefix `\u2581` for all mask words
-#' - `prefix.u0120`: adding prefix `\u0120` for only non-starting mask words
+#' @param pattern.special See [special_case()] for details.
 #' @param file File name of `.RData` to save the returned data.
 #' @param progress Show a progress bar? Defaults to `TRUE`.
 #' @param warning Alert warning of out-of-vocabulary word(s)? Defaults to `TRUE`.
@@ -1039,7 +1153,7 @@ fill_mask_check = function(query, models, targets=NULL, topn=5, gpu) {
 #'   (a note "out-of-vocabulary" will be added
 #'   if the original word is not found in the model vocabulary).
 #' - `prob`: (raw) conditional probability of the unmasked token given the provided context, estimated by the masked language model.
-#'   - It is *NOT SUGGESTED* to directly interpret the raw probabilities because the *contrast* between a pair of probabilities is more interpretable. See [summary.fmat()].
+#'   - Raw probabilities should *NOT* be directly used or interpreted. Please use [summary.fmat()] to *contrast* between a pair of probabilities.
 #'
 #' @seealso
 #' [set_cache_folder()]
@@ -1053,6 +1167,10 @@ fill_mask_check = function(query, models, targets=NULL, topn=5, gpu) {
 #' [FMAT_query_bind()]
 #'
 #' [summary.fmat()]
+#'
+#' [special_case()]
+#'
+#' [weight_decay()]
 #'
 #' @examples
 #' ## Running the examples requires the models downloaded
@@ -1086,58 +1204,45 @@ FMAT_run = function(
     data,
     gpu,
     add.tokens = FALSE,
-    add.method = c("mean", "sum"),
-    add.verbose = TRUE,
-    pattern.special = list(
-      uncased = "uncased|albert|electra|muhtasham",
-      prefix.u2581 = "albert|xlm-roberta|xlnet",
-      prefix.u2581.excl = "chinese",
-      prefix.u0120 = "roberta|bart|deberta|bertweet-large|ModernBERT",
-      prefix.u0120.excl = "chinese|xlm-|kornosk/"
-    ),
+    add.verbose = FALSE,
+    weight.decay = 1,
+    pattern.special = special_case(),
     file = NULL,
     progress = TRUE,
     warning = TRUE,
     na.out = TRUE
 ) {
   t0 = Sys.time()
+  n.models = length(models)
   type = attr(data, "type")
   device = gpu_to_device(gpu)
+  device.info = ifelse(device %in% c(-1L, "cpu"), "CPU", "GPU")
   progress = ifelse(progress, "text", "none")
 
   transformers = transformers_init()
   cache.folder = get_cache_folder(transformers)
+  cat("\n")
   cli::cli_text("Loading models from {.path {cache.folder}} ...")
   local.models = get_cached_models(cache.folder)
   check_models_downloaded(local.models$model, models)
-  cat("\n")
 
   query = .query = mask = .mask = M_word = T_word = A_word = token = NULL
 
-  # .query (final query sentences)
-  cli::cli_text("Producing queries from query templates ...")
-  cat("\n")
+  #### .query (final query sentences) ####
   data = mutate(data, .query = str_replace(query, "\\[mask\\]", "[MASK]"))
   if("TARGET" %in% names(data))
     data = mutate(data, .query = str_replace(.query, "\\{TARGET\\}", as.character(T_word)))
   if("ATTRIB" %in% names(data))
     data = mutate(data, .query = str_replace(.query, "\\{ATTRIB\\}", as.character(A_word)))
   n.unique.query = length(unique(data$.query))
+  cli::cli_text("Task on {device.info}: {n.models} models * {n.unique.query} unique queries (type: {.val {type}})")
+  cat(" ")
 
-  # One BERT Model
+  #### function for one model ####
   onerun = function(model, data) {
     ## ---- One Run Begin ---- ##
-    if(is.character(model)) {
-      fill_mask = fill_mask_init(transformers, model, device)
-    } else {
-      fill_mask = model$fill.mask
-      model = model$model.name
-    }
-    model.progress = paste0(which(model==models), "/", length(models))
-    if(device %in% c(-1L, "cpu"))
-      cli::cli_h1("{.val {model}} [{model.progress}]")
-    else
-      cli::cli_h1("{.val {model}} [{model.progress}] (GPU)")
+    model.id = paste0(which(model==models), "/", n.models)
+    cli::cli_h1("[{model.id}] {.val {model}}")
 
     # BERT model special cases
     uncased = str_detect(model, pattern.special$uncased)
@@ -1148,26 +1253,49 @@ FMAT_run = function(
       model, pattern.special$prefix.u0120) &
       !str_detect(model, pattern.special$prefix.u0120.excl)
 
-    # .mask (final mask target words)
+    #### .mask (final mask target words) ####
     data = mutate(data, .mask = as.character(M_word))
-    if(uncased)
+    if(uncased) {
+      cli::cli_alert_success("Info: uncased model")
       data = mutate(data, .mask = tolower(.mask))
-    if(prefix.u2581)
+    }
+    if(prefix.u2581) {
+      # albert
+      cli::cli_alert_success("Info: \\u2581 used as whole-word prefix")
       data = mutate(data, .mask = paste0("\u2581", .mask))
-    if(prefix.u0120)
+    }
+    if(prefix.u0120) {
+      # roberta
+      cli::cli_alert_success("Info: \\u0120 used as whole-word prefix")
       data = mutate(data, .mask = ifelse(
         str_detect(.query, "^\\[MASK\\]"),
         .mask,
-        paste0("\u0120", .mask)))
+        paste0(" ", .mask)))
+      # "\u0120" -> " "
+      # more accurate for filling whole words! (2025.12.19)
+    }
+
+    #### fill_mask ####
+    fill_mask = fill_mask_init(transformers, model, device)
     mask.token = fill_mask$tokenizer$mask_token
-    if(mask.token!="[MASK]")
+    id.max = max(unlist(fill_mask$tokenizer$get_vocab()))
+    if(mask.token!="[MASK]") {
+      cli::cli_alert_success("Info: {mask.token} used as the [MASK] token")
       data = mutate(data, .query = str_replace(.query, "\\[MASK\\]", mask.token))
+    }
 
-    # add tokens for out-of-vocabulary words
-    if(add.tokens) fill_mask = add_tokens(fill_mask, unique(data$.mask), add.method, verbose.in=FALSE, verbose.out=add.verbose)
+    #### add tokens for out-of-vocabulary words ####
+    if(add.tokens) {
+      fill_mask = add_tokens(
+        fill_mask,
+        unique(data$.mask),
+        weight.decay = weight.decay,
+        device = device,
+        verbose.out = add.verbose)
+    }
 
-    # unmask (list version)
-    unmask = function(d, mask.list) {
+    #### unmask (list version) ####
+    unmask = function(fill_mask, d, mask.list) {
       out = reticulate::py_capture_output({
         res = fill_mask(
           inputs = d$.query,
@@ -1179,37 +1307,57 @@ FMAT_run = function(
       return(d)
     }
 
-    # mask token id mapping
-    mask_id_map = function(mask.options) {
+    #### mapping mask token id ####
+    mask_id_map = function(fill_mask, mask.options) {
       vocab = fill_mask$tokenizer$get_vocab()
-      ids = vocab[mask.options]
       map = rbindlist(lapply(mask.options, function(mask) {
-        id = as.integer(fill_mask$get_target_ids(mask))
-        token = names(vocab[vocab==id])
-        if(is.null(ids[[mask]])) token = paste(token, "(out-of-vocabulary)")
+        encode = fill_mask$tokenizer$encode(mask, add_special_tokens=FALSE)
+        if(length(encode) > 1 & max(encode) <= id.max) {
+          # out of vocabulary
+          id = encode[1]
+          token = paste(names(vocab[vocab==id]), "(out-of-vocabulary)")
+        } else {
+          # in vocabulary:
+          # -  length(encode) = 1
+          # -  length(encode) > 1 & max(encode) > id.max
+          # (
+          #  bert-base-uncased:
+          #  after add_tokens("omani"),
+          #  encode("romanian") => r + omani + an
+          #  where "omani" is larger than id.max
+          # )
+          id = as.integer(fill_mask$get_target_ids(mask))
+          token = names(vocab[vocab==id])
+        }
         data.table(.mask=mask, token.id=id, token=token)
       }))
       return(map)
     }
 
-    # progress running
-    map = mask_id_map(unique(data$.mask))
+    #### progress running ####
+    map = mask_id_map(fill_mask, unique(data$.mask))
     t1 = Sys.time()
-    dq = plyr::adply(unique(data[, ".query"]), 1, unmask,
-                     mask.list=map$.mask, .progress=progress)
-    dq = left_join(dq, map, by="token.id")
+    dq = plyr::adply(unique(data[, ".query"]), 1,
+                     unmask,
+                     fill_mask=fill_mask,
+                     mask.list=map$.mask,
+                     .progress=progress)
+    dq = left_join(dq, map, by="token.id")  # important `by` var
     data = left_join(data, dq[, c(".query", ".mask", "output", "token", "prob")],
                      by=c(".query", ".mask"))
     rm(dq)
     data$.query = data$.mask = NULL
     data = cbind(data.table(model=as_factor(model)), data)
 
+    if(min(data$prob, na.rm=TRUE)==0) {
+      n.zero.prob = sum(data$prob==0, na.rm=TRUE)
+      cli::cli_alert_danger("{n.zero.prob} zero probability estimates!")
+    }
+
     mins = as.numeric(difftime(Sys.time(), t1, units="mins"))
-    speed1 = sprintf("%.0f", n.unique.query / mins)
-    speed2 = sprintf("%.0f", nrow(data) / mins)
+    speed = sprintf("%.0f", n.unique.query / mins)
     cat(paste0("  (", dtime(t1), ") [",
-               speed1, " unique queries/min, ",
-               speed2, " prob estimates/min]",
+               speed, " unique queries/min]",
                "\n"))
     rm(fill_mask)
     gc()
@@ -1218,13 +1366,13 @@ FMAT_run = function(
     ## ---- One Run End ---- ##
   }
 
-  cli::cli_alert_info("Task: {length(models)} models * {nrow(data)} queries")
+  #### run ####
   data = rbindlist(lapply(as.character(models), onerun, data=data))
   cat("\n")
   attr(data, "type") = type
   class(data) = c("fmat", class(data))
   gc()
-  cli::cli_alert_success("Task completed: {length(models)} models ({dtime(t0)})")
+  cli::cli_alert_success("Done ({dtime(t0)})")
 
   if(warning) warning_oov(data)
   if(na.out) data[str_detect(token, "out-of-vocabulary")]$prob = NA
@@ -1236,7 +1384,7 @@ FMAT_run = function(
     cli::cli_alert_success("Data saved to {.val {file}}")
   }
 
-  return(data)
+  invisible(data)
 }
 
 
@@ -1245,8 +1393,8 @@ warning_oov = function(data) {
                       c("M_word", "token")])
   d.oov$token = str_remove(d.oov$token, " \\(out-of-vocabulary\\)")
   if(nrow(d.oov) > 0) {
-    oov0 = unique(d.oov$M_word)
-    for(oov in oov0) {
+    oovs = unique(d.oov$M_word)
+    for(oov in oovs) {
       di = d.oov[d.oov$M_word==oov]
       cli::cli_alert_warning("
       Replaced out-of-vocabulary word {.val {oov}} by: {.val {di$token}}")
@@ -1382,31 +1530,40 @@ summary.fmat = function(
 
 #' Intraclass correlation coefficient (ICC) of BERT models.
 #'
-#' Interrater agreement of log probabilities (treated as "ratings"/rows) among BERT language models (treated as "raters"/columns), with both row and column as ("two-way") random effects.
+#' Interrater agreement of *log probabilities* (treated as "ratings"/rows) among BERT language models (treated as "raters"/columns), with both row and column as ("two-way") random effects.
 #'
-#' @param data Raw data returned from [FMAT_run()].
+#' @param data Raw data returned from [FMAT_run()] (with variable `prob`) or its summarized data obtained with [summary.fmat()] (with variable `LPR`).
 #' @param type Interrater `"agreement"` (default) or `"consistency"`.
 #' @param unit Reliability of `"average"` scores (default) or `"single"` scores.
 #'
 #' @return
-#' A data.table of ICC.
+#' A data.frame of ICC.
 #'
 #' @export
 ICC_models = function(data, type="agreement", unit="average") {
   data = as.data.frame(data)
   data$ID = rowidv(data, cols="model")
   data$model = as.numeric(data$model)
-  data$logp = log(data$prob)
+  if("prob" %in% names(data)) {
+    data$logp = log(data$prob)
+    var = "Log Probability (Raw)"
+  } else if("LPR" %in% names(data)) {
+    data$logp = data$LPR
+    var = "Log Probability Ratio (LPR)"
+  } else {
+    stop("`data` should be obtained with `FMAT_run()`!", call.=FALSE)
+  }
   d = tidyr::pivot_wider(
     data[, c("ID", "model", "logp")],
     names_from="model",
     values_from="logp",
     names_prefix="logp")[, -1]
   ICC = irr::icc(d, model="twoway", unit=unit, type=type)
-  res = data.table(items = ICC$subjects,
+  res = data.frame(items = ICC$subjects,
                    raters = ICC$raters,
                    ICC = ICC$value)
   names(res)[3] = paste0("ICC.", unit)
+  row.names(res) = var
   return(res)
 }
 
@@ -1418,13 +1575,14 @@ ICC_models = function(data, type="agreement", unit="average") {
 #' @param by Variable(s) to split data by. Options can be `"model"`, `"TARGET"`, `"ATTRIB"`, or any combination of them.
 #'
 #' @return
-#' A data.table of Cronbach's \eqn{\alpha}.
+#' A data.frame of Cronbach's \eqn{\alpha}.
 #'
 #' @export
 LPR_reliability = function(
     fmat,
     item = c("query", "T_word", "A_word"),
-    by = NULL) {
+    by = NULL
+) {
   item = match.arg(item)
   alphas = plyr::ddply(fmat, by, function(x) {
     x = as.data.frame(x)
@@ -1438,15 +1596,20 @@ LPR_reliability = function(
       values_from = "LPR")
     suppressWarnings({
       suppressMessages({
-        alpha = psych::alpha(dplyr::select(x, tidyr::starts_with("LPR")),
-                             delete=FALSE, warnings=FALSE)
+        alpha = psych::alpha(
+          dplyr::select(x, tidyr::starts_with("LPR")),
+          delete=FALSE,
+          warnings=FALSE)
       })
     })
     data.frame(n.obs = nrow(x),
                k.items = alpha$nvar,
                alpha = alpha$total$raw_alpha)
   })
-  if(is.null(by)) alphas[[1]] = NULL
-  return(as.data.table(alphas))
+  if(is.null(by)) {
+    alphas[[1]] = NULL
+    row.names(alphas) = item
+  }
+  return(alphas)
 }
 

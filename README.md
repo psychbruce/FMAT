@@ -2,9 +2,9 @@
 
 😷 The Fill-Mask Association Test (掩码填空联系测验).
 
-The *Fill-Mask Association Test* (FMAT) is an integrative and probability-based method using [BERT Models] to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as *propositions* in natural language ([Bao, 2024, *JPSP*](https://doi.org/10.1037/pspa0000396)).
+The *Fill-Mask Association Test* (FMAT) is an integrative, probability-based social computing method using [BERT Models] to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as *propositional* semantic representations in natural language ([Bao, 2024, *JPSP*](https://doi.org/10.1037/pspa0000396)).
 
-⚠️ *Please update this package to version ≥ 2025.4 for faster and more robust functionality.*
+⚠️ *Please update this package to version ≥ 2026.1 for better functionality.*
 
 ![](https://psychbruce.github.io/img/FMAT-Workflow.png)
 
@@ -407,15 +407,15 @@ BERT_info(models)
 
 (Tested 2024-05-16 on the developer's computer: HP Probook 450 G10 Notebook PC)
 
-### General 30 English and 30 Chinese Models
+### General 32 English and 32 Chinese Models
 
-We are using a more comprehensive list of 30 English BERT models and 30 Chinese BERT models in our ongoing and future projects.
+We are using a more comprehensive list of 32 English BERT models and 32 Chinese BERT models in our ongoing and future projects.
 
 ``` r
 library(FMAT)
-set_cache_folder("G:/HuggingFace_Cache/")  # models saved in my portable SSD
+set_cache_folder("G:/HuggingFace_Cache/")  # models saved in portable SSD
 
-## 30 English Models
+## 32 English Models
 models.en = c(
   # BERT (base/large/large-wwm, uncased/cased)
   "bert-base-uncased",
@@ -435,11 +435,14 @@ models.en = c(
   "distilbert-base-uncased",
   "distilbert-base-cased",
   "distilroberta-base",
-  # RoBERTa (roberta/muppet, base/large)
+  # RoBERTa (roberta/muppet-roberta, base/large)
   "roberta-base",
   "roberta-large",
   "facebook/muppet-roberta-base",
   "facebook/muppet-roberta-large",
+  # BART (base/large)
+  "facebook/bart-base",
+  "facebook/bart-large",
   # ELECTRA (base/large)
   "google/electra-base-generator",
   "google/electra-large-generator",
@@ -458,7 +461,7 @@ models.en = c(
   "microsoft/BiomedNLP-BiomedBERT-large-uncased-abstract"
 )
 
-## 30 Chinese Models
+## 32 Chinese Models
 models.cn = c(
   # BERT [Google]
   "bert-base-chinese",
@@ -478,6 +481,9 @@ models.cn = c(
   "hfl/chinese-macbert-large",
   "hfl/chinese-electra-180g-base-generator",
   "hfl/chinese-electra-180g-large-generator",
+  # ALBERT [UER] (base/large)
+  "uer/albert-base-chinese-cluecorpussmall",
+  "uer/albert-large-chinese-cluecorpussmall",
   # RoBERTa [UER] (H=512/768, L=6/8/10/12)
   "uer/chinese_roberta_L-6_H-512",
   "uer/chinese_roberta_L-8_H-512",
@@ -505,7 +511,7 @@ BERT_info(models.en)
 BERT_info(models.cn)
 ```
 
-#### Information of the 30 English Models
+#### Information of the English Models
 
 ```         
                                                     model       type     param vocab embed layer heads   mask
@@ -529,17 +535,19 @@ BERT_info(models.cn)
 17:                                         roberta-large    roberta 355359744 50265  1024    24    16 <mask>
 18:                          facebook/muppet-roberta-base    roberta 124645632 50265   768    12    12 <mask>
 19:                         facebook/muppet-roberta-large    roberta 355359744 50265  1024    24    16 <mask>
-20:                         google/electra-base-generator    electra  33511168 30522   768    12     4 [MASK]
-21:                        google/electra-large-generator    electra  50999552 30522  1024    24     4 [MASK]
-22:                             google/mobilebert-uncased mobilebert  24581888 30522   128    24     4 [MASK]
-23:                           answerdotai/ModernBERT-base modernbert 149014272 50368   768    22    12 [MASK]
-24:                          answerdotai/ModernBERT-large modernbert 394781696 50368  1024    28    16 [MASK]
-25:                              muhtasham/base-mlm-tweet       bert 109482240 30522   768    12    12 [MASK]
-26:                       cardiffnlp/twitter-roberta-base    roberta 124645632 50265   768    12    12 <mask>
-27:                                   vinai/bertweet-base    roberta 134899968 64001   768    12    12 <mask>
-28:                                  vinai/bertweet-large    roberta 355359744 50265  1024    24    16 <mask>
-29:  microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract       bert 109482240 30522   768    12    12 [MASK]
-30: microsoft/BiomedNLP-BiomedBERT-large-uncased-abstract       bert 335141888 30522  1024    24    16 [MASK]
+20:                                    facebook/bart-base       bart 139420416 50265   768     6    12 <mask>
+21:                                   facebook/bart-large       bart 406291456 50265  1024    12    16 <mask>
+22:                         google/electra-base-generator    electra  33511168 30522   768    12     4 [MASK]
+23:                        google/electra-large-generator    electra  50999552 30522  1024    24     4 [MASK]
+24:                             google/mobilebert-uncased mobilebert  24581888 30522   128    24     4 [MASK]
+25:                           answerdotai/ModernBERT-base modernbert 149014272 50368   768    22    12 [MASK]
+26:                          answerdotai/ModernBERT-large modernbert 394781696 50368  1024    28    16 [MASK]
+27:                              muhtasham/base-mlm-tweet       bert 109482240 30522   768    12    12 [MASK]
+28:                       cardiffnlp/twitter-roberta-base    roberta 124645632 50265   768    12    12 <mask>
+29:                                   vinai/bertweet-base    roberta 134899968 64001   768    12    12 <mask>
+30:                                  vinai/bertweet-large    roberta 355359744 50265  1024    24    16 <mask>
+31:  microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract       bert 109482240 30522   768    12    12 [MASK]
+32: microsoft/BiomedNLP-BiomedBERT-large-uncased-abstract       bert 335141888 30522  1024    24    16 [MASK]
                                                     model       type     param vocab embed layer heads   mask
 ```
 
@@ -549,14 +557,14 @@ BERT_info(models.cn)
     -   1807, 1809, 1817
 -   `"ModernBERT"` series: 65 missing
     -   1801\~1829, 1831\~1839, 1841\~1847, 1849, 1851\~1859, 1869, 1871\~1875, 1877\~1879, 1883
--   `"roberta"` series, `"muppet"` series, `"distilroberta-base"`, `"cardiffnlp/twitter-roberta-base"`, `"vinai/bertweet-large"`: 79 missing
+-   `"roberta"` series, `"muppet"` series, `"bart"` series, `"distilroberta-base"`, `"cardiffnlp/twitter-roberta-base"`, `"vinai/bertweet-large"`: 79 missing
     -   1801\~1829, 1831\~1839, 1841\~1849, 1851\~1859, 1864, 1866\~1869, 1871\~1879, 1881\~1885, 1887, 1891, 1892, 1894
 -   `"vinai/bertweet-base"`: 29 missing
     -   1801\~1811, 1813\~1814, 1816\~1819, 1821\~1823, 1825\~1829, 1831, 1833, 1834, 1843
 -   `"BiomedBERT"` series: 163 missing
     -   1801\~1949, 1951\~1959, 1961\~1964, 1967
 
-#### Information of the 30 Chinese Models
+#### Information of the Chinese Models
 
 ```         
                                                           model          type      param vocab embed layer heads   mask
@@ -575,22 +583,24 @@ BERT_info(models.cn)
 12:                                   hfl/chinese-macbert-large          bert  325522432 21128  1024    24    16 [MASK]
 13:                     hfl/chinese-electra-180g-base-generator       electra   22108608 21128   768    12     3 [MASK]
 14:                    hfl/chinese-electra-180g-large-generator       electra   41380096 21128  1024    24     4 [MASK]
-15:                               uer/chinese_roberta_L-6_H-512          bert   30258688 21128   512     6     8 [MASK]
-16:                               uer/chinese_roberta_L-8_H-512          bert   36563456 21128   512     8     8 [MASK]
-17:                              uer/chinese_roberta_L-10_H-512          bert   42868224 21128   512    10     8 [MASK]
-18:                              uer/chinese_roberta_L-12_H-512          bert   49172992 21128   512    12     8 [MASK]
-19:                               uer/chinese_roberta_L-6_H-768          bert   59740416 21128   768     6    12 [MASK]
-20:                               uer/chinese_roberta_L-8_H-768          bert   73916160 21128   768     8    12 [MASK]
-21:                              uer/chinese_roberta_L-10_H-768          bert   88091904 21128   768    10    12 [MASK]
-22:                              uer/chinese_roberta_L-12_H-768          bert  102267648 21128   768    12    12 [MASK]
-23:                uer/roberta-base-wwm-chinese-cluecorpussmall          bert  102267648 21128   768    12    12 [MASK]
-24:               uer/roberta-large-wwm-chinese-cluecorpussmall          bert  325522432 21128  1024    24    16 [MASK]
-25:               IDEA-CCNL/Erlangshen-MacBERT-325M-NLI-Chinese          bert  325625856 21229  1024    24    16 [MASK]
-26:     IDEA-CCNL/Erlangshen-TCBert-330M-Classification-Chinese          bert  325522432 21128  1024    24    16 [MASK]
-27: IDEA-CCNL/Erlangshen-TCBert-330M-Sentence-Embedding-Chinese          bert  325522432 21128  1024    24    16 [MASK]
-28:             IDEA-CCNL/Erlangshen-UniMC-RoBERTa-110M-Chinese          bert  102267648 21128   768    12    12 [MASK]
-29:             IDEA-CCNL/Erlangshen-UniMC-RoBERTa-330M-Chinese          bert  325522432 21128  1024    24    16 [MASK]
-30:        IDEA-CCNL/Erlangshen-UniMC-MegatronBERT-1.3B-Chinese megatron-bert 1257367552 21248  2048    24     8 [MASK]
+15:                     uer/albert-base-chinese-cluecorpussmall        albert   10547968 21128   128    12    12 [MASK]
+16:                    uer/albert-large-chinese-cluecorpussmall        albert   16548352 21128   128    24    16 [MASK]
+17:                               uer/chinese_roberta_L-6_H-512          bert   30258688 21128   512     6     8 [MASK]
+18:                               uer/chinese_roberta_L-8_H-512          bert   36563456 21128   512     8     8 [MASK]
+19:                              uer/chinese_roberta_L-10_H-512          bert   42868224 21128   512    10     8 [MASK]
+20:                              uer/chinese_roberta_L-12_H-512          bert   49172992 21128   512    12     8 [MASK]
+21:                               uer/chinese_roberta_L-6_H-768          bert   59740416 21128   768     6    12 [MASK]
+22:                               uer/chinese_roberta_L-8_H-768          bert   73916160 21128   768     8    12 [MASK]
+23:                              uer/chinese_roberta_L-10_H-768          bert   88091904 21128   768    10    12 [MASK]
+24:                              uer/chinese_roberta_L-12_H-768          bert  102267648 21128   768    12    12 [MASK]
+25:                uer/roberta-base-wwm-chinese-cluecorpussmall          bert  102267648 21128   768    12    12 [MASK]
+26:               uer/roberta-large-wwm-chinese-cluecorpussmall          bert  325522432 21128  1024    24    16 [MASK]
+27:               IDEA-CCNL/Erlangshen-MacBERT-325M-NLI-Chinese          bert  325625856 21229  1024    24    16 [MASK]
+28:     IDEA-CCNL/Erlangshen-TCBert-330M-Classification-Chinese          bert  325522432 21128  1024    24    16 [MASK]
+29: IDEA-CCNL/Erlangshen-TCBert-330M-Sentence-Embedding-Chinese          bert  325522432 21128  1024    24    16 [MASK]
+30:             IDEA-CCNL/Erlangshen-UniMC-RoBERTa-110M-Chinese          bert  102267648 21128   768    12    12 [MASK]
+31:             IDEA-CCNL/Erlangshen-UniMC-RoBERTa-330M-Chinese          bert  325522432 21128  1024    24    16 [MASK]
+32:        IDEA-CCNL/Erlangshen-UniMC-MegatronBERT-1.3B-Chinese megatron-bert 1257367552 21248  2048    24     8 [MASK]
                                                           model          type      param vocab embed layer heads   mask
 ```
 

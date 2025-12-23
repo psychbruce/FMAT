@@ -1,5 +1,18 @@
 **Please check the [latest news (change log)](https://psychbruce.github.io/FMAT/news/index.html) and keep this package updated.**
 
+# FMAT 2026.1
+
+This version brings crucial changes and improvements to the `add.tokens` method of `FMAT_run()`. Old versions are completely deprecated.
+
+-   Deprecated the `add.method` parameter of `FMAT_run()`: Now it always computes **average** subword token embeddings, with another new parameter `weight.decay` (default value = 1, i.e., equally weighted) that can specify the relative importance of multiple subwords.
+    -   A smaller decay value would give greater weight to the former subwords than to the latter subwords.
+    -   The *i*-th subword $w_i$ has the raw weight score as $\text{weight}(w_i) = decay^i$.
+    -   See also `weight_decay()` for computational details.
+-   Added `special_case()` as an explicit function to better specify models requiring special treatment, which was previously just a parameter of `FMAT_run()`.
+-   Improved the internal technical treatment for subword token combination when "\\u0120" is the special prefix. This is important for more accurate out-of-vocabulary fill-mask probability estimates of whole words and phrases, mainly relevant to models using the RoBERTa architecture and only influencing results under `add.tokens=TRUE`. Note that `FMAT_run()` results with `add.tokens=FALSE` are not affected by this change.
+-   Improved progress output information of `FMAT_run()`.
+-   Improved `ICC_models()` to support ICC estimates of both log probability (raw) and log probability ratio (LPR).
+
 # FMAT 2025.12
 
 -   Changed the default `add.method` of `add.tokens` from `"sum"` to `"mean"`, relevant to `BERT_vocab()` and `FMAT_run()`. Using the averaged rather than the summed subword token embeddings for out-of-vocabulary tokens would have a smaller impact on the probability estimates of vocabulary tokens.

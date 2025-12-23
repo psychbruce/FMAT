@@ -9,12 +9,9 @@ FMAT_run(
   data,
   gpu,
   add.tokens = FALSE,
-  add.method = c("mean", "sum"),
-  add.verbose = TRUE,
-  pattern.special = list(uncased = "uncased|albert|electra|muhtasham", prefix.u2581 =
-    "albert|xlm-roberta|xlnet", prefix.u2581.excl = "chinese", prefix.u0120 =
-    "roberta|bart|deberta|bertweet-large|ModernBERT", prefix.u0120.excl =
-    "chinese|xlm-|kornosk/"),
+  add.verbose = FALSE,
+  weight.decay = 1,
+  pattern.special = special_case(),
   file = NULL,
   progress = TRUE,
   warning = TRUE,
@@ -36,19 +33,24 @@ Options passing on to the \code{device} parameter in Python:
 \item Others: passing on to \href{https://huggingface.co/docs/transformers/main_classes/pipelines#transformers.pipeline.device}{\code{transformers.pipeline(device=...)}} which defines the device (e.g., \code{"cpu"}, \code{"cuda:0"}, or a GPU device id like \code{1}) on which the pipeline will be allocated.
 }}
 
-\item{add.tokens}{Add new tokens (for out-of-vocabulary words or phrases) to model vocabulary? It only temporarily adds tokens for tasks but does not change the raw model file. Defaults to \code{FALSE}.}
-
-\item{add.method}{Method used to produce the token embeddings of appended tokens. Can be \code{"mean"} (default) or \code{"sum"} of subword token embeddings.}
-
-\item{add.verbose}{Print composition information of new tokens (for out-of-vocabulary words or phrases)? Defaults to \code{TRUE}.}
-
-\item{pattern.special}{Regular expression patterns (matching model names) for special model cases that are uncased or require a special prefix character in certain situations.
-
-\strong{WARNING}: As the developer is not able to check all models, users are responsible for checking the models they would use and for modifying this argument if necessary.
+\item{add.tokens}{Add new tokens (for out-of-vocabulary words or phrases) to model vocabulary? Defaults to \code{FALSE}.
 \itemize{
-\item \code{prefix.u2581}: adding prefix \verb{\\u2581} for all mask words
-\item \code{prefix.u0120}: adding prefix \verb{\\u0120} for only non-starting mask words
+\item Default method of producing the new token embeddings is computing the (equally weighted) average subword token embeddings. To change the weights of different subwords, specify \code{weight.decay}.
+\item It just adds tokens temporarily without changing the raw model file.
 }}
+
+\item{add.verbose}{Print subwords of each new token? Defaults to \code{FALSE}.}
+
+\item{weight.decay}{Decay factor of relative importance of multiple subwords. Defaults to \code{1} (see \code{\link[=weight_decay]{weight_decay()}} for computational details). A smaller decay value would give greater weight to the former subwords than to the latter subwords. The i-th subword has raw weight = decay ^ i.
+\itemize{
+\item decay = 1: all subwords are \strong{equally} important (default)
+\item 0 < decay < 1: \strong{first} subwords are more important
+\item decay > 1: \strong{last} subwords are more important
+}
+
+For example, decay = 0.5 would give 0.5 and 0.25 (with normalized weights 0.667 and 0.333) to two subwords (e.g., "individualism" = 0.667 "individual" + 0.333 "##ism").}
+
+\item{pattern.special}{See \code{\link[=special_case]{special_case()}} for details.}
 
 \item{file}{File name of \code{.RData} to save the returned data.}
 
@@ -68,7 +70,7 @@ A data.table (class \code{fmat}) appending \code{data} with these new variables:
 if the original word is not found in the model vocabulary).
 \item \code{prob}: (raw) conditional probability of the unmasked token given the provided context, estimated by the masked language model.
 \itemize{
-\item It is \emph{NOT SUGGESTED} to directly interpret the raw probabilities because the \emph{contrast} between a pair of probabilities is more interpretable. See \code{\link[=summary.fmat]{summary.fmat()}}.
+\item Raw probabilities should \emph{NOT} be directly used or interpreted. Please use \code{\link[=summary.fmat]{summary.fmat()}} to \emph{contrast} between a pair of probabilities.
 }
 }
 }
@@ -76,7 +78,7 @@ if the original word is not found in the model vocabulary).
 Run the fill-mask pipeline on multiple models with CPU or GPU (faster but requires an NVIDIA GPU device).
 }
 \details{
-The function automatically adjusts for the compatibility of tokens used in certain models: (1) for uncased models (e.g., ALBERT), it turns tokens to lowercase; (2) for models that use \verb{<mask>} rather than \verb{[MASK]}, it automatically uses the corrected mask token; (3) for models that require a prefix to estimate whole words than subwords (e.g., ALBERT, RoBERTa), it adds a certain prefix (usually a white space; \\u2581 for ALBERT and XLM-RoBERTa, \\u0120 for RoBERTa and DistilRoBERTa).
+The function automatically adjusts for the compatibility of tokens used in certain models: (1) for uncased models (e.g., ALBERT), it turns tokens to lowercase; (2) for models that use \verb{<mask>} rather than \verb{[MASK]}, it automatically uses the corrected mask token; (3) for models that require a prefix to estimate whole words than subwords (e.g., ALBERT, RoBERTa), it adds a white space before each mask option word. See \code{\link[=special_case]{special_case()}} for details.
 
 These changes only affect the \code{token} variable in the returned data, but will not affect the \code{M_word} variable. Thus, users may analyze data based on the unchanged \code{M_word} rather than the \code{token}.
 
@@ -121,4 +123,8 @@ summary(data2)
 \code{\link[=FMAT_query_bind]{FMAT_query_bind()}}
 
 \code{\link[=summary.fmat]{summary.fmat()}}
+
+\code{\link[=special_case]{special_case()}}
+
+\code{\link[=weight_decay]{weight_decay()}}
 }
