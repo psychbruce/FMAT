@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FMAT</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2025.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2026.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,7 +32,20 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2025.12" id="fmat-202512">FMAT 2025.12<a class="anchor" aria-label="anchor" href="#fmat-202512"></a></h2>
+<h2 class="pkg-version" data-toc-text="2026.1" id="fmat-20261">FMAT 2026.1<a class="anchor" aria-label="anchor" href="#fmat-20261"></a></h2>
+<p>This version brings crucial changes and improvements to the <code>add.tokens</code> method of <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code>. Old versions are completely deprecated.</p>
+<ul><li>Deprecated the <code>add.method</code> parameter of <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code>: Now it always computes <strong>average</strong> subword token embeddings, with another new parameter <code>weight.decay</code> (default value = 1, i.e., equally weighted) that can specify the relative importance of multiple subwords.
+<ul><li>A smaller decay value would give greater weight to the former subwords than to the latter subwords.</li>
+<li>The <em>i</em>-th subword <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>w</mi><mi>i</mi></msub><annotation encoding="application/x-tex">w_i</annotation></semantics></math> has the raw weight score as <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">weight</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>w</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>d</mi><mi>e</mi><mi>c</mi><mi>a</mi><msup><mi>y</mi><mi>i</mi></msup></mrow><annotation encoding="application/x-tex">\text{weight}(w_i) = decay^i</annotation></semantics></math>.</li>
+<li>See also <code><a href="../reference/weight_decay.html">weight_decay()</a></code> for computational details.</li>
+</ul></li>
+<li>Added <code><a href="../reference/special_case.html">special_case()</a></code> as an explicit function to better specify models requiring special treatment, which was previously just a parameter of <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code>.</li>
+<li>Improved the internal technical treatment for subword token combination when “\u0120” is the special prefix. This is important for more accurate out-of-vocabulary fill-mask probability estimates of whole words and phrases, mainly relevant to models using the RoBERTa architecture and only influencing results under <code>add.tokens=TRUE</code>. Note that <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code> results with <code>add.tokens=FALSE</code> are not affected by this change.</li>
+<li>Improved progress output information of <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code>.</li>
+<li>Improved <code><a href="../reference/ICC_models.html">ICC_models()</a></code> to support ICC estimates of both log probability (raw) and log probability ratio (LPR).</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2025.12" id="fmat-202512">FMAT 2025.12<a class="anchor" aria-label="anchor" href="#fmat-202512"></a></h2><p class="text-muted">CRAN release: 2025-12-15</p>
 <ul><li>Changed the default <code>add.method</code> of <code>add.tokens</code> from <code>"sum"</code> to <code>"mean"</code>, relevant to <code><a href="../reference/BERT_vocab.html">BERT_vocab()</a></code> and <code><a href="../reference/FMAT_run.html">FMAT_run()</a></code>. Using the averaged rather than the summed subword token embeddings for out-of-vocabulary tokens would have a smaller impact on the probability estimates of vocabulary tokens.</li>
 <li>Improved functionality for the latest versions of Python packages.</li>
 <li>Refined help pages in the style of Roxygen markdown.</li>

@@ -9,8 +9,8 @@ BERT_vocab(
   models,
   mask.words,
   add.tokens = FALSE,
-  add.method = c("mean", "sum"),
-  add.verbose = TRUE
+  add.verbose = FALSE,
+  weight.decay = 1
 )
 ```
 
@@ -28,18 +28,36 @@ BERT_vocab(
 - add.tokens:
 
   Add new tokens (for out-of-vocabulary words or phrases) to model
-  vocabulary? It only temporarily adds tokens for tasks but does not
-  change the raw model file. Defaults to `FALSE`.
+  vocabulary? Defaults to `FALSE`.
 
-- add.method:
+  - Default method of producing the new token embeddings is computing
+    the (equally weighted) average subword token embeddings. To change
+    the weights of different subwords, specify `weight.decay`.
 
-  Method used to produce the token embeddings of appended tokens. Can be
-  `"mean"` (default) or `"sum"` of subword token embeddings.
+  - It just adds tokens temporarily without changing the raw model file.
 
 - add.verbose:
 
-  Print composition information of new tokens (for out-of-vocabulary
-  words or phrases)? Defaults to `TRUE`.
+  Print subwords of each new token? Defaults to `FALSE`.
+
+- weight.decay:
+
+  Decay factor of relative importance of multiple subwords. Defaults to
+  `1` (see
+  [`weight_decay()`](https://psychbruce.github.io/FMAT/reference/weight_decay.md)
+  for computational details). A smaller decay value would give greater
+  weight to the former subwords than to the latter subwords. The i-th
+  subword has raw weight = decay ^ i.
+
+  - decay = 1: all subwords are **equally** important (default)
+
+  - 0 \< decay \< 1: **first** subwords are more important
+
+  - decay \> 1: **last** subwords are more important
+
+  For example, decay = 0.5 would give 0.5 and 0.25 (with normalized
+  weights 0.667 and 0.333) to two subwords (e.g., "individualism" =
+  0.667 "individual" + 0.333 "##ism").
 
 ## Value
 

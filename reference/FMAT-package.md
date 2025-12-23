@@ -2,10 +2,11 @@
 
 The Fill-Mask Association Test ('FMAT')
 [doi:10.1037/pspa0000396](https://doi.org/10.1037/pspa0000396) is an
-integrative and probability-based method using Masked Language Models to
-measure conceptual associations (e.g., attitudes, biases, stereotypes,
-social norms, cultural values) as propositions in natural language.
-Supported language models include 'BERT'
+integrative, probability-based social computing method using Masked
+Language Models to measure conceptual associations (e.g., attitudes,
+biases, stereotypes, social norms, cultural values) as propositional
+semantic representations in natural language. Supported language models
+include 'BERT'
 [doi:10.48550/arXiv.1810.04805](https://doi.org/10.48550/arXiv.1810.04805)
 and its variants available at 'Hugging Face'
 <https://huggingface.co/models?pipeline_tag=fill-mask>. Methodological

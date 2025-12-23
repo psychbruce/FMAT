@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FMAT</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2025.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2026.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,7 +33,7 @@
     </div>
 
     <div class="ref-description section level2">
-    <p>Interrater agreement of log probabilities (treated as "ratings"/rows) among BERT language models (treated as "raters"/columns), with both row and column as ("two-way") random effects.</p>
+    <p>Interrater agreement of <em>log probabilities</em> (treated as "ratings"/rows) among BERT language models (treated as "raters"/columns), with both row and column as ("two-way") random effects.</p>
     </div>
 
     <div class="section level2">
@@ -46,7 +46,7 @@
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>Raw data returned from <code><a href="FMAT_run.html">FMAT_run()</a></code>.</p></dd>
+<dd><p>Raw data returned from <code><a href="FMAT_run.html">FMAT_run()</a></code> (with variable <code>prob</code>) or its summarized data obtained with <code><a href="summary.fmat.html">summary.fmat()</a></code> (with variable <code>LPR</code>).</p></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
@@ -59,7 +59,7 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A data.table of ICC.</p>
+    <p>A data.frame of ICC.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

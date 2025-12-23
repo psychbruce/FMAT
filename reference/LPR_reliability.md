@@ -27,4 +27,4 @@ LPR_reliability(fmat, item = c("query", "T_word", "A_word"), by = NULL)
 
 ## Value
 
-A data.table of Cronbach's \\\alpha\\.
+A data.frame of Cronbach's \\\alpha\\.

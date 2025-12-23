@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FMAT</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2025.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2026.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,8 +42,8 @@
 <span>  <span class="va">models</span>,</span>
 <span>  <span class="va">mask.words</span>,</span>
 <span>  add.tokens <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  add.method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mean"</span>, <span class="st">"sum"</span><span class="op">)</span>,</span>
-<span>  add.verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  add.verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  weight.decay <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -61,15 +61,20 @@
 
 
 <dt id="arg-add-tokens">add.tokens<a class="anchor" aria-label="anchor" href="#arg-add-tokens"></a></dt>
-<dd><p>Add new tokens (for out-of-vocabulary words or phrases) to model vocabulary? It only temporarily adds tokens for tasks but does not change the raw model file. Defaults to <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-add-method">add.method<a class="anchor" aria-label="anchor" href="#arg-add-method"></a></dt>
-<dd><p>Method used to produce the token embeddings of appended tokens. Can be <code>"mean"</code> (default) or <code>"sum"</code> of subword token embeddings.</p></dd>
+<dd><p>Add new tokens (for out-of-vocabulary words or phrases) to model vocabulary? Defaults to <code>FALSE</code>.</p><ul><li><p>Default method of producing the new token embeddings is computing the (equally weighted) average subword token embeddings. To change the weights of different subwords, specify <code>weight.decay</code>.</p></li>
+<li><p>It just adds tokens temporarily without changing the raw model file.</p></li>
+</ul></dd>
 
 
 <dt id="arg-add-verbose">add.verbose<a class="anchor" aria-label="anchor" href="#arg-add-verbose"></a></dt>
-<dd><p>Print composition information of new tokens (for out-of-vocabulary words or phrases)? Defaults to <code>TRUE</code>.</p></dd>
+<dd><p>Print subwords of each new token? Defaults to <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-weight-decay">weight.decay<a class="anchor" aria-label="anchor" href="#arg-weight-decay"></a></dt>
+<dd><p>Decay factor of relative importance of multiple subwords. Defaults to <code>1</code> (see <code><a href="weight_decay.html">weight_decay()</a></code> for computational details). A smaller decay value would give greater weight to the former subwords than to the latter subwords. The i-th subword has raw weight = decay ^ i.</p><ul><li><p>decay = 1: all subwords are <strong>equally</strong> important (default)</p></li>
+<li><p>0 &lt; decay &lt; 1: <strong>first</strong> subwords are more important</p></li>
+<li><p>decay &gt; 1: <strong>last</strong> subwords are more important</p></li>
+</ul><p>For example, decay = 0.5 would give 0.5 and 0.25 (with normalized weights 0.667 and 0.333) to two subwords (e.g., "individualism" = 0.667 "individual" + 0.333 "##ism").</p></dd>
 
 </dl></div>
     <div class="section level2">

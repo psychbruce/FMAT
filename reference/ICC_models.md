@@ -1,6 +1,6 @@
 # Intraclass correlation coefficient (ICC) of BERT models.
 
-Interrater agreement of log probabilities (treated as "ratings"/rows)
+Interrater agreement of *log probabilities* (treated as "ratings"/rows)
 among BERT language models (treated as "raters"/columns), with both row
 and column as ("two-way") random effects.
 
@@ -15,7 +15,10 @@ ICC_models(data, type = "agreement", unit = "average")
 - data:
 
   Raw data returned from
-  [`FMAT_run()`](https://psychbruce.github.io/FMAT/reference/FMAT_run.md).
+  [`FMAT_run()`](https://psychbruce.github.io/FMAT/reference/FMAT_run.md)
+  (with variable `prob`) or its summarized data obtained with
+  [`summary.fmat()`](https://psychbruce.github.io/FMAT/reference/summary.fmat.md)
+  (with variable `LPR`).
 
 - type:
 
@@ -27,4 +30,4 @@ ICC_models(data, type = "agreement", unit = "average")
 
 ## Value
 
-A data.table of ICC.
+A data.frame of ICC.

@@ -1,8 +1,8 @@
 # Run the fill-mask pipeline and check the raw results.
 
-Normal users should use
-[`FMAT_run()`](https://psychbruce.github.io/FMAT/reference/FMAT_run.md).
-This function is only for technical check.
+This function is only for technical check. Please use
+[`FMAT_run()`](https://psychbruce.github.io/FMAT/reference/FMAT_run.md)
+for general purposes.
 
 ## Usage
 

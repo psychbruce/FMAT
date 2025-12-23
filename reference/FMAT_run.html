@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FMAT</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2025.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2026.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,12 +43,9 @@
 <span>  <span class="va">data</span>,</span>
 <span>  <span class="va">gpu</span>,</span>
 <span>  add.tokens <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  add.method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mean"</span>, <span class="st">"sum"</span><span class="op">)</span>,</span>
-<span>  add.verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  pattern.special <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>uncased <span class="op">=</span> <span class="st">"uncased|albert|electra|muhtasham"</span>, prefix.u2581 <span class="op">=</span></span>
-<span>    <span class="st">"albert|xlm-roberta|xlnet"</span>, prefix.u2581.excl <span class="op">=</span> <span class="st">"chinese"</span>, prefix.u0120 <span class="op">=</span></span>
-<span>    <span class="st">"roberta|bart|deberta|bertweet-large|ModernBERT"</span>, prefix.u0120.excl <span class="op">=</span></span>
-<span>    <span class="st">"chinese|xlm-|kornosk/"</span><span class="op">)</span>,</span>
+<span>  add.verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  weight.decay <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  pattern.special <span class="op">=</span> <span class="fu"><a href="special_case.html">special_case</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  file <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  warning <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -78,22 +75,24 @@
 
 
 <dt id="arg-add-tokens">add.tokens<a class="anchor" aria-label="anchor" href="#arg-add-tokens"></a></dt>
-<dd><p>Add new tokens (for out-of-vocabulary words or phrases) to model vocabulary? It only temporarily adds tokens for tasks but does not change the raw model file. Defaults to <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-add-method">add.method<a class="anchor" aria-label="anchor" href="#arg-add-method"></a></dt>
-<dd><p>Method used to produce the token embeddings of appended tokens. Can be <code>"mean"</code> (default) or <code>"sum"</code> of subword token embeddings.</p></dd>
+<dd><p>Add new tokens (for out-of-vocabulary words or phrases) to model vocabulary? Defaults to <code>FALSE</code>.</p><ul><li><p>Default method of producing the new token embeddings is computing the (equally weighted) average subword token embeddings. To change the weights of different subwords, specify <code>weight.decay</code>.</p></li>
+<li><p>It just adds tokens temporarily without changing the raw model file.</p></li>
+</ul></dd>
 
 
 <dt id="arg-add-verbose">add.verbose<a class="anchor" aria-label="anchor" href="#arg-add-verbose"></a></dt>
-<dd><p>Print composition information of new tokens (for out-of-vocabulary words or phrases)? Defaults to <code>TRUE</code>.</p></dd>
+<dd><p>Print subwords of each new token? Defaults to <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-weight-decay">weight.decay<a class="anchor" aria-label="anchor" href="#arg-weight-decay"></a></dt>
+<dd><p>Decay factor of relative importance of multiple subwords. Defaults to <code>1</code> (see <code><a href="weight_decay.html">weight_decay()</a></code> for computational details). A smaller decay value would give greater weight to the former subwords than to the latter subwords. The i-th subword has raw weight = decay ^ i.</p><ul><li><p>decay = 1: all subwords are <strong>equally</strong> important (default)</p></li>
+<li><p>0 &lt; decay &lt; 1: <strong>first</strong> subwords are more important</p></li>
+<li><p>decay &gt; 1: <strong>last</strong> subwords are more important</p></li>
+</ul><p>For example, decay = 0.5 would give 0.5 and 0.25 (with normalized weights 0.667 and 0.333) to two subwords (e.g., "individualism" = 0.667 "individual" + 0.333 "##ism").</p></dd>
 
 
 <dt id="arg-pattern-special">pattern.special<a class="anchor" aria-label="anchor" href="#arg-pattern-special"></a></dt>
-<dd><p>Regular expression patterns (matching model names) for special model cases that are uncased or require a special prefix character in certain situations.</p>
-<p><strong>WARNING</strong>: As the developer is not able to check all models, users are responsible for checking the models they would use and for modifying this argument if necessary.</p><ul><li><p><code>prefix.u2581</code>: adding prefix <code>\u2581</code> for all mask words</p></li>
-<li><p><code>prefix.u0120</code>: adding prefix <code>\u0120</code> for only non-starting mask words</p></li>
-</ul></dd>
+<dd><p>See <code><a href="special_case.html">special_case()</a></code> for details.</p></dd>
 
 
 <dt id="arg-file">file<a class="anchor" aria-label="anchor" href="#arg-file"></a></dt>
@@ -119,12 +118,12 @@
 <li><p><code>token</code>: actual token to be filled in the blank mask
 (a note "out-of-vocabulary" will be added
 if the original word is not found in the model vocabulary).</p></li>
-<li><p><code>prob</code>: (raw) conditional probability of the unmasked token given the provided context, estimated by the masked language model.</p><ul><li><p>It is <em>NOT SUGGESTED</em> to directly interpret the raw probabilities because the <em>contrast</em> between a pair of probabilities is more interpretable. See <code><a href="summary.fmat.html">summary.fmat()</a></code>.</p></li>
+<li><p><code>prob</code>: (raw) conditional probability of the unmasked token given the provided context, estimated by the masked language model.</p><ul><li><p>Raw probabilities should <em>NOT</em> be directly used or interpreted. Please use <code><a href="summary.fmat.html">summary.fmat()</a></code> to <em>contrast</em> between a pair of probabilities.</p></li>
 </ul></li>
 </ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The function automatically adjusts for the compatibility of tokens used in certain models: (1) for uncased models (e.g., ALBERT), it turns tokens to lowercase; (2) for models that use <code>&lt;mask&gt;</code> rather than <code>[MASK]</code>, it automatically uses the corrected mask token; (3) for models that require a prefix to estimate whole words than subwords (e.g., ALBERT, RoBERTa), it adds a certain prefix (usually a white space; \u2581 for ALBERT and XLM-RoBERTa, \u0120 for RoBERTa and DistilRoBERTa).</p>
+    <p>The function automatically adjusts for the compatibility of tokens used in certain models: (1) for uncased models (e.g., ALBERT), it turns tokens to lowercase; (2) for models that use <code>&lt;mask&gt;</code> rather than <code>[MASK]</code>, it automatically uses the corrected mask token; (3) for models that require a prefix to estimate whole words than subwords (e.g., ALBERT, RoBERTa), it adds a white space before each mask option word. See <code><a href="special_case.html">special_case()</a></code> for details.</p>
 <p>These changes only affect the <code>token</code> variable in the returned data, but will not affect the <code>M_word</code> variable. Thus, users may analyze data based on the unchanged <code>M_word</code> rather than the <code>token</code>.</p>
 <p>Note also that there may be extremely trivial differences (after 5~6 significant digits) in the raw probability estimates between using CPU and GPU, but these differences would have little impact on main results.</p>
     </div>
@@ -135,7 +134,9 @@ if the original word is not found in the model vocabulary).</p></li>
 <p><code><a href="BERT_vocab.html">BERT_vocab()</a></code></p>
 <p><code><a href="FMAT_query.html">FMAT_query()</a></code></p>
 <p><code><a href="FMAT_query_bind.html">FMAT_query_bind()</a></code></p>
-<p><code><a href="summary.fmat.html">summary.fmat()</a></code></p></div>
+<p><code><a href="summary.fmat.html">summary.fmat()</a></code></p>
+<p><code><a href="special_case.html">special_case()</a></code></p>
+<p><code><a href="weight_decay.html">weight_decay()</a></code></p></div>
     </div>
 
     <div class="section level2">

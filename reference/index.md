@@ -27,5 +27,9 @@
   : Run the fill-mask pipeline and check the raw results.
 - [`set_cache_folder()`](https://psychbruce.github.io/FMAT/reference/set_cache_folder.md)
   : Set (change) HuggingFace cache folder temporarily.
+- [`special_case()`](https://psychbruce.github.io/FMAT/reference/special_case.md)
+  : Specify models that require special treatment to ensure accuracy.
 - [`summary(`*`<fmat>`*`)`](https://psychbruce.github.io/FMAT/reference/summary.fmat.md)
   : \[S3 method\] Summarize the results for the FMAT.
+- [`weight_decay()`](https://psychbruce.github.io/FMAT/reference/weight_decay.md)
+  : Compute a vector of weights with a decay rate.

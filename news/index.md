@@ -1,6 +1,48 @@
 # Changelog
 
+## FMAT 2026.1
+
+This version brings crucial changes and improvements to the `add.tokens`
+method of
+[`FMAT_run()`](https://psychbruce.github.io/FMAT/reference/FMAT_run.md).
+Old versions are completely deprecated.
+
+- Deprecated the `add.method` parameter of
+  [`FMAT_run()`](https://psychbruce.github.io/FMAT/reference/FMAT_run.md):
+  Now it always computes **average** subword token embeddings, with
+  another new parameter `weight.decay` (default value = 1, i.e., equally
+  weighted) that can specify the relative importance of multiple
+  subwords.
+  - A smaller decay value would give greater weight to the former
+    subwords than to the latter subwords.
+  - The *i*-th subword $w_{i}$ has the raw weight score as
+    $\text{weight}\left( w_{i} \right) = decay^{i}$.
+  - See also
+    [`weight_decay()`](https://psychbruce.github.io/FMAT/reference/weight_decay.md)
+    for computational details.
+- Added
+  [`special_case()`](https://psychbruce.github.io/FMAT/reference/special_case.md)
+  as an explicit function to better specify models requiring special
+  treatment, which was previously just a parameter of
+  [`FMAT_run()`](https://psychbruce.github.io/FMAT/reference/FMAT_run.md).
+- Improved the internal technical treatment for subword token
+  combination when “\u0120” is the special prefix. This is important for
+  more accurate out-of-vocabulary fill-mask probability estimates of
+  whole words and phrases, mainly relevant to models using the RoBERTa
+  architecture and only influencing results under `add.tokens=TRUE`.
+  Note that
+  [`FMAT_run()`](https://psychbruce.github.io/FMAT/reference/FMAT_run.md)
+  results with `add.tokens=FALSE` are not affected by this change.
+- Improved progress output information of
+  [`FMAT_run()`](https://psychbruce.github.io/FMAT/reference/FMAT_run.md).
+- Improved
+  [`ICC_models()`](https://psychbruce.github.io/FMAT/reference/ICC_models.md)
+  to support ICC estimates of both log probability (raw) and log
+  probability ratio (LPR).
+
 ## FMAT 2025.12
+
+CRAN release: 2025-12-15
 
 - Changed the default `add.method` of `add.tokens` from `"sum"` to
   `"mean"`, relevant to

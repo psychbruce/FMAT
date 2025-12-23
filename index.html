@@ -18,8 +18,8 @@
 <link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="The Fill-Mask Association Test">
-<meta name="description" content="The Fill-Mask Association Test (FMAT) &lt;doi:10.1037/pspa0000396&gt; is an integrative and probability-based method using Masked Language Models to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as propositions in natural language. Supported language models include BERT &lt;doi:10.48550/arXiv.1810.04805&gt; and its variants available at Hugging Face &lt;https://huggingface.co/models?pipeline_tag=fill-mask&gt;. Methodological references and installation guidance are provided at &lt;https://psychbruce.github.io/FMAT/&gt;.">
-<meta property="og:description" content="The Fill-Mask Association Test (FMAT) &lt;doi:10.1037/pspa0000396&gt; is an integrative and probability-based method using Masked Language Models to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as propositions in natural language. Supported language models include BERT &lt;doi:10.48550/arXiv.1810.04805&gt; and its variants available at Hugging Face &lt;https://huggingface.co/models?pipeline_tag=fill-mask&gt;. Methodological references and installation guidance are provided at &lt;https://psychbruce.github.io/FMAT/&gt;.">
+<meta name="description" content="The Fill-Mask Association Test (FMAT) &lt;doi:10.1037/pspa0000396&gt; is an integrative, probability-based social computing method using Masked Language Models to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as propositional semantic representations in natural language. Supported language models include BERT &lt;doi:10.48550/arXiv.1810.04805&gt; and its variants available at Hugging Face &lt;https://huggingface.co/models?pipeline_tag=fill-mask&gt;. Methodological references and installation guidance are provided at &lt;https://psychbruce.github.io/FMAT/&gt;.">
+<meta property="og:description" content="The Fill-Mask Association Test (FMAT) &lt;doi:10.1037/pspa0000396&gt; is an integrative, probability-based social computing method using Masked Language Models to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as propositional semantic representations in natural language. Supported language models include BERT &lt;doi:10.48550/arXiv.1810.04805&gt; and its variants available at Hugging Face &lt;https://huggingface.co/models?pipeline_tag=fill-mask&gt;. Methodological references and installation guidance are provided at &lt;https://psychbruce.github.io/FMAT/&gt;.">
 <meta property="og:image" content="https://psychbruce.github.io/FMAT/logo.png">
 </head>
 <body>
@@ -30,7 +30,7 @@
 
     <a class="navbar-brand me-2" href="index.html">FMAT</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2025.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2026.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,8 +60,8 @@
 </h1>
 </div>
 <p>😷 The Fill-Mask Association Test (掩码填空联系测验).</p>
-<p>The <em>Fill-Mask Association Test</em> (FMAT) is an integrative and probability-based method using <a href="#bert-models">BERT Models</a> to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as <em>propositions</em> in natural language (<a href="https://doi.org/10.1037/pspa0000396" class="external-link">Bao, 2024, <em>JPSP</em></a>).</p>
-<p>⚠️ <em>Please update this package to version ≥ 2025.4 for faster and more robust functionality.</em></p>
+<p>The <em>Fill-Mask Association Test</em> (FMAT) is an integrative, probability-based social computing method using <a href="#bert-models">BERT Models</a> to measure conceptual associations (e.g., attitudes, biases, stereotypes, social norms, cultural values) as <em>propositional</em> semantic representations in natural language (<a href="https://doi.org/10.1037/pspa0000396" class="external-link">Bao, 2024, <em>JPSP</em></a>).</p>
+<p>⚠️ <em>Please update this package to version ≥ 2026.1 for better functionality.</em></p>
 <p><img src="https://psychbruce.github.io/img/FMAT-Workflow.png"></p>
 <!-- badges: start -->
 
@@ -472,14 +472,14 @@ vinai/bertweet-large    1356 MB
 <p>(Tested 2024-05-16 on the developer’s computer: HP Probook 450 G10 Notebook PC)</p>
 </div>
 <div class="section level3">
-<h3 id="general-30-english-and-30-chinese-models">General 30 English and 30 Chinese Models<a class="anchor" aria-label="anchor" href="#general-30-english-and-30-chinese-models"></a>
+<h3 id="general-32-english-and-32-chinese-models">General 32 English and 32 Chinese Models<a class="anchor" aria-label="anchor" href="#general-32-english-and-32-chinese-models"></a>
 </h3>
-<p>We are using a more comprehensive list of 30 English BERT models and 30 Chinese BERT models in our ongoing and future projects.</p>
+<p>We are using a more comprehensive list of 32 English BERT models and 32 Chinese BERT models in our ongoing and future projects.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://psychbruce.github.io/FMAT/">FMAT</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/set_cache_folder.html">set_cache_folder</a></span><span class="op">(</span><span class="st">"G:/HuggingFace_Cache/"</span><span class="op">)</span>  <span class="co"># models saved in my portable SSD</span></span>
+<span><span class="fu"><a href="reference/set_cache_folder.html">set_cache_folder</a></span><span class="op">(</span><span class="st">"G:/HuggingFace_Cache/"</span><span class="op">)</span>  <span class="co"># models saved in portable SSD</span></span>
 <span></span>
-<span><span class="co">## 30 English Models</span></span>
+<span><span class="co">## 32 English Models</span></span>
 <span><span class="va">models.en</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="co"># BERT (base/large/large-wwm, uncased/cased)</span></span>
 <span>  <span class="st">"bert-base-uncased"</span>,</span>
@@ -499,11 +499,14 @@ vinai/bertweet-large    1356 MB
 <span>  <span class="st">"distilbert-base-uncased"</span>,</span>
 <span>  <span class="st">"distilbert-base-cased"</span>,</span>
 <span>  <span class="st">"distilroberta-base"</span>,</span>
-<span>  <span class="co"># RoBERTa (roberta/muppet, base/large)</span></span>
+<span>  <span class="co"># RoBERTa (roberta/muppet-roberta, base/large)</span></span>
 <span>  <span class="st">"roberta-base"</span>,</span>
 <span>  <span class="st">"roberta-large"</span>,</span>
 <span>  <span class="st">"facebook/muppet-roberta-base"</span>,</span>
 <span>  <span class="st">"facebook/muppet-roberta-large"</span>,</span>
+<span>  <span class="co"># BART (base/large)</span></span>
+<span>  <span class="st">"facebook/bart-base"</span>,</span>
+<span>  <span class="st">"facebook/bart-large"</span>,</span>
 <span>  <span class="co"># ELECTRA (base/large)</span></span>
 <span>  <span class="st">"google/electra-base-generator"</span>,</span>
 <span>  <span class="st">"google/electra-large-generator"</span>,</span>
@@ -522,7 +525,7 @@ vinai/bertweet-large    1356 MB
 <span>  <span class="st">"microsoft/BiomedNLP-BiomedBERT-large-uncased-abstract"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">## 30 Chinese Models</span></span>
+<span><span class="co">## 32 Chinese Models</span></span>
 <span><span class="va">models.cn</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="co"># BERT [Google]</span></span>
 <span>  <span class="st">"bert-base-chinese"</span>,</span>
@@ -542,6 +545,9 @@ vinai/bertweet-large    1356 MB
 <span>  <span class="st">"hfl/chinese-macbert-large"</span>,</span>
 <span>  <span class="st">"hfl/chinese-electra-180g-base-generator"</span>,</span>
 <span>  <span class="st">"hfl/chinese-electra-180g-large-generator"</span>,</span>
+<span>  <span class="co"># ALBERT [UER] (base/large)</span></span>
+<span>  <span class="st">"uer/albert-base-chinese-cluecorpussmall"</span>,</span>
+<span>  <span class="st">"uer/albert-large-chinese-cluecorpussmall"</span>,</span>
 <span>  <span class="co"># RoBERTa [UER] (H=512/768, L=6/8/10/12)</span></span>
 <span>  <span class="st">"uer/chinese_roberta_L-6_H-512"</span>,</span>
 <span>  <span class="st">"uer/chinese_roberta_L-8_H-512"</span>,</span>
@@ -568,7 +574,7 @@ vinai/bertweet-large    1356 MB
 <span><span class="fu"><a href="reference/BERT_info.html">BERT_info</a></span><span class="op">(</span><span class="va">models.en</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/BERT_info.html">BERT_info</a></span><span class="op">(</span><span class="va">models.cn</span><span class="op">)</span></span></code></pre></div>
 <div class="section level4">
-<h4 id="information-of-the-30-english-models">Information of the 30 English Models<a class="anchor" aria-label="anchor" href="#information-of-the-30-english-models"></a>
+<h4 id="information-of-the-english-models">Information of the English Models<a class="anchor" aria-label="anchor" href="#information-of-the-english-models"></a>
 </h4>
 <pre><code>                                                    model       type     param vocab embed layer heads   mask
                                                    &lt;fctr&gt;     &lt;fctr&gt;     &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;fctr&gt;
@@ -591,17 +597,19 @@ vinai/bertweet-large    1356 MB
 17:                                         roberta-large    roberta 355359744 50265  1024    24    16 &lt;mask&gt;
 18:                          facebook/muppet-roberta-base    roberta 124645632 50265   768    12    12 &lt;mask&gt;
 19:                         facebook/muppet-roberta-large    roberta 355359744 50265  1024    24    16 &lt;mask&gt;
-20:                         google/electra-base-generator    electra  33511168 30522   768    12     4 [MASK]
-21:                        google/electra-large-generator    electra  50999552 30522  1024    24     4 [MASK]
-22:                             google/mobilebert-uncased mobilebert  24581888 30522   128    24     4 [MASK]
-23:                           answerdotai/ModernBERT-base modernbert 149014272 50368   768    22    12 [MASK]
-24:                          answerdotai/ModernBERT-large modernbert 394781696 50368  1024    28    16 [MASK]
-25:                              muhtasham/base-mlm-tweet       bert 109482240 30522   768    12    12 [MASK]
-26:                       cardiffnlp/twitter-roberta-base    roberta 124645632 50265   768    12    12 &lt;mask&gt;
-27:                                   vinai/bertweet-base    roberta 134899968 64001   768    12    12 &lt;mask&gt;
-28:                                  vinai/bertweet-large    roberta 355359744 50265  1024    24    16 &lt;mask&gt;
-29:  microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract       bert 109482240 30522   768    12    12 [MASK]
-30: microsoft/BiomedNLP-BiomedBERT-large-uncased-abstract       bert 335141888 30522  1024    24    16 [MASK]
+20:                                    facebook/bart-base       bart 139420416 50265   768     6    12 &lt;mask&gt;
+21:                                   facebook/bart-large       bart 406291456 50265  1024    12    16 &lt;mask&gt;
+22:                         google/electra-base-generator    electra  33511168 30522   768    12     4 [MASK]
+23:                        google/electra-large-generator    electra  50999552 30522  1024    24     4 [MASK]
+24:                             google/mobilebert-uncased mobilebert  24581888 30522   128    24     4 [MASK]
+25:                           answerdotai/ModernBERT-base modernbert 149014272 50368   768    22    12 [MASK]
+26:                          answerdotai/ModernBERT-large modernbert 394781696 50368  1024    28    16 [MASK]
+27:                              muhtasham/base-mlm-tweet       bert 109482240 30522   768    12    12 [MASK]
+28:                       cardiffnlp/twitter-roberta-base    roberta 124645632 50265   768    12    12 &lt;mask&gt;
+29:                                   vinai/bertweet-base    roberta 134899968 64001   768    12    12 &lt;mask&gt;
+30:                                  vinai/bertweet-large    roberta 355359744 50265  1024    24    16 &lt;mask&gt;
+31:  microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract       bert 109482240 30522   768    12    12 [MASK]
+32: microsoft/BiomedNLP-BiomedBERT-large-uncased-abstract       bert 335141888 30522  1024    24    16 [MASK]
                                                     model       type     param vocab embed layer heads   mask</code></pre>
 <p><strong>Missing values of year tokens (1800~2019):</strong></p>
 <ul>
@@ -618,7 +626,7 @@ vinai/bertweet-large    1356 MB
 </ul>
 </li>
 <li>
-<code>"roberta"</code> series, <code>"muppet"</code> series, <code>"distilroberta-base"</code>, <code>"cardiffnlp/twitter-roberta-base"</code>, <code>"vinai/bertweet-large"</code>: 79 missing
+<code>"roberta"</code> series, <code>"muppet"</code> series, <code>"bart"</code> series, <code>"distilroberta-base"</code>, <code>"cardiffnlp/twitter-roberta-base"</code>, <code>"vinai/bertweet-large"</code>: 79 missing
 <ul>
 <li>1801~1829, 1831~1839, 1841~1849, 1851~1859, 1864, 1866~1869, 1871~1879, 1881~1885, 1887, 1891, 1892, 1894</li>
 </ul>
@@ -638,7 +646,7 @@ vinai/bertweet-large    1356 MB
 </ul>
 </div>
 <div class="section level4">
-<h4 id="information-of-the-30-chinese-models">Information of the 30 Chinese Models<a class="anchor" aria-label="anchor" href="#information-of-the-30-chinese-models"></a>
+<h4 id="information-of-the-chinese-models">Information of the Chinese Models<a class="anchor" aria-label="anchor" href="#information-of-the-chinese-models"></a>
 </h4>
 <pre><code>                                                          model          type      param vocab embed layer heads   mask
                                                          &lt;fctr&gt;        &lt;fctr&gt;      &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;fctr&gt;
@@ -656,22 +664,24 @@ vinai/bertweet-large    1356 MB
 12:                                   hfl/chinese-macbert-large          bert  325522432 21128  1024    24    16 [MASK]
 13:                     hfl/chinese-electra-180g-base-generator       electra   22108608 21128   768    12     3 [MASK]
 14:                    hfl/chinese-electra-180g-large-generator       electra   41380096 21128  1024    24     4 [MASK]
-15:                               uer/chinese_roberta_L-6_H-512          bert   30258688 21128   512     6     8 [MASK]
-16:                               uer/chinese_roberta_L-8_H-512          bert   36563456 21128   512     8     8 [MASK]
-17:                              uer/chinese_roberta_L-10_H-512          bert   42868224 21128   512    10     8 [MASK]
-18:                              uer/chinese_roberta_L-12_H-512          bert   49172992 21128   512    12     8 [MASK]
-19:                               uer/chinese_roberta_L-6_H-768          bert   59740416 21128   768     6    12 [MASK]
-20:                               uer/chinese_roberta_L-8_H-768          bert   73916160 21128   768     8    12 [MASK]
-21:                              uer/chinese_roberta_L-10_H-768          bert   88091904 21128   768    10    12 [MASK]
-22:                              uer/chinese_roberta_L-12_H-768          bert  102267648 21128   768    12    12 [MASK]
-23:                uer/roberta-base-wwm-chinese-cluecorpussmall          bert  102267648 21128   768    12    12 [MASK]
-24:               uer/roberta-large-wwm-chinese-cluecorpussmall          bert  325522432 21128  1024    24    16 [MASK]
-25:               IDEA-CCNL/Erlangshen-MacBERT-325M-NLI-Chinese          bert  325625856 21229  1024    24    16 [MASK]
-26:     IDEA-CCNL/Erlangshen-TCBert-330M-Classification-Chinese          bert  325522432 21128  1024    24    16 [MASK]
-27: IDEA-CCNL/Erlangshen-TCBert-330M-Sentence-Embedding-Chinese          bert  325522432 21128  1024    24    16 [MASK]
-28:             IDEA-CCNL/Erlangshen-UniMC-RoBERTa-110M-Chinese          bert  102267648 21128   768    12    12 [MASK]
-29:             IDEA-CCNL/Erlangshen-UniMC-RoBERTa-330M-Chinese          bert  325522432 21128  1024    24    16 [MASK]
-30:        IDEA-CCNL/Erlangshen-UniMC-MegatronBERT-1.3B-Chinese megatron-bert 1257367552 21248  2048    24     8 [MASK]
+15:                     uer/albert-base-chinese-cluecorpussmall        albert   10547968 21128   128    12    12 [MASK]
+16:                    uer/albert-large-chinese-cluecorpussmall        albert   16548352 21128   128    24    16 [MASK]
+17:                               uer/chinese_roberta_L-6_H-512          bert   30258688 21128   512     6     8 [MASK]
+18:                               uer/chinese_roberta_L-8_H-512          bert   36563456 21128   512     8     8 [MASK]
+19:                              uer/chinese_roberta_L-10_H-512          bert   42868224 21128   512    10     8 [MASK]
+20:                              uer/chinese_roberta_L-12_H-512          bert   49172992 21128   512    12     8 [MASK]
+21:                               uer/chinese_roberta_L-6_H-768          bert   59740416 21128   768     6    12 [MASK]
+22:                               uer/chinese_roberta_L-8_H-768          bert   73916160 21128   768     8    12 [MASK]
+23:                              uer/chinese_roberta_L-10_H-768          bert   88091904 21128   768    10    12 [MASK]
+24:                              uer/chinese_roberta_L-12_H-768          bert  102267648 21128   768    12    12 [MASK]
+25:                uer/roberta-base-wwm-chinese-cluecorpussmall          bert  102267648 21128   768    12    12 [MASK]
+26:               uer/roberta-large-wwm-chinese-cluecorpussmall          bert  325522432 21128  1024    24    16 [MASK]
+27:               IDEA-CCNL/Erlangshen-MacBERT-325M-NLI-Chinese          bert  325625856 21229  1024    24    16 [MASK]
+28:     IDEA-CCNL/Erlangshen-TCBert-330M-Classification-Chinese          bert  325522432 21128  1024    24    16 [MASK]
+29: IDEA-CCNL/Erlangshen-TCBert-330M-Sentence-Embedding-Chinese          bert  325522432 21128  1024    24    16 [MASK]
+30:             IDEA-CCNL/Erlangshen-UniMC-RoBERTa-110M-Chinese          bert  102267648 21128   768    12    12 [MASK]
+31:             IDEA-CCNL/Erlangshen-UniMC-RoBERTa-330M-Chinese          bert  325522432 21128  1024    24    16 [MASK]
+32:        IDEA-CCNL/Erlangshen-UniMC-MegatronBERT-1.3B-Chinese megatron-bert 1257367552 21248  2048    24     8 [MASK]
                                                           model          type      param vocab embed layer heads   mask</code></pre>
 <p><strong>Missing values of year tokens (1800~2019):</strong></p>
 <ul>

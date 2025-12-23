@@ -11,12 +11,9 @@ FMAT_run(
   data,
   gpu,
   add.tokens = FALSE,
-  add.method = c("mean", "sum"),
-  add.verbose = TRUE,
-  pattern.special = list(uncased = "uncased|albert|electra|muhtasham", prefix.u2581 =
-    "albert|xlm-roberta|xlnet", prefix.u2581.excl = "chinese", prefix.u0120 =
-    "roberta|bart|deberta|bertweet-large|ModernBERT", prefix.u0120.excl =
-    "chinese|xlm-|kornosk/"),
+  add.verbose = FALSE,
+  weight.decay = 1,
+  pattern.special = special_case(),
   file = NULL,
   progress = TRUE,
   warning = TRUE,
@@ -60,33 +57,42 @@ FMAT_run(
 - add.tokens:
 
   Add new tokens (for out-of-vocabulary words or phrases) to model
-  vocabulary? It only temporarily adds tokens for tasks but does not
-  change the raw model file. Defaults to `FALSE`.
+  vocabulary? Defaults to `FALSE`.
 
-- add.method:
+  - Default method of producing the new token embeddings is computing
+    the (equally weighted) average subword token embeddings. To change
+    the weights of different subwords, specify `weight.decay`.
 
-  Method used to produce the token embeddings of appended tokens. Can be
-  `"mean"` (default) or `"sum"` of subword token embeddings.
+  - It just adds tokens temporarily without changing the raw model file.
 
 - add.verbose:
 
-  Print composition information of new tokens (for out-of-vocabulary
-  words or phrases)? Defaults to `TRUE`.
+  Print subwords of each new token? Defaults to `FALSE`.
+
+- weight.decay:
+
+  Decay factor of relative importance of multiple subwords. Defaults to
+  `1` (see
+  [`weight_decay()`](https://psychbruce.github.io/FMAT/reference/weight_decay.md)
+  for computational details). A smaller decay value would give greater
+  weight to the former subwords than to the latter subwords. The i-th
+  subword has raw weight = decay ^ i.
+
+  - decay = 1: all subwords are **equally** important (default)
+
+  - 0 \< decay \< 1: **first** subwords are more important
+
+  - decay \> 1: **last** subwords are more important
+
+  For example, decay = 0.5 would give 0.5 and 0.25 (with normalized
+  weights 0.667 and 0.333) to two subwords (e.g., "individualism" =
+  0.667 "individual" + 0.333 "##ism").
 
 - pattern.special:
 
-  Regular expression patterns (matching model names) for special model
-  cases that are uncased or require a special prefix character in
-  certain situations.
-
-  **WARNING**: As the developer is not able to check all models, users
-  are responsible for checking the models they would use and for
-  modifying this argument if necessary.
-
-  - `prefix.u2581`: adding prefix `\u2581` for all mask words
-
-  - `prefix.u0120`: adding prefix `\u0120` for only non-starting mask
-    words
+  See
+  [`special_case()`](https://psychbruce.github.io/FMAT/reference/special_case.md)
+  for details.
 
 - file:
 
@@ -120,10 +126,10 @@ A data.table (class `fmat`) appending `data` with these new variables:
 - `prob`: (raw) conditional probability of the unmasked token given the
   provided context, estimated by the masked language model.
 
-  - It is *NOT SUGGESTED* to directly interpret the raw probabilities
-    because the *contrast* between a pair of probabilities is more
-    interpretable. See
-    [`summary.fmat()`](https://psychbruce.github.io/FMAT/reference/summary.fmat.md).
+  - Raw probabilities should *NOT* be directly used or interpreted.
+    Please use
+    [`summary.fmat()`](https://psychbruce.github.io/FMAT/reference/summary.fmat.md)
+    to *contrast* between a pair of probabilities.
 
 ## Details
 
@@ -132,9 +138,10 @@ in certain models: (1) for uncased models (e.g., ALBERT), it turns
 tokens to lowercase; (2) for models that use `<mask>` rather than
 `[MASK]`, it automatically uses the corrected mask token; (3) for models
 that require a prefix to estimate whole words than subwords (e.g.,
-ALBERT, RoBERTa), it adds a certain prefix (usually a white space;
-\u2581 for ALBERT and XLM-RoBERTa, \u0120 for RoBERTa and
-DistilRoBERTa).
+ALBERT, RoBERTa), it adds a white space before each mask option word.
+See
+[`special_case()`](https://psychbruce.github.io/FMAT/reference/special_case.md)
+for details.
 
 These changes only affect the `token` variable in the returned data, but
 will not affect the `M_word` variable. Thus, users may analyze data
@@ -157,6 +164,10 @@ and GPU, but these differences would have little impact on main results.
 [`FMAT_query_bind()`](https://psychbruce.github.io/FMAT/reference/FMAT_query_bind.md)
 
 [`summary.fmat()`](https://psychbruce.github.io/FMAT/reference/summary.fmat.md)
+
+[`special_case()`](https://psychbruce.github.io/FMAT/reference/special_case.md)
+
+[`weight_decay()`](https://psychbruce.github.io/FMAT/reference/weight_decay.md)
 
 ## Examples
 
