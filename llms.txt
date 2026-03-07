@@ -544,7 +544,7 @@ models.en = c(
 )
 
 ## 32 Chinese Models
-models.cn = c(
+models.zh = c(
   # BERT [Google]
   "bert-base-chinese",
   # BERT [Alibaba-PAI] (base/ck-base/ck-large/ck-huge)
@@ -590,7 +590,7 @@ models.cn = c(
 )
 
 BERT_info(models.en)
-BERT_info(models.cn)
+BERT_info(models.zh)
 ```
 
 #### Information of the English Models

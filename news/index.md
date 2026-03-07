@@ -2,6 +2,8 @@
 
 ## FMAT 2026.1
 
+CRAN release: 2026-01-12
+
 This version brings crucial changes and improvements to the `add.tokens`
 method of
 [`FMAT_run()`](https://psychbruce.github.io/FMAT/reference/FMAT_run.md).
